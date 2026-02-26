@@ -1,0 +1,5 @@
+Sitemap: https://vahlayconsulting.com/sitemap.xml
+
+Allow : /assets/Title Logo.png
+# Disallow: /assets/
+Allow: /

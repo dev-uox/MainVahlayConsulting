@@ -1,0 +1,324 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+
+/* Add this to your global CSS (index.css or App.css) */
+html {
+  scroll-behavior: smooth;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Batangas";
+  src: url("/fonts/Batangas-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Add some fallback fonts for better performance */
+body {
+  font-family: "Poppins", sans-serif;
+}
+/* Raindrop animation background */
+.raindrop-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.raindrop-background::before {
+  content: "";
+  position: absolute;
+  top: 0px; /* Start above the section */
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+    circle,
+    rgba(230, 173, 173, 0.6) 30%,
+    transparent 60%
+  );
+  animation: raindrop-fall 5s linear infinite;
+}
+
+@keyframes raindrop-fall {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100vh); /* Move downwards */
+  }
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+.animate-fade-in.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-fade-in.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-fade-in.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animate-fade-in.delay-700 {
+  animation-delay: 0.7s;
+}
+
+.animate-fade-in.delay-900 {
+  animation-delay: 0.9s;
+}
+
+/* navbar animation */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logoRingsSpin {
+  animation: spin 20s linear infinite;
+}
+
+/* navbar animation end  */
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.animate-scroll-slow {
+  animation: scroll-up 30s linear infinite;
+}
+
+.animate-scroll-medium {
+  animation: scroll-down 30s linear infinite;
+}
+
+.animate-scroll-fast {
+  animation: scroll-up 30s linear infinite;
+}
+
+/* 1) Same keyframes driving offset-distance 0→100% */
+@keyframes journey {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* 2) Card-level custom properties */
+.card {
+  position: relative;
+  --trail-length: 80px; /* how long the line is */
+  --trail-thickness: 7px; /* how thick the line is */
+  --speed: 10s; /* one full lap */
+  --accent: #ef4444; /* line color */
+}
+
+/* 3) The moving “line” element */
+.card .trail {
+  position: absolute;
+  width: var(--trail-length);
+  height: var(--trail-thickness);
+  background: var(--accent);
+
+  /* walk around the border-box */
+  offset-path: border-box;
+  -webkit-offset-path: border-box; /* Safari/old Chromes */
+
+  /* pivot at the “start” of the line, vertically centered */
+  offset-anchor: 0% 50%;
+  -webkit-offset-anchor: 0% 50%;
+
+  /* orient it tangentially along the path */
+  offset-rotate: auto;
+  -webkit-offset-rotate: auto;
+
+  /* animate endlessly */
+  animation: journey var(--speed) linear infinite;
+}
+
+
+/* Base (mobile): no typing animation */
+.typewriter h1 {
+  overflow: visible;
+  border-right: none;
+  white-space: normal;
+  width: auto;
+  animation: none;
+}
+
+/* Desktop and up: enable the typing effect */
+@media (min-width: 768px) {
+  .typewriter {
+    width: 100%;
+    max-width: 30ch;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .typewriter h1 {
+    display: inline-block;
+    white-space: nowrap;
+    border-right: .15em solid red;
+    letter-spacing: .10em;
+    width: 0;
+    animation: 
+      typing 3.5s steps(30) forwards,
+      blink-caret .75s step-end infinite;
+  }
+
+  @keyframes typing {
+    from { width: 0 }
+    to   { width: 100% }
+  }
+
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+   10%  { border-color: red }
+  }
+ }
+
+
+.btn {
+  position: relative;
+  padding: 1.5rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  min-width: 200px;
+  z-index: 1;
+}
+
+.neon-pulse {
+  background: red;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  overflow: visible;
+}
+
+.neon-pulse::before,
+.neon-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid red;
+  border-radius: inherit;
+  animation: pulseOut 2s ease-out infinite;
+  opacity: 0;
+}
+
+.neon-pulse::after {
+  animation-delay: 1s;
+}
+
+@keyframes pulseOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.typing-line1,
+.typing-line2 {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* First line animation */
+.typing-line1 {
+  width: 0;
+  animation: typing 2s steps(25, end) forwards;
+}
+
+/* Second line animation after first finishes */
+.typing-line2 {
+  width: 0;
+  animation: typing 2s steps(25, end) forwards;
+  animation-delay: 2.2s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.beat {
+  animation: beat 0.9s infinite ease-in-out;
+}
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.blink-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #dc2626; /* red */
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 6px;
+  animation: blink 1s infinite;
+}
