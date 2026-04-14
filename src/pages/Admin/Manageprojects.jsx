@@ -25,8 +25,8 @@ const ManageProjects = () => {
   const [uploadError, setUploadError] = useState("");
   const [services, setServices] = useState([]); // Services list
   const [selectedService, setSelectedService] = useState(""); // New state for services
-  
-    const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // State to hold all projects
   const [projects, setProjects] = useState([]);
@@ -197,261 +197,261 @@ const ManageProjects = () => {
   const upcomingProjects = projects.filter((proj) => proj.status === "upcoming");
 
   return (
-  <div className="min-h-screen bg-gray-100 flex">
-      
+    <div className="min-h-screen bg-gray-100 flex">
+
       <main className="flex-1">
-        
+
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-          Manage Project
-        </h1>
-      {/* Sidebar */}
+            Manage Project
+          </h1>
+          {/* Sidebar */}
 
-       
 
-      <div className="w-full ">
 
-        {/* Form */}
-        <form
-          onSubmit={handleAddOrUpdate}
-          className="bg-white p-4 rounded shadow mb-8"
-        >
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              Project Title
-            </label>
-            <input
-              type="text"
-              className="w-full p-2 border rounded"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="Enter project title"
-              required
-            />
-          </div>
+          <div className="w-full ">
 
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              Description
-            </label>
-            <textarea
-              className="w-full p-2 border rounded"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter project description"
-              required
-            />
-          </div>
-
-          {/* File input for project image */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">
-              Project Image
-            </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleImageUpload}
-              className="w-full p-2 border rounded"
-              required={!projectImage} // Required if no image URL is present
-            />
-            {uploading && <p className="text-sm text-blue-500 mt-1">Uploading image...</p>}
-            {uploadError && <p className="text-sm text-red-500 mt-1">{uploadError}</p>}
-            {projectImage && (
-              <img src={projectImage} alt="Project" className="mt-2 w-32 h-32 object-cover rounded" />
-            )}
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">Status</label>
-            <select
-              className="w-full p-2 border rounded"
-              value={status}
-              onChange={(e) => setStatus(e.target.value)}
+            {/* Form */}
+            <form
+              onSubmit={handleAddOrUpdate}
+              className="bg-white p-4 rounded shadow mb-8"
             >
-              <option value="live">Live</option>
-              <option value="upcoming">Upcoming</option>
-            </select>
-          </div>
-          {/* Dropdown for selecting services */}
-          <div className="mb-4">
-            <label className="block text-sm font-semibold mb-1">Service</label>
-            <select
-              className="w-full p-2 border rounded"
-              value={selectedService}
-              onChange={(e) => setSelectedService(e.target.value)}
-              required
-            >
-              <option value="">Select a Service</option>
-              {services.map((service) => (
-                <option key={service.id} value={service.name}>
-                  {service.name}
-                </option>
-              ))}
-            </select>
-          </div>
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">
+                  Project Title
+                </label>
+                <input
+                  type="text"
+                  className="w-full p-2 border rounded"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Enter project title"
+                  required
+                />
+              </div>
 
-          {/* Only show project link field when status is "live" */}
-          {status === "live" && (
-            <div className="mb-4">
-              <label className="block text-sm font-semibold mb-1">
-                Project Link
-              </label>
-              <input
-                type="text"
-                className="w-full p-2 border rounded"
-                value={projectLink}
-                onChange={(e) => setProjectLink(e.target.value)}
-                placeholder="Enter project link"
-                required
-              />
-            </div>
-          )}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">
+                  Description
+                </label>
+                <textarea
+                  className="w-full p-2 border rounded"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  placeholder="Enter project description"
+                  required
+                />
+              </div>
 
-          <button
-            type="submit"
-            className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
-          >
-            {editId ? "Update Project" : "Add Project"}
-          </button>
-        </form>
-
-        <DragDropContext onDragEnd={handleDragEnd}>
-          {/* Live Projects Section */}
-          <section className="mb-8">
-            <h2 className="text-xl font-bold mb-2">Live Projects</h2>
-            {liveProjects.length === 0 ? (
-              <p>No live projects found.</p>
-            ) : (
-              <Droppable droppableId="live">
-                {(provided) => (
-                  <ul
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-4"
-                  >
-                    {liveProjects.map((proj, index) => (
-                      <Draggable
-                        key={proj.id}
-                        draggableId={proj.id}
-                        index={index}
-                      >
-                        {(provided) => (
-                          <li
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className="bg-white rounded shadow p-4 mb-2 flex flex-col md:flex-row md:justify-between md:items-center"
-                          >
-                            <div className="flex flex-col md:flex-row items-center">
-                              <div
-                                {...provided.dragHandleProps}
-                                className="mr-4 cursor-move"
-                              >
-                                <svg
-                                  className="w-6 h-6 text-gray-400"
-                                  fill="none"
-                                  stroke="currentColor"
-                                  viewBox="0 0 24 24"
-                                >
-                                  <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M4 6h16M4 12h16M4 18h16"
-                                  />
-                                </svg>
-                              </div>
-                              {proj.projectImage && (
-                                <img
-                                  src={proj.projectImage}
-                                  alt={proj.title}
-                                  className="w-16 h-16 object-cover mr-4 mb-2 md:mb-0"
-                                />
-                              )}
-                              <div>
-                                <h3 className="font-semibold">{proj.title} <span className="text-red-500 mx-2 ">{proj.serviceId}</span></h3>
-                                <p className="text-sm text-gray-600">{proj.description}</p>
-                                {proj.projectLink && (
-                                  <a
-                                    href={proj.projectLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-500 hover:underline text-sm mx-2"
-                                  >
-                                    Visit
-                                  </a>
-                                )}
-                              </div>
-                            </div>
-                            <div className="mt-4 flex space-x-4">
-                              <button
-                                onClick={() => handleEdit(proj)}
-                                className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDelete(proj.id)}
-                                className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </li>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </ul>
+              {/* File input for project image */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">
+                  Project Image
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="w-full p-2 border rounded"
+                  required={!projectImage} // Required if no image URL is present
+                />
+                {uploading && <p className="text-sm text-blue-500 mt-1">Uploading image...</p>}
+                {uploadError && <p className="text-sm text-red-500 mt-1">{uploadError}</p>}
+                {projectImage && (
+                  <img src={projectImage} alt="Project" className="mt-2 w-32 h-32 object-cover rounded" />
                 )}
-              </Droppable>
-            )}
-          </section>
-        </DragDropContext>
+              </div>
 
-        {/* Display Upcoming Projects */}
-        <section>
-          <h2 className="text-xl font-bold mb-2">Upcoming Projects</h2>
-          {upcomingProjects.length === 0 && <p>No upcoming projects found.</p>}
-          <ul>
-            {upcomingProjects.map((proj) => (
-              <li
-                key={proj.id}
-                className="bg-white rounded shadow p-4 mb-2 flex flex-col md:flex-row md:justify-between md:items-center"
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">Status</label>
+                <select
+                  className="w-full p-2 border rounded"
+                  value={status}
+                  onChange={(e) => setStatus(e.target.value)}
+                >
+                  <option value="live">Live</option>
+                  <option value="upcoming">Upcoming</option>
+                </select>
+              </div>
+              {/* Dropdown for selecting services */}
+              <div className="mb-4">
+                <label className="block text-sm font-semibold mb-1">Service</label>
+                <select
+                  className="w-full p-2 border rounded"
+                  value={selectedService}
+                  onChange={(e) => setSelectedService(e.target.value)}
+                  required
+                >
+                  <option value="">Select a Service</option>
+                  {services.map((service) => (
+                    <option key={service.id} value={service.name}>
+                      {service.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              {/* Only show project link field when status is "live" */}
+              {status === "live" && (
+                <div className="mb-4">
+                  <label className="block text-sm font-semibold mb-1">
+                    Project Link
+                  </label>
+                  <input
+                    type="text"
+                    className="w-full p-2 border rounded"
+                    value={projectLink}
+                    onChange={(e) => setProjectLink(e.target.value)}
+                    placeholder="Enter project link"
+                    required
+                  />
+                </div>
+              )}
+
+              <button
+                type="submit"
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition"
               >
-                <div className="flex flex-col md:flex-row items-center">
-                  {proj.projectImage && (
-                    <img
-                      src={proj.projectImage}
-                      alt={proj.title}
-                      className="w-16 h-16 object-cover mr-4 mb-2 md:mb-0"
-                    />
-                  )}
-                  <div>
-                    <h3 className="font-semibold">{proj.title}</h3>
-                    <p className="text-sm text-gray-600">{proj.description}</p>
-                  </div>
-                </div>
-                <div className="mt-4 flex space-x-4">
-                  <button
-                    onClick={() => handleEdit(proj)}
-                    className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
+                {editId ? "Update Project" : "Add Project"}
+              </button>
+            </form>
+
+            <DragDropContext onDragEnd={handleDragEnd}>
+              {/* Live Projects Section */}
+              <section className="mb-8">
+                <h2 className="text-xl font-bold mb-2">Live Projects</h2>
+                {liveProjects.length === 0 ? (
+                  <p>No live projects found.</p>
+                ) : (
+                  <Droppable droppableId="live">
+                    {(provided) => (
+                      <ul
+                        {...provided.droppableProps}
+                        ref={provided.innerRef}
+                        className="space-y-4"
+                      >
+                        {liveProjects.map((proj, index) => (
+                          <Draggable
+                            key={proj.id}
+                            draggableId={proj.id}
+                            index={index}
+                          >
+                            {(provided) => (
+                              <li
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                className="bg-white rounded shadow p-4 mb-2 flex flex-col md:flex-row md:justify-between md:items-center"
+                              >
+                                <div className="flex flex-col md:flex-row items-center">
+                                  <div
+                                    {...provided.dragHandleProps}
+                                    className="mr-4 cursor-move"
+                                  >
+                                    <svg
+                                      className="w-6 h-6 text-gray-400"
+                                      fill="none"
+                                      stroke="currentColor"
+                                      viewBox="0 0 24 24"
+                                    >
+                                      <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 6h16M4 12h16M4 18h16"
+                                      />
+                                    </svg>
+                                  </div>
+                                  {proj.projectImage && (
+                                    <img
+                                      src={proj.projectImage}
+                                      alt={proj.title}
+                                      className="w-16 h-16 object-cover mr-4 mb-2 md:mb-0"
+                                    />
+                                  )}
+                                  <div>
+                                    <h3 className="font-semibold">{proj.title} <span className="text-red-500 mx-2 ">{proj.serviceId}</span></h3>
+                                    <p className="text-sm text-gray-600">{proj.description}</p>
+                                    {proj.projectLink && (
+                                      <a
+                                        href={proj.projectLink}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="text-blue-500 hover:underline text-sm mx-2"
+                                      >
+                                        Visit
+                                      </a>
+                                    )}
+                                  </div>
+                                </div>
+                                <div className="mt-4 flex space-x-4">
+                                  <button
+                                    onClick={() => handleEdit(proj)}
+                                    className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
+                                  >
+                                    Edit
+                                  </button>
+                                  <button
+                                    onClick={() => handleDelete(proj.id)}
+                                    className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
+                                  >
+                                    Delete
+                                  </button>
+                                </div>
+                              </li>
+                            )}
+                          </Draggable>
+                        ))}
+                        {provided.placeholder}
+                      </ul>
+                    )}
+                  </Droppable>
+                )}
+              </section>
+            </DragDropContext>
+
+            {/* Display Upcoming Projects */}
+            <section>
+              <h2 className="text-xl font-bold mb-2">Upcoming Projects</h2>
+              {upcomingProjects.length === 0 && <p>No upcoming projects found.</p>}
+              <ul>
+                {upcomingProjects.map((proj) => (
+                  <li
+                    key={proj.id}
+                    className="bg-white rounded shadow p-4 mb-2 flex flex-col md:flex-row md:justify-between md:items-center"
                   >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(proj.id)}
-                    className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
-                  >
-                    Delete
-                  </button>
-                </div>
-              </li>
-            ))}
-          </ul>
-        </section>
-      </div>
-    </div>
+                    <div className="flex flex-col md:flex-row items-center">
+                      {proj.projectImage && (
+                        <img
+                          src={proj.projectImage}
+                          alt={proj.title}
+                          className="w-16 h-16 object-cover mr-4 mb-2 md:mb-0"
+                        />
+                      )}
+                      <div>
+                        <h3 className="font-semibold">{proj.title}</h3>
+                        <p className="text-sm text-gray-600">{proj.description}</p>
+                      </div>
+                    </div>
+                    <div className="mt-4 flex space-x-4">
+                      <button
+                        onClick={() => handleEdit(proj)}
+                        className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(proj.id)}
+                        className="text-sm font-semibold text-red-500 hover:text-red-600 transition"
+                      >
+                        Delete
+                      </button>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          </div>
+        </div>
       </main>
     </div>
   );

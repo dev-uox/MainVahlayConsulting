@@ -99,6 +99,7 @@ export default function TrainerDailyReport() {
   // Filters
   const [employeeSearch, setEmployeeSearch] = useState("");
   const [addEmpSearch, setAddEmpSearch] = useState("");
+  const [batchSearchQuery, setBatchSearchQuery] = useState("");
   const [hideExistingInBatch, setHideExistingInBatch] = useState(true);
 
   /* ---------------- FETCH BATCHES ---------------- */
@@ -988,11 +989,11 @@ export default function TrainerDailyReport() {
 
       {/* MAIN CONTENT */}
       <div className="flex-1 w-full md:flex overflow-x-hidden">
-        <div className="w-full">
+        <div className=" w-full max-w-7xl mx-auto">
           {/* DESKTOP HEADER - IMPROVED LAYOUT */}
-          <div className="flex items-center md:justify-between justify-center p-4 sm:p-6 bg-white md:border-b">
-            <h1 className=" md:block hidden text-xl sm:text-2xl font-bold text-red-700">
-              Training Batch Manager
+          <div className="flex items-center justify-between justify-center p-4 sm:p-6  md:border-b">
+            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+              Manage  Batches
             </h1>
 
             <div className="flex items-center gap-4">
@@ -1023,7 +1024,7 @@ export default function TrainerDailyReport() {
                   }}
                   className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow text-sm font-medium"
                 >
-                  + Create Batch
+                  + Create
                 </button>
               )}
             </div>
@@ -1034,8 +1035,22 @@ export default function TrainerDailyReport() {
             {/* BATCH LIST (if no batch selected) */}
             {!selectedBatch && (
               <>
+                <div className="mb-4 bg-white p-3 rounded-lg border border-red-100">
+                  <input
+                    type="text"
+                    placeholder="Search batches by name or date..."
+                    className="w-full p-3 border border-red-200 rounded-lg focus:ring-2 focus:ring-red-300 outline-none text-sm"
+                    value={batchSearchQuery}
+                    onChange={(e) => setBatchSearchQuery(e.target.value)}
+                  />
+                </div>
                 <div className="space-y-3">
-                  {batches.map((b) => (
+                  {batches.filter(b => {
+                    const term = batchSearchQuery.toLowerCase();
+                    const batchName = (b.batchName || "").toLowerCase();
+                    const bDate = b.batchDate ? b.batchDate.toLowerCase() : (b.createdAt?.toDate ? b.createdAt.toDate().toLocaleDateString().toLowerCase() : "");
+                    return batchName.includes(term) || bDate.includes(term);
+                  }).map((b) => (
                     <div
                       key={b.id}
                       className="bg-white rounded-xl p-4 shadow-sm border border-red-100 hover:border-red-200 transition-colors"
@@ -1088,6 +1103,17 @@ export default function TrainerDailyReport() {
                       </div>
                     </div>
                   ))}
+
+                  {batches.length > 0 && batches.filter(b => {
+                    const term = batchSearchQuery.toLowerCase();
+                    const batchName = (b.batchName || "").toLowerCase();
+                    const bDate = b.batchDate ? b.batchDate.toLowerCase() : (b.createdAt?.toDate ? b.createdAt.toDate().toLocaleDateString().toLowerCase() : "");
+                    return batchName.includes(term) || bDate.includes(term);
+                  }).length === 0 && (
+                      <div className="bg-white p-6 rounded-xl border border-red-100 text-center text-slate-600">
+                        <p>No batches match your search.</p>
+                      </div>
+                    )}
 
                   {batches.length === 0 && (
                     <div className="bg-white p-6 rounded-xl border border-red-100 text-center text-slate-600">

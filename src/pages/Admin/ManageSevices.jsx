@@ -613,9 +613,9 @@ const ManageHierarchyPage = () => {
     <div className="min-h-screen bg-gray-100 flex">
 
 
-     
+
       <main className="flex-1">
-       
+
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
             Manage Services
@@ -696,8 +696,8 @@ const ManageHierarchyPage = () => {
                   {categoryLoading
                     ? "Saving..."
                     : editingCategoryId
-                    ? "Update Category"
-                    : "Add Category"}
+                      ? "Update Category"
+                      : "Add Category"}
                 </button>
               </div>
 
@@ -707,11 +707,10 @@ const ManageHierarchyPage = () => {
                   <button
                     key={cat.id}
                     onClick={() => setSelectedCategory(cat.id)}
-                    className={`flex items-center gap-2 px-3 py-2 rounded-full border whitespace-nowrap ${
-                      cat.id === selectedCategory
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full border whitespace-nowrap ${cat.id === selectedCategory
                         ? "bg-red-100 border-red-300"
                         : "bg-gray-50 border-gray-300"
-                    }`}
+                      }`}
                   >
                     <span className="underline text-gray-700">{cat.name}</span>
 
@@ -858,11 +857,10 @@ const ManageHierarchyPage = () => {
                     <button
                       key={serv.id}
                       onClick={() => setSelectedService(serv.id)}
-                      className={`flex items-center gap-2 px-3 py-2 rounded-full border whitespace-nowrap ${
-                        serv.id === selectedService
+                      className={`flex items-center gap-2 px-3 py-2 rounded-full border whitespace-nowrap ${serv.id === selectedService
                           ? "bg-green-100 border-green-300"
                           : "bg-gray-50 border-gray-300"
-                      }`}
+                        }`}
                     >
                       <span className="underline text-gray-700">{serv.name}</span>
 
@@ -1015,8 +1013,8 @@ const ManageHierarchyPage = () => {
                     {subserviceLoading
                       ? "Saving..."
                       : editingSubserviceId
-                      ? "Update Subservice"
-                      : "Add Subservice"}
+                        ? "Update Subservice"
+                        : "Add Subservice"}
                   </button>
                 </div>
 

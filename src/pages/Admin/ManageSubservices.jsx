@@ -270,7 +270,7 @@
 
 
 import { useState, useEffect } from "react";
-import { db, storage } from "../../firebaseConfig"; 
+import { db, storage } from "../../firebaseConfig";
 import Side_bar from "../../components/Side_bar";
 import {
   collection,
@@ -522,12 +522,10 @@ const ManageSubservices = () => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-full md:w-1/4 bg-white shadow-lg">
-        <Side_bar />
-      </div>
+
 
       {/* Main Content */}
-      <div className="w-full md:w-3/4 p-8 bg-white shadow-md rounded-lg m-4">
+      <div className="w-full md:w-full p-8 bg-white shadow-md rounded-lg m-4">
         <h2 className="text-xl font-bold mb-4">Manage Subservices</h2>
 
         {/* Select Service */}
@@ -644,8 +642,8 @@ const ManageSubservices = () => {
               {loading
                 ? "Saving..."
                 : editingSubserviceId
-                ? "Update Subservice"
-                : "Add Subservice"}
+                  ? "Update Subservice"
+                  : "Add Subservice"}
             </button>
           </div>
         )}

@@ -113,75 +113,75 @@ const ManageJoiningDates = () => {
   };
 
   return (
-  <div className="min-h-screen bg-gray-100 ">
-      
+    <div className="min-h-screen bg-gray-100 ">
+
       <main className="flex-1">
-        
-        <div className=" md:w-full w-[21rem]  px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+
+        <div className=" mx-auto w-full max-w-6xl  px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-          Manage Joining Dates
-        </h1>
+            Manage Joining Dates
+          </h1>
 
-        {/* Add Date Card */}
-        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow mb-6 w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Add Joining Date & Time
-          </label>
+          {/* Add Date Card */}
+          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow mb-6 w-full">
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Add Joining Date & Time
+            </label>
 
-          <div className="flex flex-col gap-3">
-            <input
-              type="date"
-              name="date"
-              value={dateTime.date}
-              onChange={handleInputChange}
-              min={new Date().toISOString().split("T")[0]}
-              className="border px-3 py-2 rounded-lg w-full"
-            />
+            <div className="flex flex-col gap-3">
+              <input
+                type="date"
+                name="date"
+                value={dateTime.date}
+                onChange={handleInputChange}
+                min={new Date().toISOString().split("T")[0]}
+                className="border px-3 py-2 rounded-lg w-full"
+              />
 
-            <input
-              type="time"
-              name="time"
-              value={dateTime.time}
-              onChange={handleInputChange}
-              className="border px-3 py-2 rounded-lg w-full"
-            />
+              <input
+                type="time"
+                name="time"
+                value={dateTime.time}
+                onChange={handleInputChange}
+                className="border px-3 py-2 rounded-lg w-full"
+              />
 
-            {/* 🔥 FULL WIDTH BUTTON */}
-            <button
-              type="button"
-              onClick={handleAddDate}
-              className="bg-blue-600 text-white w-full py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
-            >
-              Add
-            </button>
+              {/* 🔥 FULL WIDTH BUTTON */}
+              <button
+                type="button"
+                onClick={handleAddDate}
+                className="bg-red-600 text-white w-full py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+              >
+                Add
+              </button>
+            </div>
+          </div>
+
+          {/* Date List */}
+          <div className="bg-white p-4 sm:p-6 rounded-2xl shadow space-y-3">
+            {dateList.length === 0 ? (
+              <p className="text-gray-500 text-sm text-center py-3">
+                No upcoming dates found.
+              </p>
+            ) : (
+              dateList.map(({ id, date, time }) => (
+                <div
+                  key={id}
+                  className="p-3 border rounded-lg flex items-center justify-between"
+                >
+                  <span className="text-gray-700 text-sm">
+                    {date} {time && `- ${time}`}
+                  </span>
+
+                  <FaTrash
+                    className="text-red-500 cursor-pointer hover:text-red-600"
+                    onClick={() => handleremoveDate(id)}
+                  />
+                </div>
+              ))
+            )}
           </div>
         </div>
-
-        {/* Date List */}
-        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow space-y-3">
-          {dateList.length === 0 ? (
-            <p className="text-gray-500 text-sm text-center py-3">
-              No upcoming dates found.
-            </p>
-          ) : (
-            dateList.map(({ id, date, time }) => (
-              <div
-                key={id}
-                className="p-3 border rounded-lg flex items-center justify-between"
-              >
-                <span className="text-gray-700 text-sm">
-                  {date} {time && `- ${time}`}
-                </span>
-
-                <FaTrash
-                  className="text-red-500 cursor-pointer hover:text-red-600"
-                  onClick={() => handleremoveDate(id)}
-                />
-              </div>
-            ))
-          )}
-        </div>
-      </div>
       </main>
     </div>
   );

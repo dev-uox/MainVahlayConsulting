@@ -1,7 +1,7 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
 
 import "../../backgroundImage.css";
 import { useNavigate } from "react-router-dom";
@@ -41,21 +41,31 @@ const Login = () => {
       // 1) Auth sign-in
       const { user } = await signInWithEmailAndPassword(auth, email, password);
 
-      // 2) Read role from jobApplications/{email} (replaces 'users' collection)
-      const emailKey = (user.email || "").toLowerCase();
-      // UPDATED: Now targeting the "jobApplications" collection
-      const userDocRef = doc(db, "jobApplications", emailKey);
-      const snap = await getDoc(userDocRef);
+      const emailKey = (user.email || "").toLowerCase().trim();
 
-      // Note: If you want to block users who don't have a document here,
-      // you can uncomment the snap.exists() check below.
-      // if (!snap.exists()) {
-      //   await signOut(auth);
-      //   setError("No profile found for this email. Please contact support or sign up.");
-      //   return;
-      // }
+      // 1) First, try fetching the role from the "users" collection (most up-to-date)
+      const userRef = doc(db, "users", emailKey);
+      const userSnap = await getDoc(userRef);
 
-      const role = String(snap.data()?.role || "user").toLowerCase();
+      let role = "user";
+      let userDocExists = false;
+      if (userSnap.exists()) {
+        role = String(userSnap.data()?.role || "user").toLowerCase();
+        userDocExists = true;
+      }
+
+      // 2) Fallback: Read from jobApplications
+      const jobAppsRef = collection(db, "jobApplications");
+      const q = query(jobAppsRef, where("email", "==", emailKey));
+      const querySnapshot = await getDocs(q);
+
+      let snapData = null;
+      if (!querySnapshot.empty) {
+        snapData = querySnapshot.docs[0].data();
+        if (!userDocExists) { // Only override if they don't have a record in the users collection
+          role = String(snapData?.role || "user").toLowerCase();
+        }
+      }
 
       // 3) Route by role
       if (role === "admin") {
@@ -64,9 +74,13 @@ const Login = () => {
       } else if (role === "recruiter") {
         alert("Welcome Recruiter!");
         navigate("/result"); // recruiter portal
+      } else if (role !== "user") {
+        alert(`Welcome ${role.charAt(0).toUpperCase() + role.slice(1)}!`);
+        navigate("/profile"); // Any staff/trainer role gets their profile dashboard
       } else {
         alert("Login successful!");
-        navigate("/MultiStepForm"); // regular user
+        const formCompleted = !!snapData?.formCompleted || !!snapData?.firstName;
+        navigate(formCompleted ? "/profile" : "/multistepform");
       }
     } catch (err) {
       console.error("Login error:", err);

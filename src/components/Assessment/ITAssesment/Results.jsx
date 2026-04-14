@@ -11,7 +11,6 @@ import Side_Bar from "../../Side_bar";
 
 export default function ResultsTable() {
   const [users, setUsers] = useState([]);
-  const [audioURLs, setAudioURLs] = useState({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [originalUsers, setOriginalUsers] = useState([]);
@@ -27,25 +26,7 @@ export default function ResultsTable() {
     setFilteredUsers(users);
   }, [users]);
 
-  useEffect(() => {
-    async function fetchAudio() {
-      const urls = {};
-      for (const user of users) {
-        for (const sec of ["speaking", "selling", "problemSolving"]) {
-          if (user[sec]?.audioPath) {
-            try {
-              const u = await getDownloadURL(
-                storageRef(storage, user[sec].audioPath)
-              );
-              urls[user.id] = { ...(urls[user.id] || {}), [sec]: u };
-            } catch {}
-          }
-        }
-      }
-      setAudioURLs(urls);
-    }
-    if (users.length) fetchAudio();
-  }, [users]);
+
 
   const fetchUsers = async () => {
     setLoading(true);
@@ -85,11 +66,7 @@ export default function ResultsTable() {
       }
     }
 
-    setAudioURLs((prev) => {
-      const newUrls = { ...prev };
-      delete newUrls[user.id];
-      return newUrls;
-    });
+
   };
 
   if (loading)

@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import ScrollToTop from "./components/ScrollTop";
 import PopupBox from "./components/Popupbox";
 import SEO from "./components/Seo";
+import FormGuard from "./components/FormGuard";
 
 /* --- 1. LAZY LOAD PUBLIC PAGES --- */
 const Home = lazy(() => import("./pages/Home"));
@@ -68,6 +69,8 @@ const TraineeFeedback = lazy(() => import("./pages/Admin/FeedbackToTrainee"));
 const ManageAgreements = lazy(() => import("./pages/Admin/ManageAgreement"));
 const AdminAgreementPage = lazy(() => import("./pages/Admin/Agreement"));
 const FeedbackToTrainer = lazy(() => import("./pages/FeedbackToTrainer"));
+const ManageRoles = lazy(() => import("./pages/Admin/ManageRoles"));
+const UserManagement = lazy(() => import("./pages/Admin/UserManagement"));
 // const TrainingWebAccess = lazy(() => import("./pages/Admin/TrainingWebAccess"));
 
 /* --- 6. LAZY LOAD ASSESSMENT --- */
@@ -108,6 +111,7 @@ const App = () => {
         <main className="flex-grow">
           {/* WRAP ROUTES IN SUSPENSE FOR LAZY LOADING */}
           <Suspense fallback={<PageLoader />}>
+            <FormGuard>
             <Routes>
               {/* Public */}
               <Route path="/" element={<Home />} />
@@ -158,7 +162,7 @@ const App = () => {
               <Route path="/multistepform" element={<MultiStepForm />} />
 
               {/* Profile */}
-              <Route path="/profile" element={<UserProfile />} />
+
               <Route
                 path="/my-agreement/:appId"
                 element={<CandidateAgreementPage />}
@@ -172,10 +176,11 @@ const App = () => {
 
               {/* Admin Layout */}
               <Route element={<AdminSidebarLayout />}>
+                <Route path="/profile" element={<UserProfile />} />
                 <Route
                   path="/manageblogs"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manageblogs">
                       <ManageBlogs />
                     </ProtectedRoute>
                   }
@@ -183,7 +188,7 @@ const App = () => {
                 <Route
                   path="/jobs"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="jobs">
                       <Jobs />
                     </ProtectedRoute>
                   }
@@ -191,7 +196,7 @@ const App = () => {
                 <Route
                   path="/manageservices"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manageservices">
                       <ManageServices />
                     </ProtectedRoute>
                   }
@@ -199,7 +204,7 @@ const App = () => {
                 <Route
                   path="/managesubservices"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manageservices">
                       <ManageSubservices />
                     </ProtectedRoute>
                   }
@@ -207,7 +212,7 @@ const App = () => {
                 <Route
                   path="/manageprojects"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manageprojects">
                       <ManageProjects />
                     </ProtectedRoute>
                   }
@@ -215,7 +220,7 @@ const App = () => {
                 <Route
                   path="/manage-emp"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manage-emp">
                       <ManageEmployees />
                     </ProtectedRoute>
                   }
@@ -223,7 +228,7 @@ const App = () => {
                 <Route
                   path="/manage-emp/:id"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manage-emp">
                       <ManageEmpdetails />
                     </ProtectedRoute>
                   }
@@ -239,7 +244,7 @@ const App = () => {
                 <Route
                   path="/interestedcandidates"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="interestedcandidates">
                       <InterestedCandidates />
                     </ProtectedRoute>
                   }
@@ -247,7 +252,7 @@ const App = () => {
                 <Route
                   path="/managejoiningdates"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="managejoiningdates">
                       <ManageJoiningDates />
                     </ProtectedRoute>
                   }
@@ -255,7 +260,7 @@ const App = () => {
                 <Route
                   path="/feedbacktotrainee"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="feedbacktotrainee">
                       <TraineeFeedback />
                     </ProtectedRoute>
                   }
@@ -263,7 +268,7 @@ const App = () => {
                 <Route
                   path="/trainerdailyreport"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="trainerdailyreport">
                       <TrainerDailyReport />
                     </ProtectedRoute>
                   }
@@ -271,7 +276,7 @@ const App = () => {
                 <Route
                   path="/manageagreements"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manageagreements">
                       <ManageAgreements />
                     </ProtectedRoute>
                   }
@@ -279,7 +284,7 @@ const App = () => {
                 <Route
                   path="/agreement/:appId"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="manageagreements">
                       <AdminAgreementPage />
                     </ProtectedRoute>
                   }
@@ -287,7 +292,7 @@ const App = () => {
                 <Route
                   path="/trainer-reports/:batchId"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="trainingaccess">
                       <ReportsPage />
                     </ProtectedRoute>
                   }
@@ -295,7 +300,7 @@ const App = () => {
                 <Route
                   path="/trainer-reports/:batchId/trainee/:email"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="trainingaccess">
                       <ReportsPage />
                     </ProtectedRoute>
                   }
@@ -305,7 +310,7 @@ const App = () => {
                 <Route
                   path="/testlist"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="result">
                       <Testlist />
                     </ProtectedRoute>
                   }
@@ -313,7 +318,7 @@ const App = () => {
                 <Route
                   path="/listeningtest"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="result">
                       <ListeningTest />
                     </ProtectedRoute>
                   }
@@ -321,7 +326,7 @@ const App = () => {
                 <Route
                   path="/aptitude-test"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="result">
                       <Aptitudetest />
                     </ProtectedRoute>
                   }
@@ -329,7 +334,7 @@ const App = () => {
                 <Route
                   path="/problemsolvingtest"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="result">
                       <Problemsolvingtest />
                     </ProtectedRoute>
                   }
@@ -337,7 +342,7 @@ const App = () => {
                 <Route
                   path="/sellingtest"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="result">
                       <Sellingtest />
                     </ProtectedRoute>
                   }
@@ -345,7 +350,7 @@ const App = () => {
                 <Route
                   path="/speakingtest"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="result">
                       <Speakingtest />
                     </ProtectedRoute>
                   }
@@ -353,7 +358,7 @@ const App = () => {
                 <Route
                   path="/result"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="result">
                       <Result />
                     </ProtectedRoute>
                   }
@@ -361,7 +366,7 @@ const App = () => {
                 <Route
                   path="/results/:userId"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="result">
                       <ResultDetails />
                     </ProtectedRoute>
                   }
@@ -369,7 +374,7 @@ const App = () => {
                 <Route
                   path="/itresult"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="result">
                       <Results />
                     </ProtectedRoute>
                   }
@@ -377,7 +382,7 @@ const App = () => {
                 <Route
                   path="/itresults/:userId"
                   element={
-                    <ProtectedRoute roles={["admin", "recruiter"]}>
+                    <ProtectedRoute permission="result">
                       <ITResultDetails />
                     </ProtectedRoute>
                   }
@@ -385,8 +390,24 @@ const App = () => {
                 <Route
                   path="/approve-users"
                   element={
-                    <ProtectedRoute roles={["admin"]}>
+                    <ProtectedRoute permission="trainingaccess">
                       <ApproveUsers />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/manage-roles"
+                  element={
+                    <ProtectedRoute permission="manageroles">
+                      <ManageRoles />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/user-management"
+                  element={
+                    <ProtectedRoute permission="usermanagement">
+                      <UserManagement />
                     </ProtectedRoute>
                   }
                 />
@@ -400,6 +421,7 @@ const App = () => {
               {/* 404 */}
               <Route path="*" element={<PageNotFound />} />
             </Routes>
+            </FormGuard>
           </Suspense>
         </main>
 

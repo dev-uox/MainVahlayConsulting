@@ -33,6 +33,7 @@ const Footer = () => {
     { label: "Campus Drive", path: "/assessmentlogin" },
     { label: "Co-Managed By", path: "/copartners" },
     { label: "Give Feedback to Trainer", path: "/feedbacktotrainer" },
+    { label: "Vahlay Training", path: "https://training.vahlayconsulting.com" },
   ];
 
   const locations = [

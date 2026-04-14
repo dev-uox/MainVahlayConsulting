@@ -101,96 +101,82 @@ const ManageAgreements = () => {
   }
 
   return (
-    
-  <div className="min-h-screen bg-gray-100 flex">
-      
-      <main className="flex-1 ">
-        
-        <div className="md:w-full w-5/6 px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+    <div className="min-h-screen bg-gray-50 flex flex-col font-poppins text-gray-900">
+      <main className="flex-1 w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+        <div className="mb-6 sm:mb-8">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-          Manage Agreements
-        </h1>
+            Manage Agreements
+          </h1>
 
-        {/* Desktop Header */}
-        <div className="hidden lg:block mb-4 md:mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4">
-            <div>
-              
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                View all users and manage their employment agreements.
-              </p>
-            </div>
+        </div>
 
-            {/* Search - Full width on mobile, fixed width on desktop */}
-            <div className="w-full sm:w-auto sm:min-w-[280px] md:w-72">
+        {/* Desktop Header Actions */}
+        <div className="hidden lg:flex items-center justify-between gap-4 mb-8">
+          <div className="w-full sm:w-80">
+            <div className="relative">
               <input
                 type="text"
                 placeholder="Search by name or email..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-full border border-slate-200 px-4 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-200"
+                className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-all shadow-sm"
               />
             </div>
           </div>
         </div>
 
-        {/* Mobile Search - Below mobile header */}
-        <div className="lg:hidden mb-4">
+        {/* Mobile Search */}
+        <div className="lg:hidden mb-6">
           <input
             type="text"
             placeholder="Search by name or email..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-full border border-slate-200 px-4 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-200"
+            className="w-full bg-white border border-gray-300 rounded-lg px-4 py-2.5 text-sm text-gray-700 outline-none focus:ring-2 focus:ring-red-500 shadow-sm"
           />
         </div>
 
-        {/* Tabs - Responsive with scroll on mobile */}
-        <div className="mb-4 md:mb-6">
-          <div className="flex overflow-x-auto pb-2 -mx-2 px-2 md:mx-0 md:px-0">
-            <div className="flex items-center gap-1 md:gap-2 min-w-max border-b border-slate-200">
-              <button
-                onClick={() => setActiveTab("pending")}
-                className={`px-3 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px whitespace-nowrap ${
-                  activeTab === "pending"
-                    ? "border-red-600 text-red-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
+        {/* Tabs */}
+        <div className="mb-8 overflow-hidden bg-white border border-gray-200 p-1 rounded-xl shadow-sm inline-flex w-full sm:w-auto">
+          <div className="flex w-full sm:w-auto overflow-x-auto no-scrollbar">
+            <button
+              onClick={() => setActiveTab("pending")}
+              className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-bold rounded-lg transition-all whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === "pending"
+                ? "bg-red-600 text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
-              >
-                Pending
-                <span className="ml-1 md:ml-2 text-xs rounded-full px-2 py-0.5 bg-red-50 text-red-600">
-                  {pendingCount}
-                </span>
-              </button>
+            >
+              Pending
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === 'pending' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                {pendingCount}
+              </span>
+            </button>
 
-              <button
-                onClick={() => setActiveTab("inprogress")}
-                className={`px-3 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px whitespace-nowrap ${
-                  activeTab === "inprogress"
-                    ? "border-yellow-600 text-yellow-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
+            <button
+              onClick={() => setActiveTab("inprogress")}
+              className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-bold rounded-lg transition-all whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === "inprogress"
+                ? "bg-red-600 text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
-              >
-                In Progress
-                <span className="ml-1 md:ml-2 text-xs rounded-full px-2 py-0.5 bg-yellow-50 text-yellow-700">
-                  {inProgressCount}
-                </span>
-              </button>
+            >
+              In Progress
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === 'inprogress' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                {inProgressCount}
+              </span>
+            </button>
 
-              <button
-                onClick={() => setActiveTab("completed")}
-                className={`px-3 py-2 text-xs md:text-sm font-medium border-b-2 -mb-px whitespace-nowrap ${
-                  activeTab === "completed"
-                    ? "border-green-600 text-green-600"
-                    : "border-transparent text-slate-500 hover:text-slate-700"
+            <button
+              onClick={() => setActiveTab("completed")}
+              className={`flex-1 sm:flex-none px-6 py-2.5 text-sm font-bold rounded-lg transition-all whitespace-nowrap flex items-center justify-center gap-2 ${activeTab === "completed"
+                ? "bg-red-600 text-white shadow-sm"
+                : "text-gray-600 hover:text-gray-900 hover:bg-gray-50"
                 }`}
-              >
-                Signed
-                <span className="ml-1 md:ml-2 text-xs rounded-full px-2 py-0.5 bg-green-50 text-green-700">
-                  {completedCount}
-                </span>
-              </button>
-            </div>
+            >
+              Signed
+              <span className={`text-[10px] px-1.5 py-0.5 rounded-full ${activeTab === 'completed' ? 'bg-red-500 text-white' : 'bg-gray-100 text-gray-600'}`}>
+                {completedCount}
+              </span>
+            </button>
           </div>
         </div>
 
@@ -199,10 +185,13 @@ const ManageAgreements = () => {
           {/* Mobile Cards View */}
           <div className="space-y-3">
             {filteredUsers.length === 0 ? (
-              <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 text-center">
-                <p className="text-slate-500 text-sm">
-                  No users found in this tab.
-                </p>
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+                <div className="inline-flex items-center justify-center w-12 h-12 bg-gray-50 rounded-full mb-4">
+                  <svg className="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354A4 4 0 1115.354 11H8.646a4.002 4.002 0 00-3.292-6.646" />
+                  </svg>
+                </div>
+                <p className="text-gray-500 text-sm">No users found in this category.</p>
               </div>
             ) : (
               filteredUsers.map((u, idx) => {
@@ -210,14 +199,14 @@ const ManageAgreements = () => {
                 const signed = !!signedStatus[u.id];
 
                 let statusBadge = (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                  <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-100">
                     Pending
                   </span>
                 );
 
                 if (u.agreementDone && !signed) {
                   statusBadge = (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-100">
                       In Progress
                     </span>
                   );
@@ -225,8 +214,8 @@ const ManageAgreements = () => {
 
                 if (u.agreementDone && signed) {
                   statusBadge = (
-                    <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                      Signed by Candidate
+                    <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-700 border border-green-100">
+                      Signed
                     </span>
                   );
                 }
@@ -234,28 +223,28 @@ const ManageAgreements = () => {
                 return (
                   <div
                     key={u.id}
-                    className="bg-white rounded-xl shadow-sm border border-slate-100 p-4"
+                    className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 hover:border-red-200 transition-colors"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-slate-500 text-sm">#{idx + 1}</span>
-                          <h3 className="font-medium text-slate-800">
+                          <span className="text-gray-400 text-xs font-bold">#{idx + 1}</span>
+                          <h3 className="font-bold text-gray-900">
                             {fullName || "No name"}
                           </h3>
                         </div>
-                        <p className="text-slate-600 text-sm">{u.email || "-"}</p>
-                        <p className="text-slate-600 text-sm mt-1">
-                          Position: {u.position || "-"}
+                        <p className="text-gray-500 text-xs">{u.email || "-"}</p>
+                        <p className="text-gray-700 text-xs mt-2 flex items-center gap-1">
+                          <span className="text-gray-400">Position:</span> {u.position || "-"}
                         </p>
                       </div>
                       <div>{statusBadge}</div>
                     </div>
 
-                    <div className="flex flex-wrap gap-2 pt-3 border-t border-slate-100">
+                    <div className="flex flex-wrap gap-2 pt-4 border-t border-gray-100">
                       <button
                         onClick={() => handleCreateAgreement(u)}
-                        className="flex-1 min-w-[140px] px-3 py-2 rounded-full text-xs font-medium text-white bg-red-600 hover:bg-red-700 shadow-sm text-center"
+                        className="flex-1 px-4 py-2 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-all shadow-sm"
                       >
                         {u.agreementDone ? "View/Edit" : "Create Agreement"}
                       </button>
@@ -263,8 +252,11 @@ const ManageAgreements = () => {
                       {activeTab === "completed" && signed && (
                         <button
                           onClick={() => handleDownloadAgreement(u.id)}
-                          className="flex-1 min-w-[140px] px-3 py-2 rounded-full text-xs font-medium text-white bg-green-600 hover:bg-green-700 shadow-sm text-center"
+                          className="px-4 py-2 rounded-lg text-xs font-bold text-white bg-green-600 hover:bg-green-700 transition-all shadow-sm flex items-center justify-center gap-1"
                         >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                          </svg>
                           Download
                         </button>
                       )}
@@ -278,27 +270,27 @@ const ManageAgreements = () => {
 
         {/* Desktop Table View */}
         <div className="hidden lg:block">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
+          <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
             <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-200">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-gray-50">
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                       #
                     </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      Name
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      Candidate Name
                     </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      Email
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
+                      Email Address
                     </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                       Position
                     </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
+                    <th className="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
-                    <th className="text-right px-4 py-3 font-semibold text-slate-500">
+                    <th className="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">
                       Actions
                     </th>
                   </tr>
@@ -308,7 +300,7 @@ const ManageAgreements = () => {
                     <tr>
                       <td
                         colSpan={6}
-                        className="px-4 py-8 text-center text-slate-500 text-sm"
+                        className="px-6 py-12 text-center text-gray-500 italic bg-gray-50/50"
                       >
                         No users found in this tab.
                       </td>
@@ -319,14 +311,14 @@ const ManageAgreements = () => {
                       const signed = !!signedStatus[u.id];
 
                       let statusBadge = (
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-red-50 text-red-700 border border-red-200">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-red-50 text-red-700 border border-red-100">
                           Pending
                         </span>
                       );
 
                       if (u.agreementDone && !signed) {
                         statusBadge = (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-yellow-50 text-yellow-700 border border-yellow-200">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-orange-50 text-orange-700 border border-orange-100">
                             In Progress
                           </span>
                         );
@@ -334,8 +326,8 @@ const ManageAgreements = () => {
 
                       if (u.agreementDone && signed) {
                         statusBadge = (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-50 text-green-700 border border-green-200">
-                            Signed by Candidate
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-green-50 text-green-700 border border-green-100">
+                            Signed
                           </span>
                         );
                       }
@@ -343,39 +335,42 @@ const ManageAgreements = () => {
                       return (
                         <tr
                           key={u.id}
-                          className="border-b border-slate-100 hover:bg-slate-50/60"
+                          className="border-b border-gray-100 hover:bg-gray-50/50 transition-colors"
                         >
-                          <td className="px-4 py-3 text-slate-500 align-middle">
+                          <td className="px-6 py-4 text-gray-400 text-xs font-bold align-middle">
                             {idx + 1}
                           </td>
-                          <td className="px-4 py-3 text-slate-800 align-middle">
+                          <td className="px-6 py-4 text-gray-900 font-bold align-middle">
                             {fullName || "No name"}
                           </td>
-                          <td className="px-4 py-3 text-slate-600 align-middle">
+                          <td className="px-6 py-4 text-gray-600 text-sm align-middle">
                             {u.email || "-"}
                           </td>
-                          <td className="px-4 py-3 text-slate-600 align-middle">
+                          <td className="px-6 py-4 text-gray-700 text-sm align-middle">
                             {u.position || "-"}
                           </td>
-                          <td className="px-4 py-3 align-middle">
+                          <td className="px-6 py-4 align-middle">
                             {statusBadge}
                           </td>
-                          <td className="px-4 py-3 text-right align-middle">
+                          <td className="px-6 py-4 text-right align-middle space-x-2">
                             <button
                               onClick={() => handleCreateAgreement(u)}
-                              className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-white bg-red-600 hover:bg-red-700 shadow-sm"
+                              className="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold text-white bg-red-600 hover:bg-red-700 transition-all shadow-sm shadow-red-100"
                             >
                               {u.agreementDone
-                                ? "View / Edit Agreement"
+                                ? "View / Edit"
                                 : "Create Agreement"}
                             </button>
 
                             {activeTab === "completed" && signed && (
                               <button
                                 onClick={() => handleDownloadAgreement(u.id)}
-                                className="inline-flex items-center px-3 py-1.5 rounded-full text-xs font-medium text-white bg-green-600 hover:bg-green-700 shadow-sm ml-2"
+                                className="inline-flex items-center px-4 py-2 rounded-lg text-xs font-bold text-white bg-green-600 hover:bg-green-700 transition-all shadow-sm shadow-green-100 gap-1"
                               >
-                                Download Agreement
+                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                                </svg>
+                                Download
                               </button>
                             )}
                           </td>
@@ -388,7 +383,6 @@ const ManageAgreements = () => {
             </div>
           </div>
         </div>
-      </div>
       </main>
     </div>
   );

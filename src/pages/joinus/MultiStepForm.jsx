@@ -1,7 +1,7 @@
 // src/components/ApplicationForm.jsx
 
 import React, { useState, useEffect, useMemo } from "react";
-import { collection, addDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, getDocs, doc, setDoc, query, where } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
@@ -52,7 +52,7 @@ export default function ApplicationForm() {
   const usr = auth.currentUser;
 
   useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((usr) => {
+    const unsubscribe = auth.onAuthStateChanged(async (usr) => {
       if (usr) {
         setUser(usr);
       } else {
@@ -223,87 +223,80 @@ export default function ApplicationForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // Check if the training checkbox is checked when the position is 'Business Development Associate'
-    if (
-      formData.position === "Business Development Associate" &&
-      !trainingAccepted
-    ) {
-      alert("Please accept the training terms before submitting the form.");
-      return;
-    }
+    // Guided validation: each entry maps field → { step, label }
+    const isIndia = formData.nationality === "India";
 
-    // Manual validation for react-select nationality
-    if (!formData.nationality) {
-      alert("Please select your Country of Citizenship.");
-      return;
-    }
-
-    // Build always-required fields
-    let requiredFields = [
-      "firstName",
-      "lastName",
-      "nationality",
-      "currentAddress",
-      "permanentAddress",
-      "phone",
-      "email",
-      "position",
-      "dob",
-      "bloodgroup",
-      "emergencyContactName",
-      "emergencyContactRelation",
-      "emergencyContactNumber",
-      "joiningDate",
-      "firstJob",
-      "nightShift",
-      "pressure",
-      "religion",
-      "usSalesExperience",
-      "interestInPosition",
-      "resume",
+    const fieldMap = [
+      { field: "firstName",                  step: 1, label: "First Name" },
+      { field: "lastName",                   step: 1, label: "Last Name" },
+      { field: "phone",                      step: 1, label: "Phone Number" },
+      { field: "dob",                        step: 1, label: "Date of Birth" },
+      { field: "currentAddress",             step: 1, label: "Current Address" },
+      ...(!isSameAddress ? [{ field: "permanentAddress", step: 1, label: "Permanent Address" }] : []),
+      { field: "nationality",                step: 1, label: "Country of Citizenship" },
+      { field: "religion",                   step: 1, label: "Religion" },
+      { field: "bloodgroup",                 step: 1, label: "Blood Group" },
+      { field: "emergencyContactName",       step: 1, label: "Emergency Contact Name" },
+      { field: "emergencyContactRelation",   step: 1, label: "Emergency Contact Relation" },
+      { field: "emergencyContactNumber",     step: 1, label: "Emergency Contact Number" },
+      { field: "position",                   step: 2, label: "Position Applying For" },
+      { field: "joiningDate",               step: 2, label: "Preferred Joining Date" },
+      { field: "firstJob",                   step: 2, label: "Is This Your First Job?" },
+      { field: "nightShift",                 step: 2, label: "Comfortable in Night Shift?" },
+      { field: "pressure",                   step: 2, label: "Able to Work Under Pressure?" },
+      { field: "usSalesExperience",          step: 2, label: "Experience in US/Canada Market?" },
+      { field: "interestInPosition",         step: 2, label: "Why Are You Interested in This Position?" },
+      { field: "resume",                     step: 3, label: "Resume (PDF)" },
+      ...(isIndia
+        ? [
+            { field: "adharCardFront", step: 3, label: "Aadhar Card - Front" },
+            { field: "adharCardBack",  step: 3, label: "Aadhar Card - Back" },
+            { field: "panCard",        step: 3, label: "PAN Card" },
+          ]
+        : [{ field: "passport", step: 3, label: "Passport" }]),
+      ...(formData.firstJob === "No"
+        ? [
+            { field: "previousCompanyExitType",        step: 3, label: "Type of Exit (Previous Company)" },
+            { field: "previousCompanyExitReason",      step: 3, label: "Reason for Exit (Previous Company)" },
+            { field: "previousCompanyLastWorkingDate", step: 3, label: "Last Working Date (Previous Company)" },
+          ]
+        : []),
     ];
 
-    // India-specific docs
-    const isIndia = formData.nationality === "India";
-    if (isIndia) {
-      requiredFields.push("adharCardFront", "adharCardBack", "panCard");
-    } else {
-      requiredFields.push("passport"); // PDF or image allowed
-    }
-
-    // First job NO → exit info required for everyone (India & non-India)
-    if (formData.firstJob === "No") {
-      requiredFields.push(
-        "previousCompanyExitType",
-        "previousCompanyExitReason",
-        "previousCompanyLastWorkingDate"
-      );
-    }
-
-    const isFormComplete = requiredFields.every(
-      (field) => formData[field] !== "" && formData[field] !== null
+    // Find first missing field
+    const missing = fieldMap.find(
+      ({ field }) => !formData[field] || formData[field] === ""
     );
 
-    // if (!isFormComplete) {
-    //   alert(
-    //     "Please fill all required fields (including exit details if not first job) and upload all necessary documents."
-    //   );
-    //   return;
-    // }
+    if (missing) {
+      setCurrentStep(missing.step);
+      alert(`⚠️ Step ${missing.step} — Please fill in: "${missing.label}"`);
+      return;
+    }
 
+    // Previous company doc check
     if (
       formData.firstJob === "No" &&
       !formData.previousCompanyDoc &&
       !noPreviousDoc
     ) {
-      alert(
-        "Since this is not your first job, upload your previous company document OR check 'No Document Available' and provide a reason."
-      );
+      setCurrentStep(3);
+      alert("⚠️ Step 3 — Please upload your Previous Company Document, or check \"No Document Available\" and provide a reason.");
       return;
     }
 
     if (!termsAccepted) {
-      alert("Please accept the Terms and Conditions before submitting.");
+      setCurrentStep(3);
+      alert("⚠️ Step 3 — Please accept the Terms and Conditions before submitting.");
+      return;
+    }
+
+    if (
+      formData.position === "Business Development Associate" &&
+      !trainingAccepted
+    ) {
+      setCurrentStep(3);
+      alert("⚠️ Step 3 — Please accept the Training Condition in the Terms and Conditions.");
       return;
     }
 
@@ -349,8 +342,8 @@ export default function ApplicationForm() {
         maybeUpload(formData.immigrationForm, "immigrationForms"),
       ]);
 
-      // Store in Firestore
-      await addDoc(collection(db, "jobApplications"), {
+      // Store in Firestore using email as document ID
+      await setDoc(doc(db, "jobApplications", user.email.toLowerCase()), {
         firstName: formData.firstName,
         lastName: formData.lastName,
         nationality: formData.nationality,
@@ -390,6 +383,7 @@ export default function ApplicationForm() {
         previousCompanyExitReason: formData.previousCompanyExitReason || "",
         previousCompanyLastWorkingDate:
           formData.previousCompanyLastWorkingDate || "",
+        formCompleted: true, // Mark as completed in the same doc
       });
 
       // Build PDF
@@ -451,13 +445,53 @@ export default function ApplicationForm() {
       });
 
       alert("Form submitted successfully!");
-      navigate("/home");
+      navigate("/profile");
     } catch (error) {
       console.error("Error submitting the form:", error);
       alert(`An error occurred while submitting the form: ${error.message}`);
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Per-step validation before advancing
+  const validateStep = (step) => {
+    if (step === 1) {
+      if (!formData.firstName.trim()) { alert("Please enter your First Name."); return false; }
+      if (!formData.lastName.trim()) { alert("Please enter your Last Name."); return false; }
+      if (!formData.phone.trim()) { alert("Please enter your Phone Number."); return false; }
+      if (!formData.dob) { alert("Please enter your Date of Birth."); return false; }
+      if (!formData.currentAddress.trim()) { alert("Please enter your Current Address."); return false; }
+      if (!isSameAddress && !formData.permanentAddress.trim()) { alert("Please enter your Permanent Address."); return false; }
+      if (!formData.nationality) { alert("Please select your Country of Citizenship."); return false; }
+      if (!formData.religion.trim()) { alert("Please enter your Religion."); return false; }
+      if (!formData.bloodgroup.trim()) { alert("Please enter your Blood Group."); return false; }
+      if (!formData.emergencyContactName.trim()) { alert("Please enter the Emergency Contact Name."); return false; }
+      if (!formData.emergencyContactRelation) { alert("Please select the Emergency Contact Relation."); return false; }
+      if (!formData.emergencyContactNumber.trim()) { alert("Please enter the Emergency Contact Number."); return false; }
+    }
+    if (step === 2) {
+      if (!formData.position) { alert("Please select the Position you are applying for."); return false; }
+      if (!formData.joiningDate) { alert("Please select a Preferred Joining Date."); return false; }
+      if (!formData.firstJob) { alert("Please answer: Is This Your First Job?"); return false; }
+      if (!formData.nightShift) { alert("Please answer: Comfortable in Night Shift?"); return false; }
+      if (!formData.pressure) { alert("Please answer: Able to Work Under Pressure?"); return false; }
+      if (!formData.usSalesExperience) { alert("Please answer: Experience in US/Canada Market?"); return false; }
+      if (!formData.interestInPosition.trim()) { alert("Please explain why you are interested in this position."); return false; }
+    }
+    return true;
+  };
+
+  const handleStepClick = (targetStep) => {
+    if (targetStep < currentStep) {
+      setCurrentStep(targetStep);
+      return;
+    }
+    // Jumping forward: must validate intermediate steps
+    for (let s = currentStep; s < targetStep; s++) {
+      if (!validateStep(s)) return;
+    }
+    setCurrentStep(targetStep);
   };
 
   // UI
@@ -478,7 +512,7 @@ export default function ApplicationForm() {
             <button
               key={step}
               type="button"
-              onClick={() => setCurrentStep(step)}
+              onClick={() => handleStepClick(step)}
               className={`text-sm font-semibold px-2 ${currentStep === step
                   ? "text-red-600 bg-gray-200 rounded-t-md"
                   : "text-white bg-red-600 rounded-full mb-1"
@@ -1113,8 +1147,8 @@ export default function ApplicationForm() {
               {currentStep < 3 ? (
                 <button
                   type="button"
-                  onClick={() => setCurrentStep((s) => s + 1)}
-                  className="ml-auto bg-blue-600 text-white py-2 px-4 rounded-lg hover:bg-blue-700 transition"
+                  onClick={() => { if (validateStep(currentStep)) setCurrentStep((s) => s + 1); }}
+                  className="ml-auto bg-red-600 text-white py-2 px-4 rounded-lg hover:bg-red-700 transition"
                 >
                   Next
                 </button>

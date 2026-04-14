@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 /**
@@ -13,7 +13,7 @@ import { db } from "../firebaseConfig";
  *  - Not signed in  -> /login
  *  - Signed in but unauthorized -> /unauthorize
  */
-const ProtectedRoute = ({ children, roles }) => {
+const ProtectedRoute = ({ children, roles, permission }) => {
   const [loading, setLoading] = useState(true);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const location = useLocation();
@@ -28,26 +28,55 @@ const ProtectedRoute = ({ children, roles }) => {
           return;
         }
 
-        // No specific role required -> any signed-in user can pass
-        if (!roles || roles.length === 0) {
-          setIsAuthorized(true);
-          setLoading(false);
-          return;
+        const emailKey = (user.email || "").toLowerCase().trim();
+        const userRef = doc(db, "users", emailKey);
+        const userSnap = await getDoc(userRef);
+
+        let userRole = null;
+        if (userSnap.exists()) {
+          userRole = String(userSnap.data()?.role || "user").toLowerCase();
+        } else {
+          // Fallback: Query jobApplications by email field
+          const q = query(collection(db, "jobApplications"), where("email", "==", emailKey));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            userRole = String(querySnapshot.docs[0].data()?.role || "user").toLowerCase();
+          }
         }
 
-        // Load role from Firestore at users/{emailLower}
-        const emailKey = (user.email || "").toLowerCase();
-        const userRef = doc(db, "users", emailKey);
-        const snap = await getDoc(userRef);
-
-        if (!snap.exists()) {
+        if (!userRole) {
           setIsAuthorized(false);
           setLoading(false);
           return;
         }
 
-        const role = String(snap.data()?.role || "user").toLowerCase();
-        setIsAuthorized(roles.map((r) => r.toLowerCase()).includes(role));
+        // Admin always has access to everything for safety
+        if (userRole === "admin") {
+          setIsAuthorized(true);
+          setLoading(false);
+          return;
+        }
+
+        // 1. Check if specific permission is required
+        if (permission) {
+          const roleRef = doc(db, "roles", userRole);
+          const roleSnap = await getDoc(roleRef);
+          if (roleSnap.exists()) {
+            const permissions = roleSnap.data()?.permissions || [];
+            setIsAuthorized(permissions.includes(permission));
+          } else {
+            setIsAuthorized(false);
+          }
+        } 
+        // 2. Fallback to hardcoded roles list if provided
+        else if (roles && roles.length > 0) {
+          setIsAuthorized(roles.map((r) => r.toLowerCase()).includes(userRole));
+        } 
+        // 3. No specific role or permission required -> just authenticated is enough
+        else {
+          setIsAuthorized(true);
+        }
+
       } catch (e) {
         console.error("ProtectedRoute error:", e);
         setIsAuthorized(false);
@@ -57,7 +86,7 @@ const ProtectedRoute = ({ children, roles }) => {
     });
 
     return () => unsubscribe();
-  }, [auth, roles]);
+  }, [auth, roles, permission]);
 
   if (loading) {
     return <div className="text-center">Loading...</div>;

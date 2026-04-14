@@ -112,7 +112,7 @@ const AdminBlogPage = () => {
     await new Promise((resolve, reject) => {
       uploadTask.on(
         "state_changed",
-        () => {},
+        () => { },
         (err) => reject(err),
         () => resolve()
       );
@@ -322,9 +322,9 @@ const AdminBlogPage = () => {
   // -----------------------------
   return (
     <div className="min-h-screen bg-gray-100 flex">
-      
+
       <main className="flex-1">
-        
+
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
             Manage Blogs

@@ -109,18 +109,18 @@ const InterestedCandidates = () => {
   };
 
   return (
-        
-  <div className="min-h-screen bg-gray-100 flex">
-      
+
+    <div className="min-h-screen bg-gray-100 flex">
+
       <main className="flex-1">
-        
+
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-          {" "}
-           Interested Candidates
-        </h1>
+            {" "}
+            Interested Candidates
+          </h1>
 
-       
+
           {/* Filter Dropdown for Job Title */}
           <div className="mb-4">
             <label className="font-semibold text-gray-700 mr-2">
@@ -168,9 +168,8 @@ const InterestedCandidates = () => {
                 {displayedCandidates.map((candidate) => {
                   const nameToShow =
                     candidate.name ||
-                    `${candidate.firstName || ""} ${
-                      candidate.lastName || ""
-                    }`.trim();
+                    `${candidate.firstName || ""} ${candidate.lastName || ""
+                      }`.trim();
                   return (
                     <tr
                       key={candidate.id}
@@ -227,9 +226,8 @@ const InterestedCandidates = () => {
             {displayedCandidates.map((candidate) => {
               const nameToShow =
                 candidate.name ||
-                `${candidate.firstName || ""} ${
-                  candidate.lastName || ""
-                }`.trim();
+                `${candidate.firstName || ""} ${candidate.lastName || ""
+                  }`.trim();
               return (
                 <div
                   key={candidate.id}
@@ -307,9 +305,9 @@ const InterestedCandidates = () => {
               {totalRecords === 0
                 ? "0"
                 : `${startIndex + 1} - ${Math.min(
-                    endIndex,
-                    totalRecords
-                  )} of ${totalRecords}`}
+                  endIndex,
+                  totalRecords
+                )} of ${totalRecords}`}
             </div>
 
             {/* Pagination Icons */}
@@ -317,11 +315,10 @@ const InterestedCandidates = () => {
               <button
                 onClick={handlePreviousPage}
                 disabled={currentPage === 1}
-                className={`px-3 py-1 rounded border border-gray-300 text-gray-700 font-medium focus:outline-none ${
-                  currentPage === 1
+                className={`px-3 py-1 rounded border border-gray-300 text-gray-700 font-medium focus:outline-none ${currentPage === 1
                     ? "bg-gray-200 cursor-not-allowed"
                     : "bg-gray-100 hover:bg-gray-200"
-                }`}
+                  }`}
                 aria-label="Previous Page"
               >
                 <FaChevronLeft />
@@ -329,11 +326,10 @@ const InterestedCandidates = () => {
               <button
                 onClick={handleNextPage}
                 disabled={currentPage === totalPages || totalPages === 0}
-                className={`px-3 py-1 rounded border border-gray-300 text-gray-700 font-medium focus:outline-none ${
-                  currentPage === totalPages || totalPages === 0
+                className={`px-3 py-1 rounded border border-gray-300 text-gray-700 font-medium focus:outline-none ${currentPage === totalPages || totalPages === 0
                     ? "bg-gray-200 cursor-not-allowed"
                     : "bg-gray-100 hover:bg-gray-200"
-                }`}
+                  }`}
                 aria-label="Next Page"
               >
                 <FaChevronRight />

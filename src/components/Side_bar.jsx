@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, query, collection, where, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 import { IoIosArrowBack } from "react-icons/io";
@@ -15,9 +15,18 @@ import {
   FaCalendarAlt,
   FaClipboardList,
   FaExternalLinkAlt,
+  FaShieldAlt,
+  FaUsersCog,
+  FaUser,
 } from "react-icons/fa";
 
 const MENU = [
+  {
+    to: "/profile",
+    label: "My Profile",
+    icon: <FaUser size={18} />,
+    key: "profile",
+  },
   {
     to: "/manage-emp",
     label: "Manage Emp",
@@ -45,6 +54,12 @@ const MENU = [
   {
     to: "/manageservices",
     label: "Manage Services",
+    icon: <FaServicestack size={18} />,
+    key: "manageservices",
+  },
+  {
+    to: "/managesubservices",
+    label: "Subservices",
     icon: <FaServicestack size={18} />,
     key: "manageservices",
   },
@@ -90,26 +105,25 @@ const MENU = [
     icon: <FaExternalLinkAlt size={18} />,
     key: "trainingaccess",
   },
+  {
+    to: "/manage-roles",
+    label: "Manage Roles",
+    icon: <FaShieldAlt size={18} />,
+    key: "manageroles",
+  },
+  {
+    to: "/user-management",
+    label: "User Management",
+    icon: <FaUsersCog size={18} />,
+    key: "usermanagement",
+  },
 ];
-
-const ALLOWED_KEYS_BY_ROLE = {
-  admin: [...MENU.map((m) => m.key), "trainingaccess"],
-  recruiter: [
-    "result",
-    "itresult",
-    "interestedcandidates",
-    "managejoiningdates",
-    "trainerdailyreport",
-    "feedbacktotrainee",
-  ],
-  trainer: ["trainerdailyreport", "FeedbackToTrainee"],
-  user: [],
-};
 
 const SideBar = ({ isOpen, onClose }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [allowedKeys, setAllowedKeys] = useState([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -119,21 +133,53 @@ const SideBar = ({ isOpen, onClose }) => {
         if (!authUser?.email) {
           setUser(null);
           setRole(null);
+          setAllowedKeys([]);
           setLoading(false);
           return;
         }
         setUser(authUser);
-        const snap = await getDoc(
-          doc(db, "users", authUser.email.toLowerCase()),
-        );
-        setRole(
-          snap.exists()
-            ? String(snap.data()?.role || "user").toLowerCase()
-            : "user",
-        );
+        const userEmail = authUser.email.toLowerCase().trim();
+        const userSnap = await getDoc(doc(db, "users", userEmail));
+        let userRole = null;
+        if (userSnap.exists()) {
+          userRole = String(userSnap.data()?.role || "user").toLowerCase();
+        } else {
+          // Fallback: Query jobApplications by email field
+          const q = query(collection(db, "jobApplications"), where("email", "==", userEmail));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            userRole = String(querySnapshot.docs[0].data()?.role || "user").toLowerCase();
+          }
+        }
+
+        if (userRole) {
+          setRole(userRole);
+          // Fetch role permissions from "roles" collection
+          const roleSnap = await getDoc(doc(db, "roles", userRole));
+          let permissions = [];
+          
+          if (roleSnap.exists()) {
+            permissions = roleSnap.data()?.permissions || [];
+          } else if (userRole === "admin") {
+            permissions = MENU.map((m) => m.key);
+          }
+
+          // Any role except 'user' gets 'profile' by default
+          if (userRole !== "user") {
+            if (!permissions.includes("profile")) {
+              permissions.push("profile");
+            }
+          }
+
+          setAllowedKeys(permissions);
+        } else {
+          setRole("user");
+          setAllowedKeys([]);
+        }
       } catch (err) {
-        console.error(err);
+        console.error("SideBar error:", err);
         setRole("user");
+        setAllowedKeys([]);
       } finally {
         setLoading(false);
       }
@@ -144,7 +190,7 @@ const SideBar = ({ isOpen, onClose }) => {
   // Close sidebar on route change (mobile)
   useEffect(() => {
     if (window.innerWidth < 1024 && onClose) onClose(false);
-  }, [location]);
+  }, [location, onClose]);
 
   // Disable scroll when sidebar is open on mobile
   useEffect(() => {
@@ -160,7 +206,6 @@ const SideBar = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  const allowedKeys = ALLOWED_KEYS_BY_ROLE[role] || [];
   const visibleMenu = MENU.filter((item) => allowedKeys.includes(item.key));
 
   if (loading) {
@@ -171,7 +216,7 @@ const SideBar = ({ isOpen, onClose }) => {
         }`}
       >
         <div className="flex items-center justify-center h-full">
-          Loading...
+          Progressing...
         </div>
       </aside>
     );
@@ -182,7 +227,7 @@ const SideBar = ({ isOpen, onClose }) => {
   return (
     <>
       <aside
-        className={` fixed top-0 left-0 h-full overflow-scroll w-72 bg-gradient-to-b from-gray-900 to-gray-800 text-white
+        className={` fixed top-0 left-0 h-full overflow-y-auto w-72 bg-gradient-to-b from-gray-900 to-gray-800 text-white
           transform transition-transform duration-300 ease-out z-50
           ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
           lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-40 border-r border-gray-700
@@ -199,7 +244,7 @@ const SideBar = ({ isOpen, onClose }) => {
 
           <h1 className="p-4 text-2xl font-bold">Admin Panel</h1>
 
-          <nav className="flex-1  py-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
+          <nav className="flex-1 py-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
             <ul className="space-y-1 px-3">
               {visibleMenu.map(({ to, label, icon, key }) => (
                 <li key={key}>
