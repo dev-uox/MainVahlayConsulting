@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: "Bantagas";
+    src: url("/fonts/Batangas Bold 700.otf") format("truetype");
+    font-weight: normal;
+    font-style: normal;
+  }
+ 
+  /* Poppins Medium Font */
+  @font-face {
+    font-family: "Poppins";
+    src: url("/fonts/Poppins-SemiBold.ttf") format("truetype");
+    font-weight: 500; /* Medium */
+    font-style: normal;
+  }
+ 
+  /* Optional: If you're using Google Fonts, skip this step */
+ 
+  @layer base {
+    h1, h2 ,h3 {
+      font-family: "Bantagas", sans-serif; /* Use Bantagas for headings */
+    }  
+ 
+    p {
+        font-family: "Poppins", sans-serif; /* Use Poppins for paragraphs */
+      }
+ 
+    body {
+      font-family: "Poppins", sans-serif; /* Use Poppins for body text */
+    }
+ 
+    span {
+      font-family: "Poppins", sans-serif; /* Use Poppins for paragraphs */
+    }
+ 
+ 
+ 
+  }
+ 
+ 

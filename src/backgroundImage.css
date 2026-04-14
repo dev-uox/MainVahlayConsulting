@@ -1,0 +1,9 @@
+/* backgroundImage.css */
+/* Logo Section */
+.bg-backgroundImage {
+
+  background-image: url('https://res.cloudinary.com/dzdnwpocf/image/upload/v1751570862/wsltes7mqhlwlguezh54.png');
+  background-size: cover;
+  background-position: center;
+ 
+}

@@ -1,0 +1,374 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
+
+html {
+  scroll-behavior: smooth;
+}
+
+/* Global Dark Mode Support */
+.dark {
+  color-scheme: dark;
+}
+
+/* Admin Panel Design System */
+:root {
+  --admin-card-bg: white;
+  --admin-card-border: #e2e8f0;
+  --admin-card-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.dark:root {
+  --admin-card-bg: #1e293b;
+  --admin-card-border: #334155;
+  --admin-card-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.2), 0 2px 4px -2px rgb(0 0 0 / 0.2);
+}
+
+.premium-card {
+  background-color: var(--admin-card-bg);
+  border: 1px solid var(--admin-card-border);
+  box-shadow: var(--admin-card-shadow);
+  border-radius: 0.75rem;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.premium-card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+}
+
+.dark .premium-card:hover {
+  box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
+}
+
+/* Status Badges */
+.status-badge {
+  @apply px-2.5 py-0.5 rounded-full text-xs font-medium border;
+}
+
+.status-badge-green {
+  @apply bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-400 dark:border-emerald-800;
+}
+
+.status-badge-red {
+  @apply bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800;
+}
+
+.status-badge-blue {
+  @apply bg-blue-50 text-blue-700 border-blue-200 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800;
+}
+@font-face {
+  font-family: "Poppins";
+  src: url("/fonts/Poppins-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Batangas";
+  src: url("/fonts/Batangas-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/* Add some fallback fonts for better performance */
+body {
+  font-family: 'Roboto', "Poppins", sans-serif;
+  @apply antialiased;
+}
+/* Raindrop animation background */
+.raindrop-background {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.raindrop-background::before {
+  content: "";
+  position: absolute;
+  top: 0px; /* Start above the section */
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(
+    circle,
+    rgba(230, 173, 173, 0.6) 30%,
+    transparent 60%
+  );
+  animation: raindrop-fall 5s linear infinite;
+}
+
+@keyframes raindrop-fall {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(100vh); /* Move downwards */
+  }
+}
+
+/* Fade-in Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in {
+  opacity: 0;
+  animation: fadeIn 0.5s forwards;
+}
+
+.animate-fade-in.delay-200 {
+  animation-delay: 0.2s;
+}
+
+.animate-fade-in.delay-300 {
+  animation-delay: 0.3s;
+}
+
+.animate-fade-in.delay-500 {
+  animation-delay: 0.5s;
+}
+
+.animate-fade-in.delay-700 {
+  animation-delay: 0.7s;
+}
+
+.animate-fade-in.delay-900 {
+  animation-delay: 0.9s;
+}
+
+/* navbar animation */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.logoRingsSpin {
+  animation: spin 20s linear infinite;
+}
+
+/* navbar animation end  */
+
+@keyframes scroll-up {
+  0% {
+    transform: translateY(0%);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@keyframes scroll-down {
+  0% {
+    transform: translateY(-50%);
+  }
+  100% {
+    transform: translateY(0%);
+  }
+}
+
+.animate-scroll-slow {
+  animation: scroll-up 30s linear infinite;
+}
+
+.animate-scroll-medium {
+  animation: scroll-down 30s linear infinite;
+}
+
+.animate-scroll-fast {
+  animation: scroll-up 30s linear infinite;
+}
+
+/* 1) Same keyframes driving offset-distance 0→100% */
+@keyframes journey {
+  to {
+    offset-distance: 100%;
+  }
+}
+
+/* 2) Card-level custom properties */
+.card {
+  position: relative;
+  --trail-length: 80px; /* how long the line is */
+  --trail-thickness: 7px; /* how thick the line is */
+  --speed: 10s; /* one full lap */
+  --accent: #ef4444; /* line color */
+}
+
+/* 3) The moving “line” element */
+.card .trail {
+  position: absolute;
+  width: var(--trail-length);
+  height: var(--trail-thickness);
+  background: var(--accent);
+
+  /* walk around the border-box */
+  offset-path: border-box;
+  -webkit-offset-path: border-box; /* Safari/old Chromes */
+
+  /* pivot at the “start” of the line, vertically centered */
+  offset-anchor: 0% 50%;
+  -webkit-offset-anchor: 0% 50%;
+
+  /* orient it tangentially along the path */
+  offset-rotate: auto;
+  -webkit-offset-rotate: auto;
+
+  /* animate endlessly */
+  animation: journey var(--speed) linear infinite;
+}
+
+
+/* Base (mobile): no typing animation */
+.typewriter h1 {
+  overflow: visible;
+  border-right: none;
+  white-space: normal;
+  width: auto;
+  animation: none;
+}
+
+/* Desktop and up: enable the typing effect */
+@media (min-width: 768px) {
+  .typewriter {
+    width: 100%;
+    max-width: 30ch;
+    overflow: hidden;
+    margin: 0 auto;
+  }
+  .typewriter h1 {
+    display: inline-block;
+    white-space: nowrap;
+    border-right: .15em solid red;
+    letter-spacing: .10em;
+    width: 0;
+    animation: 
+      typing 3.5s steps(30) forwards,
+      blink-caret .75s step-end infinite;
+  }
+
+  @keyframes typing {
+    from { width: 0 }
+    to   { width: 100% }
+  }
+
+  @keyframes blink-caret {
+    from, to { border-color: transparent }
+   10%  { border-color: red }
+  }
+ }
+
+
+.btn {
+  position: relative;
+  padding: 1.5rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.4s ease;
+  min-width: 200px;
+  z-index: 1;
+}
+
+.neon-pulse {
+  background: red;
+  border: 2px solid white;
+  box-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
+  overflow: visible;
+}
+
+.neon-pulse::before,
+.neon-pulse::after {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border: 2px solid red;
+  border-radius: inherit;
+  animation: pulseOut 2s ease-out infinite;
+  opacity: 0;
+}
+
+.neon-pulse::after {
+  animation-delay: 1s;
+}
+
+@keyframes pulseOut {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.5);
+    opacity: 0;
+  }
+}
+
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+
+  to {
+    width: 100%;
+  }
+}
+
+.typing-line1,
+.typing-line2 {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+/* First line animation */
+.typing-line1 {
+  width: 0;
+  animation: typing 2s steps(25, end) forwards;
+}
+
+/* Second line animation after first finishes */
+.typing-line2 {
+  width: 0;
+  animation: typing 2s steps(25, end) forwards;
+  animation-delay: 2.2s;
+  animation-fill-mode: forwards;
+}
+
+@keyframes beat {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+.beat {
+  animation: beat 0.9s infinite ease-in-out;
+}
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+.blink-dot {
+  width: 10px;
+  height: 10px;
+  background-color: #dc2626; /* red */
+  border-radius: 50%;
+  display: inline-block;
+  margin-left: 6px;
+  animation: blink 1s infinite;
+}
+/* Global Input Focus Styles added by Antigravity */
+input:focus, textarea:focus, select:focus { outline: none !important; box-shadow: 0 0 0 2px #fecaca !important; border-color: #fca5a5 !important; }

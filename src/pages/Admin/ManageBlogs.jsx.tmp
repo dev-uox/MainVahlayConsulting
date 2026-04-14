@@ -1,0 +1,735 @@
+import React, { useState, useEffect } from "react";
+import {
+  collection,
+  doc,
+  addDoc,
+  getDocs,
+  updateDoc,
+  deleteDoc,
+  Timestamp,
+} from "firebase/firestore";
+import Side_bar from "../../components/Side_bar";
+import { ref, uploadBytesResumable, getDownloadURL } from "firebase/storage";
+import { db, storage } from "../../firebaseConfig";
+import ClearableInput from "../../components/common/ClearableInput";
+
+const AdminBlogPage = () => {
+  // -----------------------------
+  // SIDEBAR (optional)
+  // -----------------------------
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // -----------------------------
+  // 1) CATEGORY STATES
+  // -----------------------------
+  const [categories, setCategories] = useState([]);
+  const [selectedCategory, setSelectedCategory] = useState("");
+
+  // -----------------------------
+  // 2) BLOG FORM STATES
+  // -----------------------------
+  const [title, setTitle] = useState("");
+  const [subtitle, setSubtitle] = useState("");
+  const [metatitle, setMetatitle] = useState("");
+  const [metadescription, setMetadescription] = useState("");
+  const [headerparagraph, setHeaderParagraph] = useState("");
+  const [beforeSectionParagraph, setBeforeSectionParagraph] = useState("");
+  const [imageFile, setImageFile] = useState(null);
+  const [conclusion, setConclusion] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
+  const [sheduleBlog, setSheduleBlog] = useState("");
+  const [removeSheduling, setremoveSheduling] = useState(false);
+
+  // SEO Keywords
+  const [seoKeywords, setSeokeywords] = useState("");
+
+  // -----------------------------
+  // 3) SECTIONS (ARRAY)
+  // -----------------------------
+  const [sections, setSections] = useState([]);
+  const [tempHeading, setTempHeading] = useState("");
+  const [tempParagraph, setTempParagraph] = useState("");
+  const [tempBullets, setTempBullets] = useState([]);
+  const [tempParagraph2, setTempParagraph2] = useState("");
+  const [bulletText, setBulletText] = useState("");
+  const [editingIndex, setEditingIndex] = useState(null);
+
+  // -----------------------------
+  // 4) EXISTING BLOGS
+  // -----------------------------
+  const [allBlogs, setAllBlogs] = useState([]);
+  const [loadingBlogs, setLoadingBlogs] = useState(false);
+  const [editingBlogId, setEditingBlogId] = useState(null);
+
+  // -----------------------------
+  // FETCH CATEGORIES
+  // -----------------------------
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const snap = await getDocs(collection(db, "categories"));
+        const catData = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+        setCategories(catData);
+      } catch (err) {
+        console.error("Error fetching categories:", err);
+      }
+    };
+    fetchCategories();
+  }, []);
+
+  // -----------------------------
+  // FETCH BLOGS BY CATEGORY
+  // -----------------------------
+  const fetchBlogsForCategory = async (catId) => {
+    setLoadingBlogs(true);
+    try {
+      const catBlogsSnap = await getDocs(collection(db, "categories", catId, "blogs"));
+      const fetched = catBlogsSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      setAllBlogs(fetched);
+    } catch (error) {
+      console.error("Error fetching blogs:", error);
+    }
+    setLoadingBlogs(false);
+  };
+
+  const handleCategoryChange = (e) => {
+    const catId = e.target.value;
+    setSelectedCategory(catId);
+    setAllBlogs([]);
+    setEditingBlogId(null);
+    if (catId) fetchBlogsForCategory(catId);
+  };
+
+  // -----------------------------
+  // UPLOAD IMAGE (fixed await)
+  // -----------------------------
+  const uploadImageFile = async (file) => {
+    if (!file) return "";
+
+    const storageRef = ref(storage, `blogImages/${Date.now()}_${file.name}`);
+    const uploadTask = uploadBytesResumable(storageRef, file);
+
+    await new Promise((resolve, reject) => {
+      uploadTask.on(
+        "state_changed",
+        () => {},
+        (err) => reject(err),
+        () => resolve()
+      );
+    });
+
+    return getDownloadURL(storageRef);
+  };
+
+  // -----------------------------
+  // SAVE BLOG
+  // -----------------------------
+  const handleSaveBlog = async () => {
+    if (!selectedCategory) {
+      alert("Please select a category first.");
+      return;
+    }
+
+    try {
+      let finalImageUrl = imageUrl;
+      if (imageFile) finalImageUrl = await uploadImageFile(imageFile);
+
+      let scheduleTimestamp = null;
+      if (!removeSheduling && sheduleBlog) {
+        const date = new Date(sheduleBlog);
+        if (!isNaN(date.getTime())) scheduleTimestamp = Timestamp.fromDate(date);
+      }
+
+      const seoArray = seoKeywords
+        .split(",")
+        .map((k) => k.trim())
+        .filter(Boolean);
+
+      const blogData = {
+        title,
+        subtitle,
+        headerparagraph,
+        image: finalImageUrl,
+        beforesectionparagraph: beforeSectionParagraph,
+        sections,
+        conclusion,
+        scheduledTime: scheduleTimestamp,
+        metatitle,
+        metadescription, // ✅ consistent
+        seoKeywords: seoArray,
+        createdAt: Timestamp.now(),
+      };
+
+      if (editingBlogId) {
+        const blogRef = doc(db, "categories", selectedCategory, "blogs", editingBlogId);
+        await updateDoc(blogRef, blogData);
+        alert("Blog updated successfully!");
+        setEditingBlogId(null);
+      } else {
+        await addDoc(collection(db, "categories", selectedCategory, "blogs"), blogData);
+        alert("Blog saved successfully!");
+      }
+
+      // Reset
+      setTitle("");
+      setSubtitle("");
+      setHeaderParagraph("");
+      setBeforeSectionParagraph("");
+      setImageFile(null);
+      setImageUrl("");
+      setSections([]);
+      setConclusion("");
+      setSheduleBlog("");
+      setMetatitle("");
+      setMetadescription("");
+      setSeokeywords("");
+      setremoveSheduling(false);
+
+      fetchBlogsForCategory(selectedCategory);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    } catch (error) {
+      console.error("Error saving blog:", error);
+      alert("Failed to save blog. Check console for details.");
+    }
+  };
+
+  // -----------------------------
+  // SECTIONS
+  // -----------------------------
+  const handleAddOrUpdateSection = () => {
+    if (!tempHeading.trim()) return alert("Section heading is required.");
+
+    const newSection = {
+      heading: tempHeading,
+      paragraph: tempParagraph,
+      bullets: tempBullets,
+      paragraph2: tempParagraph2,
+    };
+
+    if (editingIndex !== null) {
+      setSections((prev) => {
+        const updated = [...prev];
+        updated[editingIndex] = newSection;
+        return updated;
+      });
+      setEditingIndex(null);
+    } else {
+      setSections((prev) => [...prev, newSection]);
+    }
+
+    setTempHeading("");
+    setTempParagraph("");
+    setTempBullets([]);
+    setTempParagraph2("");
+    setBulletText("");
+  };
+
+  const handleEditSection = (index) => {
+    const sec = sections[index];
+    setTempHeading(sec.heading || "");
+    setTempParagraph(sec.paragraph || "");
+    setTempBullets(sec.bullets || []);
+    setTempParagraph2(sec.paragraph2 || "");
+    setEditingIndex(index);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDeleteSection = (index) => {
+    if (!window.confirm("Are you sure you want to delete this section?")) return;
+    setSections((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const handleAddBullet = () => {
+    if (!bulletText.trim()) return;
+    setTempBullets((prev) => [...prev, bulletText.trim()]);
+    setBulletText("");
+  };
+
+  const handleRemoveBullet = (bIndex) => {
+    setTempBullets((prev) => prev.filter((_, i) => i !== bIndex));
+  };
+
+  // -----------------------------
+  // EDIT / DELETE BLOG
+  // -----------------------------
+  const handleEditBlog = (blogItem) => {
+    setEditingBlogId(blogItem.id);
+
+    setTitle(blogItem.title || "");
+    setSubtitle(blogItem.subtitle || "");
+    setHeaderParagraph(blogItem.headerparagraph || "");
+    setBeforeSectionParagraph(blogItem.beforesectionparagraph || "");
+    setImageUrl(blogItem.image || "");
+    setConclusion(blogItem.conclusion || "");
+    setSections(blogItem.sections || []);
+    setMetatitle(blogItem.metatitle || "");
+    setMetadescription(blogItem.metadescription || ""); // ✅ fixed
+    setSeokeywords((blogItem.seoKeywords || []).join(", "));
+
+    // schedule (optional)
+    if (blogItem.scheduledTime?.toDate && blogItem.scheduledTime) {
+      const dt = blogItem.scheduledTime.toDate();
+      const pad = (n) => String(n).padStart(2, "0");
+      const local = `${dt.getFullYear()}-${pad(dt.getMonth() + 1)}-${pad(dt.getDate())}T${pad(
+        dt.getHours()
+      )}:${pad(dt.getMinutes())}`;
+      setSheduleBlog(local);
+      setremoveSheduling(false);
+    } else {
+      setSheduleBlog("");
+      setremoveSheduling(true);
+    }
+
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDeleteBlog = async (blogId) => {
+    if (!selectedCategory) return;
+    if (!window.confirm("Are you sure you want to delete this blog?")) return;
+
+    try {
+      await deleteDoc(doc(db, "categories", selectedCategory, "blogs", blogId));
+      setAllBlogs((prev) => prev.filter((b) => b.id !== blogId));
+    } catch (error) {
+      console.error("Error deleting blog:", error);
+      alert("Failed to delete blog. Check console for details.");
+    }
+  };
+
+  const handleDisableBlogTime = (e) => {
+    const checked = e.target.checked;
+    setremoveSheduling(checked);
+    if (checked) setSheduleBlog("");
+  };
+
+  };
+
+  // -----------------------------
+  // RENDER
+  // -----------------------------
+  return (
+    <div className="min-h-screen bg-gray-100 flex">
+      
+      <main className="flex-1">
+        
+        <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+            Manage Blogs
+          </h1>
+
+          <div className="space-y-4 sm:space-y-6">
+            {/* Category */}
+            <Card title="Select Category">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
+                className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <option value="">-- Choose a Category --</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name || cat.title || "Unnamed Category"}
+                  </option>
+                ))}
+              </select>
+            </Card>
+
+            {/* Blog Basics */}
+            <Card
+              title={editingBlogId ? "Edit Blog" : "Create New Blog"}
+              right={
+                editingBlogId ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingBlogId(null);
+                      setTitle("");
+                      setSubtitle("");
+                      setHeaderParagraph("");
+                      setBeforeSectionParagraph("");
+                      setImageFile(null);
+                      setImageUrl("");
+                      setSections([]);
+                      setConclusion("");
+                      setSheduleBlog("");
+                      setMetatitle("");
+                      setMetadescription("");
+                      setSeokeywords("");
+                      setremoveSheduling(false);
+                    }}
+                    className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
+                  >
+                    Cancel Edit
+                  </button>
+                ) : null
+              }
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Blog Title</label>
+                  <ClearableInput
+                    id="blog-title"
+                    type="text"
+                    value={title}
+                    onChange={(e) => setTitle(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder="My Complex Blog"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Blog Subtitle</label>
+                  <ClearableInput
+                    id="blog-subtitle"
+                    type="text"
+                    value={subtitle}
+                    onChange={(e) => setSubtitle(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder="Subtitle text"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+                  <ClearableInput
+                    id="meta-title"
+                    type="text"
+                    value={metatitle}
+                    onChange={(e) => setMetatitle(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder="Meta title"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    SEO Keywords (comma separated)
+                  </label>
+                  <ClearableInput
+                    id="seo-keywords"
+                    type="text"
+                    value={seoKeywords}
+                    onChange={(e) => setSeokeywords(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder="e.g. marketing, ecommerce, web development"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Meta Description</label>
+                  <textarea
+                    rows={3}
+                    value={metadescription}
+                    onChange={(e) => setMetadescription(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg"
+                    placeholder="Enter a concise meta description (up to 155 characters)"
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Header Paragraph</label>
+                  <textarea
+                    rows={3}
+                    value={headerparagraph}
+                    onChange={(e) => setHeaderParagraph(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg"
+                    placeholder="Small paragraph text near the header..."
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Main Blog Image</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                    className="w-full border p-2.5 rounded-lg bg-white"
+                  />
+                  {(imageFile || imageUrl) && (
+                    <p className="text-xs text-gray-500 mt-2">
+                      {imageFile ? `Selected: ${imageFile.name}` : "Using existing image URL"}
+                    </p>
+                  )}
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Paragraph Before Sections
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={beforeSectionParagraph}
+                    onChange={(e) => setBeforeSectionParagraph(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg"
+                    placeholder="Text that appears before the list of sections..."
+                  />
+                </div>
+
+                {/* Scheduling */}
+                <div className="md:col-span-2">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="checkbox"
+                      id="removeScheduling"
+                      checked={removeSheduling}
+                      onChange={handleDisableBlogTime}
+                      className="h-4 w-4"
+                    />
+                    <label htmlFor="removeScheduling" className="text-sm font-semibold text-gray-700">
+                      Remove Scheduling
+                    </label>
+                  </div>
+
+                  {!removeSheduling && (
+                    <div className="mt-3">
+                      <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Schedule Time
+                      </label>
+                      <input
+                        type="datetime-local"
+                        value={sheduleBlog}
+                        onChange={(e) => setSheduleBlog(e.target.value)}
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            </Card>
+
+            {/* Section Editor */}
+            <Card title={editingIndex !== null ? "Edit Section" : "Add New Section"}>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Heading</label>
+                  <ClearableInput
+                    id="section-heading"
+                    type="text"
+                    value={tempHeading}
+                    onChange={(e) => setTempHeading(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                    placeholder="1. Invest in Comprehensive Agent Training..."
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Main Paragraph</label>
+                  <textarea
+                    rows={3}
+                    value={tempParagraph}
+                    onChange={(e) => setTempParagraph(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg"
+                    placeholder="Some text about why it matters..."
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Bullet Points (Optional)
+                  </label>
+                  <div className="flex flex-col sm:flex-row gap-2">
+                    <ClearableInput
+                      id="bullet-item"
+                      type="text"
+                      value={bulletText}
+                      onChange={(e) => setBulletText(e.target.value)}
+                      className="border p-2.5 rounded-lg flex-1 focus:outline-none focus:ring-2 focus:ring-red-200"
+                      placeholder="Bullet item"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleAddBullet}
+                      className="bg-blue-600 text-white px-4 py-2.5 rounded-lg hover:bg-blue-700 w-full sm:w-auto"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  {tempBullets.length > 0 && (
+                    <ul className="mt-3 space-y-2">
+                      {tempBullets.map((b, i) => (
+                        <li
+                          key={i}
+                          className="flex items-center justify-between gap-3 bg-gray-50 border rounded-lg px-3 py-2"
+                        >
+                          <span className="text-sm text-gray-800">{b}</span>
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveBullet(i)}
+                            className="text-red-600 text-sm px-2 py-1 rounded hover:bg-red-50"
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="md:col-span-2">
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Conclusion Paragraph (Optional)
+                  </label>
+                  <textarea
+                    rows={3}
+                    value={tempParagraph2}
+                    onChange={(e) => setTempParagraph2(e.target.value)}
+                    className="w-full border p-2.5 rounded-lg"
+                    placeholder="Wrap-up text for this section..."
+                  />
+                </div>
+
+                <div className="md:col-span-2">
+                  <button
+                    type="button"
+                    onClick={handleAddOrUpdateSection}
+                    className="bg-green-600 text-white px-4 py-2.5 rounded-lg hover:bg-green-700 w-full sm:w-auto"
+                  >
+                    {editingIndex !== null ? "Update Section" : "Add Section"}
+                  </button>
+                </div>
+              </div>
+            </Card>
+
+            {/* Current Sections */}
+            {sections.length > 0 && (
+              <Card title="Current Sections">
+                <div className="space-y-3">
+                  {sections.map((sec, idx) => (
+                    <div key={idx} className="border rounded-xl bg-gray-50 p-3 sm:p-4">
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3">
+                        <div>
+                          <div className="font-semibold text-gray-800">{sec.heading}</div>
+                          {sec.paragraph && <p className="text-sm text-gray-700 mt-1">{sec.paragraph}</p>}
+
+                          {sec.bullets?.length > 0 && (
+                            <ul className="list-disc list-inside text-sm text-gray-700 mt-2 space-y-1">
+                              {sec.bullets.map((b, i) => (
+                                <li key={i}>{b}</li>
+                              ))}
+                            </ul>
+                          )}
+
+                          {sec.paragraph2 && (
+                            <p className="text-sm text-gray-700 mt-2 italic">{sec.paragraph2}</p>
+                          )}
+                        </div>
+
+                        <div className="flex gap-2 w-full sm:w-auto">
+                          <button
+                            type="button"
+                            onClick={() => handleEditSection(idx)}
+                            className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm w-full sm:w-auto"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteSection(idx)}
+                            className="bg-red-500 text-white px-3 py-2 rounded-lg text-sm w-full sm:w-auto"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+
+            {/* Overall Conclusion + Save */}
+            <Card title="Final Conclusion & Save">
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Overall Conclusion Paragraph
+              </label>
+              <textarea
+                rows={3}
+                value={conclusion}
+                onChange={(e) => setConclusion(e.target.value)}
+                className="w-full border p-2.5 rounded-lg"
+                placeholder="Concluding paragraph for the entire blog..."
+              />
+
+              <div className="mt-4 flex flex-col sm:flex-row gap-2 sm:justify-end">
+                <button
+                  onClick={handleSaveBlog}
+                  className="bg-red-500 text-white px-6 py-2.5 rounded-lg hover:bg-red-600 w-full sm:w-auto"
+                >
+                  {editingBlogId ? "Update Blog" : "Save Entire Blog"}
+                </button>
+              </div>
+            </Card>
+
+            {/* Blogs List */}
+            <Card title="Blogs in Selected Category">
+              {selectedCategory === "" ? (
+                <p className="text-center text-gray-600 text-sm">
+                  Please select a category to view its blogs.
+                </p>
+              ) : loadingBlogs ? (
+                <p className="text-center text-gray-600 text-sm">Loading blogs...</p>
+              ) : allBlogs.length === 0 ? (
+                <p className="text-center text-gray-600 text-sm">No blogs found in this category.</p>
+              ) : (
+                <div className="space-y-3">
+                  {allBlogs.map((blogItem) => (
+                    <div
+                      key={blogItem.id}
+                      className="border rounded-xl p-3 sm:p-4 bg-gray-50"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                        <div>
+                          <h3 className="text-base sm:text-lg font-semibold text-gray-800">
+                            {blogItem.title}
+                          </h3>
+                          <p className="text-sm text-gray-600">{blogItem.subtitle}</p>
+                        </div>
+
+                        <div className="flex gap-2 w-full sm:w-auto">
+                          <button
+                            onClick={() => handleEditBlog(blogItem)}
+                            className="bg-blue-500 text-white px-3 py-2 rounded-lg text-sm w-full sm:w-auto"
+                          >
+                            Edit
+                          </button>
+                          <button
+                            onClick={() => handleDeleteBlog(blogItem.id)}
+                            className="bg-red-500 text-white px-3 py-2 rounded-lg text-sm w-full sm:w-auto"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </Card>
+          </div>
+        </div>
+      </main>
+    </div>
+  );
+};
+
+// -----------------------------
+// UI Helpers (Moved outside to prevent focus loss)
+// -----------------------------
+const Card = ({ title, children, right }) => (
+  <div className="bg-white rounded-xl shadow p-4 sm:p-5">
+    {(title || right) && (
+      <div className="flex items-start justify-between gap-3 mb-4">
+        {title ? <h2 className="text-base sm:text-lg font-semibold text-gray-800">{title}</h2> : <div />}
+        {right}
+      </div>
+    )}
+    {children}
+  </div>
+);
+
+export default AdminBlogPage;
