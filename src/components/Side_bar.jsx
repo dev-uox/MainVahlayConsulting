@@ -68,6 +68,18 @@ const MENU = [
     key: "manageagreements",
   },
   {
+    to: "/manageroles",
+    label: "Manage Roles",
+    icon: <FaUserTie size={18} />,
+    key: "manageroles",
+  },
+  {
+    to: "/usermanagement",
+    label: "User Management",
+    icon: <FaUserFriends size={18} />,
+    key: "usermanagement",
+  },
+  {
     to: "/result",
     label: "Test Result",
     icon: <FaClipboardList size={18} />,

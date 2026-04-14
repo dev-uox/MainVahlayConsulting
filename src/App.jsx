@@ -68,6 +68,8 @@ const ManageJoiningDates = lazy(() => import("./pages/Admin/MangeJoiningdates"))
 const TrainerDailyReport = lazy(() => import("./pages/TrainerDailyReport"));
 const TraineeFeedback = lazy(() => import("./pages/Admin/FeedbackToTrainee"));
 const ManageAgreements = lazy(() => import("./pages/Admin/ManageAgreement"));
+const ManageRoles = lazy(() => import("./pages/Admin/ManageRoles"));
+const UserManagement = lazy(() => import("./pages/Admin/UserManagement"));
 const AdminAgreementPage = lazy(() => import("./pages/Admin/Agreement"));
 const FeedbackToTrainer = lazy(() => import("./pages/FeedbackToTrainer"));
 // const TrainingWebAccess = lazy(() => import("./pages/Admin/TrainingWebAccess"));
@@ -403,6 +405,22 @@ const App = () => {
                   element={
                     <ProtectedRoute roles={["admin"]}>
                       <ApproveUsers />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/manageroles"
+                  element={
+                    <ProtectedRoute roles={["admin"]}>
+                      <ManageRoles />
+                    </ProtectedRoute>
+                  }
+                />
+                <Route
+                  path="/usermanagement"
+                  element={
+                    <ProtectedRoute roles={["admin"]}>
+                      <UserManagement />
                     </ProtectedRoute>
                   }
                 />

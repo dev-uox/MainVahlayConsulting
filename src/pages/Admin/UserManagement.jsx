@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { collection, getDocs, doc, updateDoc, onSnapshot, query, where, setDoc } from "firebase/firestore";
+import { collection, getDocs, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import { Users, Shield, Loader2, UserPlus, Search, UserCheck, ChevronLeft, ChevronRight } from "lucide-react";
+import { Shield, Loader2, Search, UserCheck, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
