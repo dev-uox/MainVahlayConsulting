@@ -141,34 +141,34 @@ const TrashEmp = () => {
             Trash (Deleted Employees)
           </h1>
 
-          <div className="flex items-center justify-between gap-2 my-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 my-4">
             <ClearableInput
               id="searchInput"
               type="text"
               placeholder="Search trash..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-2/3 pl-2 pr-4 py-3 border border-gray-300 rounded-xl"
+              className="w-full sm:w-96 pl-2 pr-4 py-3 border border-gray-300 rounded-xl"
             />
-            <div className="flex gap-2">
+            <div className="flex flex-wrap sm:flex-nowrap w-full sm:w-auto gap-2">
               <button
                 onClick={handleRestoreSelected}
                 disabled={selectedIds.size === 0 || isProcessing}
-                className={`px-4 py-2 text-sm rounded ${selectedIds.size === 0 ? "bg-gray-300" : "bg-green-600 text-white hover:bg-green-700"}`}
+                className={`flex-1 sm:flex-none px-4 py-2 text-sm rounded ${selectedIds.size === 0 ? "bg-gray-300" : "bg-green-600 text-white hover:bg-green-700"}`}
               >
                 Restore ({selectedIds.size})
               </button>
               <button
                 onClick={handleDeletePermanent}
                 disabled={selectedIds.size === 0 || isProcessing}
-                className={`px-4 py-2 text-sm rounded ${selectedIds.size === 0 ? "bg-gray-300" : "bg-red-700 text-white hover:bg-red-800"}`}
+                className={`flex-1 sm:flex-none px-4 py-2 text-sm rounded ${selectedIds.size === 0 ? "bg-gray-300" : "bg-red-700 text-white hover:bg-red-800"}`}
               >
                 Delete Forever
               </button>
             </div>
           </div>
 
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
+          <div className="bg-white rounded-lg shadow-lg overflow-x-auto border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
               <thead className="bg-gray-800">
                 <tr>
@@ -194,7 +194,7 @@ const TrashEmp = () => {
             </table>
           </div>
 
-          <div className="mt-6 flex items-center justify-between text-sm text-gray-700">
+          <div className="mt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-gray-700">
             <div className="flex items-center space-x-2">
               <span>Rows per page:</span>
               <select className="border rounded px-2 py-1" value={rowsPerPage} onChange={handleChangeRowsPerPage}>

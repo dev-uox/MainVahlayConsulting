@@ -8,6 +8,7 @@ import {
   doc,
   updateDoc,
   getDoc,
+  setDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebaseConfig"; // Make sure storage is exported
@@ -23,6 +24,7 @@ const UserProfile = () => {
   const [showFeedbackModal, setShowFeedbackModal] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
+  const [userRole, setUserRole] = useState("user");
 
   const [userProfile, setUserProfile] = useState({
     firstName: "",
@@ -157,6 +159,15 @@ const UserProfile = () => {
       setUser(currentUser);
 
       try {
+        const userDoc = await getDoc(doc(db, "users", currentUser.email.toLowerCase()));
+        if (userDoc.exists()) {
+          setUserRole(userDoc.data()?.role || "user");
+        }
+      } catch (err) {
+        console.error("Error fetching user role:", err);
+      }
+
+      try {
         const q = query(
           collection(db, "jobApplications"),
           where("email", "==", currentUser.email)
@@ -195,6 +206,10 @@ const UserProfile = () => {
           }
         } else {
           console.log("No document found for email:", currentUser.email);
+          setUserProfile((prev) => ({
+            ...prev,
+            email: currentUser.email,
+          }));
         }
       } catch (err) {
         console.error("Error fetching profile:", err);
@@ -210,8 +225,8 @@ const UserProfile = () => {
   const handleUpdateProfile = async (e) => {
     e.preventDefault();
 
-    if (!user || !docId) {
-      alert("User document not loaded.");
+    if (!user) {
+      alert("User not loaded.");
       return;
     }
 
@@ -221,14 +236,24 @@ const UserProfile = () => {
         displayName: `${userProfile.firstName} ${userProfile.lastName}`,
       });
 
-      // Update Firestore document
-      const userRef = doc(db, "jobApplications", docId);
-
-      await updateDoc(userRef, {
-        ...userProfile,
-        email: user.email,
-        updatedAt: new Date().toISOString(),
-      });
+      if (docId) {
+        // Update Firestore document
+        const userRef = doc(db, "jobApplications", docId);
+        await updateDoc(userRef, {
+          ...userProfile,
+          email: user.email,
+          updatedAt: new Date().toISOString(),
+        });
+      } else {
+        // Create new document
+        const newRef = doc(db, "jobApplications", user.email);
+        await setDoc(newRef, {
+          ...userProfile,
+          email: user.email,
+          updatedAt: new Date().toISOString(),
+        });
+        setDocId(user.email);
+      }
 
       alert("Profile updated successfully!");
       setIsEditing(false);
@@ -340,14 +365,16 @@ const UserProfile = () => {
 
           <div className="md:ml-auto mb-3 flex flex-wrap gap-3 items-center">
             {/* TRAINING BUTTON ADDED HERE - UPDATED TO THEME COLORS */}
-            <a
-              href="https://training.vahlayconsulting.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-4 py-2 rounded-full text-sm font-medium text-white bg-gray-700 shadow-sm hover:bg-gray-900 transition-all flex items-center gap-2"
-            >
-              <span>🚀</span> Go to Training
-            </a>
+            {userRole !== "admin" && (
+              <a
+                href="https://training.vahlayconsulting.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 rounded-full text-sm font-medium text-white bg-gray-700 shadow-sm hover:bg-gray-900 transition-all flex items-center gap-2"
+              >
+                <span>🚀</span> Go to Training
+              </a>
+            )}
 
             {agreement ? (
               agreement.candidateHasSigned ? (

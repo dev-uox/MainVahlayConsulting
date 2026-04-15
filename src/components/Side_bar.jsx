@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, Link, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebaseConfig";
@@ -248,7 +248,7 @@ const SideBar = ({ isOpen, onClose }) => {
 
           {/* User Profile Section */}
           <div className="border-t border-gray-700 p-4 bg-gray-900/50">
-            <div className="flex items-center gap-3 mb-3">
+            <Link to="/profile" className="flex items-center gap-3 mb-3 hover:opacity-80 transition-opacity cursor-pointer block">
               <div className="h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-lg shadow-inner">
                 {user?.email?.charAt(0).toUpperCase() || "U"}
               </div>
@@ -260,7 +260,7 @@ const SideBar = ({ isOpen, onClose }) => {
                   {role || "Admin"}
                 </p>
               </div>
-            </div>
+            </Link>
             <button
               onClick={() => signOut(getAuth())}
               className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 bg-gray-800 hover:bg-red-600 hover:text-white rounded-lg transition-all duration-200 border border-gray-700 hover:border-red-500"

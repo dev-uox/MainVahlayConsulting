@@ -291,6 +291,14 @@ const Navbar = () => {
             <SearchComponent />
             {user ? (
               <div className="flex items-center space-x-2">
+                {role === "admin" && (
+                  <Link
+                    to="/profile"
+                    className="text-gray-800 font-bold text-sm px-4 hover:text-red-600 whitespace-nowrap"
+                  >
+                    Profile
+                  </Link>
+                )}
                 <Link
                   to={role === "admin" ? "/jobs" : "/profile"}
                   className="bg-gray-900 text-white px-5 py-2 rounded-full text-sm font-semibold hover:bg-black transition-all whitespace-nowrap"
@@ -530,6 +538,15 @@ const Navbar = () => {
                   </div>
                 ) : (
                   <div className="p-4 space-y-3">
+                    {role === "admin" && (
+                      <Link
+                        to="/profile"
+                        onClick={toggleMenu}
+                        className="block text-center py-3 border-2 border-gray-900 text-gray-900 rounded-xl font-bold"
+                      >
+                        My Profile
+                      </Link>
+                    )}
                     <Link
                       to={role === "admin" ? "/jobs" : "/profile"}
                       onClick={toggleMenu}
