@@ -591,7 +591,7 @@ const ManageEmpDetails = () => {
   console.log(application)
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-    
+
 
       {/* Main Content */}
       <div className="w-full  px-6 py-8">
@@ -1081,7 +1081,7 @@ const ManageEmpDetails = () => {
               </div>
             </div>
             {/* New Section: Leave the Organization */}
-            
+
             <div className="mt-6">
               <label className="inline-flex items-center">
                 <input

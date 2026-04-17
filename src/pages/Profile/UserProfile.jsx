@@ -365,7 +365,10 @@ const UserProfile = () => {
 
           <div className="md:ml-auto mb-3 flex flex-wrap gap-3 items-center">
             {/* TRAINING BUTTON ADDED HERE - UPDATED TO THEME COLORS */}
-            {userRole !== "admin" && (
+            {(userRole === "salesexecutive" || 
+              userProfile.position === "Business Development Associate" || 
+              (userProfile.position || "").toLowerCase().includes("sales")
+            ) && (
               <a
                 href="https://training.vahlayconsulting.com"
                 target="_blank"

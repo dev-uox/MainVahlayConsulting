@@ -130,15 +130,9 @@ export default function ResultsTable() {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-      <PageHeader
-        title="Test Results"
-        breadcrumbs={[
-          { label: "Admin", to: "/manage-emp" },
-          { label: "Talent" },
-          { label: "Results" },
-        ]}
-      />
-
+    <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
+          Test Results
+        </h1>
       <div className="space-y-6 mt-6">
         {/* Controls & Search */}
         <section className="premium-card p-4 sm:p-6">

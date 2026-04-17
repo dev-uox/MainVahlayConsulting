@@ -388,7 +388,9 @@ const TrainerFeedback = () => {
         {/* Desktop Header */}
         <div className="hidden md:flex items-center justify-between p-6 bg-white border-b">
           <div>
-            <h1 className="text-2xl font-bold text-gray-800">Trainer Feedback Dashboard</h1>
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          Manage Agreements
+        </h1>
             <p className="text-gray-600 mt-1">View and manage all trainee feedback</p>
           </div>
           <button 
@@ -405,7 +407,7 @@ const TrainerFeedback = () => {
         {/* Content Container */}
         <div className="p-4 md:p-8">
           {/* Main Card */}
-          <div className="bg-white shadow-lg rounded-xl border border-red-100">
+          <div className="bg-white shadow-lg rounded-xl ">
             {/* Header with button for mobile */}
             <div className="p-6 border-b border-gray-100">
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">

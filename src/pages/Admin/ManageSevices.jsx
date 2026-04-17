@@ -592,18 +592,12 @@ const ManageHierarchyPage = () => {
   // ==============================
   return (
     <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-      <PageHeader
-        title="Service Hierarchy"
-        breadcrumbs={[
-          { label: "Admin", to: "/manage-emp" },
-          { label: "Architecture" },
-          { label: "Services" },
-        ]}
-      />
-
+    <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
+          Manage Services
+        </h1>
       <div className="space-y-8 mt-6">
         {/* ==================== CATEGORIES SECTION ==================== */}
-        <section className="premium-card p-6 border-l-4 border-l-red-600">
+        <section className="premium-card p-6 ">
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xl font-bold text-slate-900 dark:text-white">Master Categories</h2>
             {editingCategoryId && (

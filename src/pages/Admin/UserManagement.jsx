@@ -104,7 +104,7 @@ export default function UserManagement() {
     <div className="p-6 bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 w-fit mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
             User Role Management
           </h1>
 

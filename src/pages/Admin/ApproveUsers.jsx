@@ -90,10 +90,10 @@ const AdminDashboard = () => {
       <div className="p-4 md:p-8">
         <div className="max-w-8xl mx-auto">
           <header className="mb-8 pt-4">
-            <h1 className="text-2xl font-bold text-red-700">
-              Manage user access and platform approvals.
-            </h1>
-            <div className="w-16 h-1 bg-red-600 rounded-full mt-2 shadow-[0_0_10px_rgba(220,38,38,0.5)]"></div>
+            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
+          Manage Training Approval
+        </h1>
+           
           </header>
 
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">

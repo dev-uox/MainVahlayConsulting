@@ -992,9 +992,9 @@ export default function TrainerDailyReport() {
         <div className="w-full">
           {/* DESKTOP HEADER - IMPROVED LAYOUT */}
           <div className="flex items-center md:justify-between justify-center p-4 sm:p-6 bg-white md:border-b">
-            <h1 className=" md:block hidden text-xl sm:text-2xl font-bold text-red-700">
-              Training Batch Manager
-            </h1>
+           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          Training Batch Manager
+        </h1>
 
             <div className="flex items-center gap-4">
               {selectedBatch ? (
@@ -1010,7 +1010,7 @@ export default function TrainerDailyReport() {
                       setEmployees([]);
                       setActiveTab(TAB_RUNNING);
                     }}
-                    className="px-4 py-2 bg-white text-red-700 border border-red-200 rounded-lg hover:bg-red-50 text-sm font-medium whitespace-nowrap"
+                    className="px-4 py-2 bg-white text-red-700  rounded-lg hover:bg-red-50 text-sm font-medium whitespace-nowrap"
                   >
                     Close Batch
                   </button>
@@ -1039,7 +1039,7 @@ export default function TrainerDailyReport() {
                   {batches.map((b) => (
                     <div
                       key={b.id}
-                      className="bg-white rounded-xl p-4 shadow-sm border border-red-100 hover:border-red-200 transition-colors"
+                      className="bg-white rounded-xl p-4 shadow-sm hover:border hover:border-red-200 transition-colors"
                     >
                       <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
                         <div className="flex-1 min-w-0">

@@ -11,6 +11,8 @@ const ManageAgreements = () => {
   const [search, setSearch] = useState("");
   const [signedStatus, setSignedStatus] = useState({}); // { [appId]: boolean }
   const [agreementUrls, setAgreementUrls] = useState({}); // { [userId]: agreementUrl }
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage] = useState(10);
 
   const navigate = useNavigate();
 
@@ -50,6 +52,10 @@ const ManageAgreements = () => {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, activeTab]);
+
   const filteredUsers = users
     .filter((u) => {
       const signed = !!signedStatus[u.id];
@@ -75,6 +81,11 @@ const ManageAgreements = () => {
       const email = (u.email || "").toLowerCase();
       return fullName.includes(term) || email.includes(term);
     });
+
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+  const totalPages = Math.ceil(filteredUsers.length / itemsPerPage);
 
   const handleCreateAgreement = (user) => {
     navigate(`/agreement/${user.id}`, { state: { user } });
@@ -108,7 +119,7 @@ const ManageAgreements = () => {
       <main className="flex-1 ">
         
         <div className="md:w-full w-5/6 px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
           Manage Agreements
         </h1>
 
@@ -199,14 +210,15 @@ const ManageAgreements = () => {
         <div className="lg:hidden">
           {/* Mobile Cards View */}
           <div className="space-y-3">
-            {filteredUsers.length === 0 ? (
+            {currentItems.length === 0 ? (
               <div className="bg-white rounded-xl shadow-sm border border-slate-100 p-6 text-center">
                 <p className="text-slate-500 text-sm">
                   No users found in this tab.
                 </p>
               </div>
             ) : (
-              filteredUsers.map((u, idx) => {
+              currentItems.map((u, idx) => {
+                const globalIdx = indexOfFirstItem + idx;
                 const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim();
                 const signed = !!signedStatus[u.id];
 
@@ -240,7 +252,7 @@ const ManageAgreements = () => {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <span className="text-slate-500 text-sm">#{idx + 1}</span>
+                          <span className="text-slate-500 text-sm">#{globalIdx + 1}</span>
                           <h3 className="font-medium text-slate-800">
                             {fullName || "No name"}
                           </h3>
@@ -275,6 +287,64 @@ const ManageAgreements = () => {
               })
             )}
           </div>
+          {filteredUsers.length > itemsPerPage && (
+            <div className="mt-6 flex flex-col items-center gap-4">
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="p-2 rounded-lg border border-slate-200 bg-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <div className="flex items-center gap-1">
+                  {[...Array(totalPages)].map((_, i) => {
+                    const pageNum = i + 1;
+                    // Only show a few page numbers if there are many pages
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+                            currentPage === pageNum
+                              ? "bg-red-600 text-white shadow-md shadow-red-200"
+                              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if (
+                      pageNum === currentPage - 2 ||
+                      pageNum === currentPage + 2
+                    ) {
+                      return <span key={pageNum} className="px-1 text-slate-400">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="p-2 rounded-lg border border-slate-200 bg-white shadow-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-50 transition-colors"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+              <p className="text-sm text-slate-500">
+                Showing {indexOfFirstItem + 1} to {Math.min(indexOfLastItem, filteredUsers.length)} of {filteredUsers.length} entries
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Desktop Table View */}
@@ -305,7 +375,7 @@ const ManageAgreements = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredUsers.length === 0 ? (
+                  {currentItems.length === 0 ? (
                     <tr>
                       <td
                         colSpan={6}
@@ -315,7 +385,8 @@ const ManageAgreements = () => {
                       </td>
                     </tr>
                   ) : (
-                    filteredUsers.map((u, idx) => {
+                    currentItems.map((u, idx) => {
+                      const globalIdx = indexOfFirstItem + idx;
                       const fullName = `${u.firstName || ""} ${u.lastName || ""}`.trim();
                       const signed = !!signedStatus[u.id];
 
@@ -347,7 +418,7 @@ const ManageAgreements = () => {
                           className="border-b border-slate-100 hover:bg-slate-50/60"
                         >
                           <td className="px-4 py-3 text-slate-500 align-middle">
-                            {idx + 1}
+                            {globalIdx + 1}
                           </td>
                           <td className="px-4 py-3 text-slate-800 align-middle">
                             {fullName || "No name"}
@@ -388,6 +459,68 @@ const ManageAgreements = () => {
               </table>
             </div>
           </div>
+          {filteredUsers.length > itemsPerPage && (
+            <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 border-t border-slate-100 px-1">
+              <p className="text-sm text-slate-500 mb-4 sm:mb-0 order-2 sm:order-1">
+                Showing <span className="font-medium text-slate-700">{indexOfFirstItem + 1}</span> to <span className="font-medium text-slate-700">{Math.min(indexOfLastItem, filteredUsers.length)}</span> of <span className="font-medium text-slate-700">{filteredUsers.length}</span> entries
+              </p>
+              
+              <div className="flex items-center gap-2 order-1 sm:order-2">
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                  className="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Previous
+                </button>
+                
+                <div className="hidden sm:flex items-center gap-1">
+                  {[...Array(totalPages)].map((_, i) => {
+                    const pageNum = i + 1;
+                    if (
+                      pageNum === 1 ||
+                      pageNum === totalPages ||
+                      (pageNum >= currentPage - 1 && pageNum <= currentPage + 1)
+                    ) {
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => setCurrentPage(pageNum)}
+                          className={`w-9 h-9 rounded-lg text-sm font-medium transition-all ${
+                            currentPage === pageNum
+                              ? "bg-red-600 text-white shadow-md shadow-red-200"
+                              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50 hover:border-slate-300"
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      );
+                    } else if (
+                      pageNum === currentPage - 2 ||
+                      pageNum === currentPage + 2
+                    ) {
+                      return <span key={pageNum} className="px-1 text-slate-400">...</span>;
+                    }
+                    return null;
+                  })}
+                </div>
+
+                <button
+                  onClick={() => setCurrentPage((prev) => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                  className="inline-flex items-center px-3 py-2 rounded-lg border border-slate-200 bg-white text-sm font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                >
+                  Next
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
       </main>

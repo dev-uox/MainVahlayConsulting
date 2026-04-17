@@ -97,12 +97,12 @@ const SeoManagePage = () => {
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
       {/* Sidebar */}
-      <div className="w-full md:w-1/5 shadow-lg">
+      <div className="hidden md:block md:w-1/5 shadow-lg">
         <Side_bar />
       </div>
 
       {/* Main Content */}
-      <div className="w-full md:w-4/5 p-6 md:m-6">
+      <div className="flex-1 p-6">
         <h1 className="text-3xl font-bold mb-4">SEO Management</h1>
 
         {/* Form Section */}

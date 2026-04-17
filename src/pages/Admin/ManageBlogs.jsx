@@ -302,18 +302,13 @@ const AdminBlogPage = () => {
   // -----------------------------
   return (
     <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-      <PageHeader
-        title="Manage Blogs"
-        breadcrumbs={[
-          { label: "Admin", to: "/manage-emp" },
-          { label: "Content" },
-          { label: "Blogs" },
-        ]}
-      />
-
+ 
+<h1 className="text-2xl sm:text-3xl font-bold text-red-600 w-fit mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          Manage Blogs
+        </h1>
       <div className="space-y-8 mt-6">
         {/* Category Selection */}
-        <section className="premium-card p-6 border-l-4 border-l-red-600">
+        <section className="premium-card p-6 ">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Select Category</h2>
           <div className="max-w-md">
             <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">
@@ -557,7 +552,7 @@ const AdminBlogPage = () => {
                   <button
                     type="button"
                     onClick={handleAddBullet}
-                    className="bg-slate-900 dark:bg-slate-700 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
+                    className="bg-red-500 dark:bg-red-500  text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors"
                   >
                     Add
                   </button>
@@ -599,7 +594,7 @@ const AdminBlogPage = () => {
                 <button
                   type="button"
                   onClick={handleAddOrUpdateSection}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95"
+                  className="w-full bg-red-500 hover:bg-red-600 text-white font-bold py-3 px-6 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95"
                 >
                   {editingIndex !== null ? "Update Content Block" : "Add to Article"}
                 </button>

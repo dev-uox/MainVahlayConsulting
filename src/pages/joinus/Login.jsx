@@ -1,7 +1,7 @@
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth, db } from "../../firebaseConfig";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 
 import "../../backgroundImage.css";
 import { useNavigate } from "react-router-dom";
@@ -67,7 +67,25 @@ const Login = () => {
         navigate("/result"); // recruiter portal
       } else {
         alert("Login successful!");
-        navigate("/MultiStepForm"); // regular user
+        let hasFilledForm = snap.exists() && snap.data()?.formCompleted;
+        
+        if (!hasFilledForm) {
+          // Check if there's any document in jobApplications where email matches
+          const q = query(
+            collection(db, "jobApplications"),
+            where("email", "==", user.email)
+          );
+          const querySnap = await getDocs(q);
+          if (!querySnap.empty) {
+            hasFilledForm = true;
+          }
+        }
+
+        if (hasFilledForm) {
+          navigate("/profile");
+        } else {
+          navigate("/MultiStepForm");
+        }
       }
     } catch (err) {
       console.error("Login error:", err);

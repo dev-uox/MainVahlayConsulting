@@ -154,11 +154,11 @@ const AdminPortal = () => {
       <div className="min-h-screen bg-gray-100 flex">
         <main className="flex-1">
           <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 w-fit border-b-4 border-red-500 pb-2">
               {" "}
               Add New Job
             </h1>
-            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6 md:mb-8 border border-red-200 my-2">
+            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6 md:mb-8  my-2">
               <form
                 onSubmit={handleSubmit}
                 className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4"
@@ -453,7 +453,7 @@ const AdminPortal = () => {
                       />
                       <button
                         type="button"
-                        className="bg-green-500 text-white rounded px-3 py-1 hover:bg-green-600 text-sm sm:text-base whitespace-nowrap"
+                        className="bg-red-500 text-white rounded px-3 py-1 hover:bg-red-600 text-sm sm:text-base whitespace-nowrap"
                         onClick={addBullet}
                       >
                         Add
@@ -482,7 +482,7 @@ const AdminPortal = () => {
                   {editingSectionIndex === null ? (
                     <button
                       type="button"
-                      className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 text-sm sm:text-base"
+                      className="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-600 text-sm sm:text-base"
                       onClick={() => {
                         setJobForm({
                           ...jobForm,
@@ -502,7 +502,7 @@ const AdminPortal = () => {
                   ) : (
                     <button
                       type="button"
-                      className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 text-sm sm:text-base"
+                      className="bg-red-500 text-white rounded px-4 py-2 hover:bg-red-500 text-sm sm:text-base"
                       onClick={() => {
                         const updatedSections = [...jobForm.sections];
                         updatedSections[editingSectionIndex] = newSection;

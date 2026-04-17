@@ -198,18 +198,13 @@ const ManageProjects = () => {
 
   return (
     <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-      <PageHeader
-        title="Manage Projects"
-        breadcrumbs={[
-          { label: "Admin", to: "/manage-emp" },
-          { label: "Projects" },
-        ]}
-      />
-
+     <h1 className="text-2xl sm:text-3xl font-bold text-red-600 w-fit mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          Manage Projects
+        </h1>
       <div className="w-full space-y-8">
 
         {/* Form Container */}
-        <section className="premium-card p-6 border-l-4 border-l-red-600">
+        <section className="premium-card p-6 ">
           <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-6">
             {editId ? "Edit Project Details" : "Add New Project"}
           </h2>

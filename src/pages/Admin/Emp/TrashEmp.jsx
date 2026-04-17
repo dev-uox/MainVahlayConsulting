@@ -137,9 +137,9 @@ const TrashEmp = () => {
     <div className="min-h-screen bg-gray-100 flex">
       <main className="flex-1">
         <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-orange-600 mb-4 sm:mb-6 border-b-4 border-orange-500 pb-2">
-            Trash (Deleted Employees)
-          </h1>
+         <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
+          Trash (Deleted Employees)
+        </h1>
 
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 my-4">
             <ClearableInput

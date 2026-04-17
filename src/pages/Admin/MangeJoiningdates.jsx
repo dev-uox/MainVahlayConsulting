@@ -118,7 +118,7 @@ const ManageJoiningDates = () => {
       <main className="flex-1">
         
         <div className=" md:w-full w-[21rem]  px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+          <h1 className="text-2xl sm:text-3xl font-bold w-fit text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
           Manage Joining Dates
         </h1>
 
@@ -150,7 +150,7 @@ const ManageJoiningDates = () => {
             <button
               type="button"
               onClick={handleAddDate}
-              className="bg-blue-600 text-white w-full py-2.5 rounded-lg font-medium hover:bg-blue-700 transition"
+              className="bg-red-500 text-white w-full py-2.5 rounded-lg font-medium hover:bg-red-600 transition"
             >
               Add
             </button>

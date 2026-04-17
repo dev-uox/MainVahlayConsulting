@@ -22,9 +22,9 @@ const Aside = () => {
 
       {/* Aside Section */}
       <aside
-        className={`fixed top-0 right-0 h-full bg-red-600 shadow-lg p-4 w-3/4 md:w-1/4 transform ${
+        className={`fixed top-0 right-0 h-screen bg-red-600 shadow-lg p-4 w-3/4 md:w-1/4 transform ${
           isAsideOpen ? "translate-x-0" : "translate-x-full"
-        } transition-transform duration-300 z-40`}
+        } transition-transform duration-300 z-50`}
       >
         <button
           className="absolute top-4 left-4 bg-white text-red-600 p-2 rounded-full shadow-lg"

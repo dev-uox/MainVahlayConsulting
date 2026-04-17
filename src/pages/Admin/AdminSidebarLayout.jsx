@@ -32,12 +32,12 @@ export default function DashboardLayout() {
       </div>
 
       {/* ✅ Layout */}
-      <div className="flex flex-1 w-full overflow-hidden">
+      <div className="flex flex-1 w-full">
         {/* Sidebar (always mounted – IMPORTANT) */}
         <MemoSideBar isOpen={sidebarOpen} onClose={setSidebarOpen} />
 
         {/* Main Content */}
-        <main className="flex-1 min-w-0 overflow-y-auto">
+        <main className="flex-1 min-w-0">
           <Outlet />
         </main>
       </div>

@@ -201,11 +201,11 @@ const SideBar = ({ isOpen, onClose }) => {
   return (
     <>
       <aside
-        className={` fixed top-0 left-0 h-full overflow-scroll w-72 bg-gradient-to-b from-gray-900 to-gray-800 text-white
+        className={` fixed top-0 left-0 h-full overflow-scroll w-56 bg-gradient-to-b from-gray-900 to-gray-800 text-white
           transform transition-transform duration-300 ease-out z-50
           flex-shrink-0
           ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
-          lg:translate-x-0 lg:sticky lg:top-0 lg:h-screen lg:z-40 border-r border-gray-700
+          md:translate-x-0 md:sticky md:top-20 md:h-[calc(100vh-5rem)] md:z-40 border-r border-gray-700
         `}
       >
         <div className="flex flex-col h-full">
@@ -220,7 +220,7 @@ const SideBar = ({ isOpen, onClose }) => {
           <h1 className="p-4 text-2xl font-bold">Admin Panel</h1>
 
           <nav className="flex-1  py-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-            <ul className="space-y-1 px-3">
+            <ul className="space-y-1">
               {visibleMenu.map(({ to, label, icon, key }) => (
                 <li key={key}>
                   <NavLink
