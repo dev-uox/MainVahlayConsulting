@@ -10,7 +10,10 @@ import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import Navbar from "../components/Navbar";
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
+<<<<<<< HEAD
 import { GoDotFill } from "react-icons/go";
+=======
+>>>>>>> ce7fac5 (Save work before sync)
 const APImage = "/assets/ApplicationDevelopmentVC.png";
 const WBImage = "/assets/WebsiteDevelopmentVC.png";
 const TSImage = "/assets/TeleSalesVC.png";
@@ -222,6 +225,35 @@ const Home = () => {
     @keyframes dotMove {
       0% { left: -5px; }
       100% { left: calc(100% - 5px); }
+    }
+    @keyframes lineGlow {
+      0%, 100% { 
+        opacity: 0.4;
+        stroke-width: 1.5;
+      }
+      50% { 
+        opacity: 0.9;
+        stroke-width: 2.2;
+      }
+    }
+    @keyframes lineSpread {
+      0% {
+        opacity: 0;
+        transform: scale(0.1);
+      }
+      50% {
+        opacity: 0.8;
+        transform: scale(1.05);
+      }
+      100% {
+        opacity: 0.4;
+        transform: scale(1);
+      }
+    }
+    .animated-line {
+      animation: lineSpread 3.5s ease-out forwards;
+      transform-origin: center;
+      transform-box: fill-box;
     }
     .logoRingsSpin {
       animation: spin 20s linear infinite;
@@ -455,68 +487,79 @@ const Home = () => {
         className={`relative w-full h-auto min-h-[70vh] md:h-[calc(100vh-6rem)] overflow-hidden transition-colors duration-700 ${slides[activeSlide].bgColor}`}
       >
 
-        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-60">
+        {/* Animated Background SVG Lines */}
+        <motion.div 
+          className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.4 }}
+          transition={{ duration: 0.8 }}
+        >
           <svg
             viewBox="0 0 3200 1800"
             preserveAspectRatio="xMidYMid slice"
             className="w-full h-full"
           >
-            {/* Animated Lines Fanning from Top-Left to Bottom-Right */}
-            <g strokeWidth="2">
-              {[...Array(30)].map((_, i) => {
-                const delay = i * 0.05;
-
-                return (
-                  <motion.path
-                    key={i}
-                    initial={{
-                      pathLength: 0,
-                      pathOffset: 1,
-                      opacity: 0
-                    }}
-                    animate={{
-                      pathLength: 1,
-                      pathOffset: 0,
-                      opacity: 0.3
-                    }}
-                    transition={{
-                      pathLength: {
-                        duration: 2,
-                        delay: delay,
-                        ease: "easeInOut",
-                        repeatDelay: 2,
-                      },
-                      pathOffset: {
-                        duration: 2,
-                        delay: delay,
-                        ease: "easeInOut",
-                        repeatDelay: 2,
-                      },
-                      opacity: {
-                        duration: 2,
-                        delay: delay,
-                        ease: "easeInOut",
-                        repeatDelay: 2,
-                      }
-                    }}
-                    d={`M${2700 + i * 40} ${4600 - i * 80} L${300 - i * 20} ${-2900 + i * 90}`}
-                    stroke={`rgb(${220 - i * 2}, ${30 + i}, ${40 + i})`}
-                    fill="none"
-                    strokeLinecap="round"
-                  />
-                );
-              })}
+            <defs>
+              <filter id="glow">
+                <feGaussianBlur stdDeviation="2.5" result="coloredBlur"/>
+                <feMerge>
+                  <feMergeNode in="coloredBlur"/>
+                  <feMergeNode in="SourceGraphic"/>
+                </feMerge>
+              </filter>
+            </defs>
+            <g>
+              {[...Array(12)].map((_, i) => (
+                <path
+                  key={i}
+                  d={`M${2700 + i * 100} ${4600 - i * 150} L${300 - i * 50} ${-2900 + i * 200}`}
+                  stroke={`rgb(${220 - i * 5}, ${30 + i * 2}, ${40 + i * 2})`}
+                  fill="none"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  filter="url(#glow)"
+                  className="animated-line"
+                  style={{
+                    animationDelay: `${i * 0.08}s`
+                  }}
+                />
+              ))}
             </g>
           </svg>
-        </div>
+        </motion.div>
 
-        {/* Glass Red Background Circles */}
+        {/* Glass Red Background Circles with Animation */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           {/* Large primary circle */}
-          <div className="absolute -bottom-32 -right-32 w-[320px] h-[320px] rounded-full bg-red-500/10 backdrop-blur-3xl" />
+          <motion.div 
+            className="absolute -bottom-32 -right-32 w-[320px] h-[320px] rounded-full bg-red-500/10 backdrop-blur-3xl"
+            animate={{
+              x: [0, 20, -10, 0],
+              y: [0, -15, 10, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          {/* Secondary circle for depth */}
+          <motion.div 
+            className="absolute top-20 -left-40 w-[280px] h-[280px] rounded-full bg-red-500/5 backdrop-blur-3xl"
+            animate={{
+              x: [0, -15, 20, 0],
+              y: [0, 15, -10, 0],
+            }}
+            transition={{
+              duration: 10,
+              repeat: Infinity,
+              ease: "easeInOut",
+              delay: 0.5
+            }}
+          />
         </div>
 
-        {/* Floating Background Particles */}
+        {/* Animated Background Particles */}
         <div className="absolute inset-0 overflow-hidden z-0">
           {[...Array(5)].map((_, i) => (
             <motion.div
@@ -528,11 +571,16 @@ const Home = () => {
                 left: `${15 + i * 18}%`,
                 top: `${20 + i * 12}%`
               }}
-              animate={{ y: [0, -20, 0] }}
+              animate={{
+                y: [0, -20, 0],
+                opacity: [0.3, 0.6, 0.3],
+                scale: [1, 1.2, 1]
+              }}
               transition={{
-                duration: 16,
+                duration: 6 + i,
                 repeat: Infinity,
-                ease: "easeInOut"
+                ease: "easeInOut",
+                delay: i * 0.3
               }}
             />
           ))}
@@ -541,114 +589,141 @@ const Home = () => {
         {/* Progress Bar */}
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-50 hidden md:block w-48 lg:w-64 h-1.5 bg-gray-200/40 rounded-full overflow-hidden">
           <motion.div
-            key={activeSlide}
             className="h-full bg-red-600 rounded-full"
             initial={{ width: "0%" }}
-            animate={{ width: "100%" }}
-            transition={{ duration: 4, ease: "linear" }}
+            animate={{ width: `${((activeSlide + 1) / slides.length) * 100}%` }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
           />
         </div>
 
         {/* Navigation Tabs */}
         <div className="absolute left-6 top-1/2 -translate-y-1/2 z-40 hidden lg:flex flex-col gap-6">
           {slides.map((_, index) => (
-            <button
+            <motion.button
               key={index}
               onClick={() => setActiveSlide(index)}
-              className="transition-transform hover:scale-110"
+              className="p-0 outline-none border-none cursor-pointer flex items-center justify-center rounded-full"
+              initial={{ scale: 1 }}
+              whileHover={{ scale: 1.4 }}
+              whileTap={{ scale: 0.85 }}
+              transition={{ type: "spring", stiffness: 500, damping: 15 }}
             >
-              <GoDotFill
-                className={`text-lg ${activeSlide === index ? "text-red-600" : "text-gray-400"
-                  }`}
-              />
-            </button>
+              <motion.div
+                className="rounded-full flex items-center justify-center"
+                animate={{ 
+                  scale: activeSlide === index ? 1.6 : 1,
+                  boxShadow: activeSlide === index ? "0 0 25px rgba(220, 38, 38, 0.7)" : "0 0 8px rgba(0, 0, 0, 0.1)"
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20, duration: 0.4 }}
+              >
+                <div
+                  className={`w-3 h-3 rounded-full transition-colors duration-300 ${activeSlide === index ? "bg-red-600" : "bg-gray-400 hover:bg-gray-500"}`}
+                />
+              </motion.div>
+            </motion.button>
           ))}
         </div>
 
         {/* Mobile Indicators */}
         <div className="lg:hidden absolute bottom-4 left-1/2 -translate-x-1/2 z-50 flex gap-3">
           {slides.map((_, index) => (
-            <button
+            <motion.button
               key={index}
               onClick={() => setActiveSlide(index)}
-              className={`h-2 rounded-full transition-all duration-300 ${activeSlide === index ? "w-6 bg-red-600" : "w-2 bg-gray-400"
-                }`}
-            />
+              className="outline-none border-none cursor-pointer rounded-full"
+              whileHover={{ scale: 1.2 }}
+              transition={{ type: "spring", stiffness: 400 }}
+            >
+              <motion.div
+                initial={{ width: activeSlide === index ? 24 : 8 }}
+                animate={{ width: activeSlide === index ? 24 : 8, backgroundColor: activeSlide === index ? "#dc2626" : "#d1d5db" }}
+                transition={{ type: "spring", stiffness: 300, damping: 20, duration: 0.4 }}
+                className="h-2 rounded-full"
+              />
+            </motion.button>
           ))}
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={activeSlide}
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5 }}
-            className="relative w-full h-full flex flex-col-reverse md:flex-row items-center px-6 md:px-16 lg:px-24 py-10 md:py-0"
+        <div className="relative w-full h-full flex flex-col-reverse md:flex-row items-center px-6 md:px-16 lg:px-24 py-10 md:py-0">
+          {/* Text Content */}
+          <motion.div 
+            className="w-full md:w-1/2 z-20 mt-8 md:mt-0"
+            key={`text-${activeSlide}`}
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: "easeOut" }}
           >
-            {/* Text Content */}
-            <div className="w-full md:w-1/2 z-20 mt-8 md:mt-0">
-              <motion.h1
-                initial={{ y: 20, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6"
-              >
-                {slides[activeSlide].title}
-                <div className="h-1 w-20 bg-red-600 rounded-full mt-4" />
-              </motion.h1>
+            <motion.h1 
+              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6"
+              initial={{ opacity: 0, x: -30 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+            >
+              {slides[activeSlide].title}
+              <motion.div 
+                className="h-1 w-20 bg-red-600 rounded-full mt-4" 
+                initial={{ width: 0 }}
+                animate={{ width: 80 }}
+                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
+              />
+            </motion.h1>
 
-              <motion.p
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                transition={{ duration: 0.6, delay: 0.1 }}
-                className="text-lg text-gray-600 max-w-lg mb-8"
-              >
-                {slides[activeSlide].subtitle}
-              </motion.p>
+            <motion.p 
+              className="text-lg text-gray-600 max-w-lg mb-8"
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
+            >
+              {slides[activeSlide].subtitle}
+            </motion.p>
 
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
-                className="px-8 py-4 bg-red-600 text-white rounded-full font-bold tracking-wide shadow-lg"
-              >
-                {slides[activeSlide].buttonText}
-              </motion.button>
-            </div>
-
-            {/* Image Area */}
-            <div className="w-full md:w-1/2 relative flex justify-center items-center">
-              <motion.div
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="relative w-[85%] max-w-xl aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-8 border-white"
-              >
-                <img
-                  src={slides[activeSlide].image}
-                  alt="Slide"
-                  className="w-full h-full object-cover"
-                  loading={activeSlide === 0 ? "eager" : "lazy"}
-                />
-                <div
-                  className="absolute inset-0 cursor-pointer"
-                  onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
-                />
-              </motion.div>
-            </div>
+            <motion.button
+              onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
+              className="px-8 py-4 bg-red-600 text-white rounded-full font-bold tracking-wide shadow-lg hover:bg-red-700 transition-colors duration-300"
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              {slides[activeSlide].buttonText}
+            </motion.button>
           </motion.div>
-        </AnimatePresence>
 
-        {/* Subtle Background Grid */}
-        <motion.div
+          {/* Image Area */}
+          <motion.div 
+            className="w-full md:w-1/2 relative flex justify-center items-center"
+            key={`image-${activeSlide}`}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.7, ease: "easeOut" }}
+          >
+            <motion.div 
+              className="relative w-[85%] max-w-xl aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-8 border-white"
+              whileHover={{ scale: 1.02, boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)" }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            >
+              <img
+                src={slides[activeSlide].image}
+                alt="Slide"
+                className="w-full h-full object-cover"
+                loading={activeSlide === 0 ? "eager" : "lazy"}
+              />
+              <div
+                className="absolute inset-0 cursor-pointer"
+                onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
+              />
+            </motion.div>
+          </motion.div>
+        </div>
+
+        {/* Static Subtle Background Grid */}
+        <div
           className="absolute inset-0 z-0 pointer-events-none opacity-[0.015]"
           style={{
             backgroundImage: "radial-gradient(#000 1px, transparent 1px)",
             backgroundSize: "40px 40px"
           }}
-          animate={{ backgroundPosition: ["0px 0px", "40px 40px"] }}
-          transition={{ duration: 40, repeat: Infinity, ease: "linear" }}
         />
       </section>
 

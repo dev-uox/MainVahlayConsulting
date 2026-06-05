@@ -18,7 +18,8 @@ const RECRUITERS = [
   "Harshad Prajapati (Manager)",
   "KanakSinh Zala (CSA)",
   "Rahul Rana (STE)",
-  "Rajniel Prasad (Trainer)",
+
+  "Rochit Joshi (Trainer)",
   "Janet Robbin(Recruiter)",
 ];
 const RATINGS = ["Excellent", "Good", "Average", "Poor", "Bad"];
@@ -170,12 +171,34 @@ export default function ResultDetails() {
         </Link>
 
         {/* User Info Card */}
+<<<<<<< HEAD
         <div className="bg-white shadow rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
           <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
             <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{user.name}</h2>
             <p className="mt-1 sm:mt-0 text-xs sm:text-sm text-gray-600">
               Registered: {formatTs(user.registeredAt)}
             </p>
+=======
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
+            <div>
+              <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
+              <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+                Registered: {formatTs(user.registeredAt)}
+              </div>
+            </div>
+
+            <button
+              onClick={handleDelete}
+              className="px-4 py-2.5 bg-red-50 text-red-700 rounded-lg hover:bg-red-700 hover:text-white transition-all text-xs font-bold border border-red-100 flex items-center gap-2"
+            >
+              <MdDelete className="text-lg" />
+              Delete Profile
+            </button>
+>>>>>>> ce7fac5 (Save work before sync)
           </div>
 
           {/* User details grid */}
@@ -191,6 +214,10 @@ export default function ResultDetails() {
             <div className="p-3 bg-gray-50 rounded">
               <p className="text-xs text-gray-500 uppercase">City</p>
               <p className="mt-1 text-sm sm:text-base">{user.city}</p>
+            </div>
+            <div className="bg-gray-50 border border-gray-100 p-5 rounded-xl">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Religion</p>
+              <p className="text-gray-900 font-bold">{user.religion || <span className="text-gray-400 italic">Not Provided</span>}</p>
             </div>
           </div>
         </div>
@@ -211,6 +238,7 @@ export default function ResultDetails() {
         </section>
 
         {/* Section 1: Listening */}
+<<<<<<< HEAD
         <section className="bg-white shadow rounded-lg p-4 sm:p-6">
           <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Listening</h3>
           <div className="flex flex-col items-center mb-4 sm:mb-6">
@@ -221,6 +249,23 @@ export default function ResultDetails() {
               <source src="/assets/Listening%20test.mp4" type="video/mp4" />
               Your browser does not support video.
             </video>
+=======
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
+            <h3 className="text-xl font-bold text-gray-900">Listening Assessment</h3>
+          </div>
+          <div className="flex flex-col items-center mb-8">
+            <div className="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
+              <video
+                controls
+                className="w-full h-full"
+              >
+                <source src="/assets/Listening%20test.mp4" type="video/mp4" />
+                Your browser does not support video.
+              </video>
+            </div>
+>>>>>>> ce7fac5 (Save work before sync)
           </div>
 
           <div className="bg-gray-50 p-3 sm:p-4 rounded">
@@ -264,6 +309,7 @@ export default function ResultDetails() {
 
                 {/* Tasks list */}
                 {tasks.length > 0 && (
+<<<<<<< HEAD
                   <ol className="list-decimal pl-4 sm:pl-6 mt-3 sm:mt-4 space-y-2 text-gray-800 text-sm sm:text-base">
                     {tasks.map((task, i) => (
                       <li key={i} className="pb-2 last:pb-0">
@@ -294,6 +340,45 @@ export default function ResultDetails() {
                     Submitted: {formatTs(submittedAt)}
                   </p>
                 )}
+=======
+                  <div className="mb-8">
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Specific Tasks:</p>
+                    <ul className="space-y-2">
+                      {tasks.map((task, i) => (
+                        <li key={i} className="flex gap-3 text-gray-800 leading-relaxed">
+                          <span className="w-5 h-5 rounded bg-white border border-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-400 shrink-0">{i + 1}</span>
+                          {task}
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm">
+                  <p className="text-xs font-bold text-red-600 uppercase tracking-widest mb-4 text-center">Voice Submission:</p>
+                  {hasAudio ? (
+                    <audio
+                      controls
+                      src={audioURLs[sec]}
+                      className="w-full accent-red-600"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center py-4">
+                      <svg className="w-12 h-12 text-gray-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
+                      </svg>
+                      <p className="text-gray-400 text-sm font-medium italic">
+                        {user?.[sec]?.audioPath ? "Processing audio recording..." : "No recording available."}
+                      </p>
+                    </div>
+                  )}
+                  {submittedAt && (
+                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-6 text-center">
+                      Timestamp: {formatTs(submittedAt)}
+                    </p>
+                  )}
+                </div>
+>>>>>>> ce7fac5 (Save work before sync)
               </div>
             </section>
           );
@@ -315,7 +400,16 @@ export default function ResultDetails() {
                 ))}
               </ol>
             ) : (
+<<<<<<< HEAD
               <p className="italic text-gray-500 text-sm sm:text-base">No aptitude questions available.</p>
+=======
+              <div className="flex items-center gap-3 text-gray-400 italic py-4">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+                No aptitude questions cataloged for this test.
+              </div>
+>>>>>>> ce7fac5 (Save work before sync)
             )}
             {user.aptitude?.submittedAt && (
               <p className="text-xs sm:text-sm text-gray-500 mt-3">
@@ -326,21 +420,51 @@ export default function ResultDetails() {
         </section>
 
         {/* Recruiter Comments */}
+<<<<<<< HEAD
         <section className="bg-white shadow rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
           <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">Recruiter Comments</h3>
           
           <div className="space-y-3 sm:space-y-4">
+=======
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+          <div className="flex items-center gap-2 mb-8">
+            <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
+            <h3 className="text-xl font-bold text-gray-900">Professional Evaluations</h3>
+          </div>
+
+          <div className="space-y-4 mb-10">
+>>>>>>> ce7fac5 (Save work before sync)
             {user.recruiterComments?.length > 0 ? (
               user.recruiterComments.map((c, i) => (
                 <div
                   key={i}
                   className="border-l-4 border-red-400 bg-gray-50 p-3 sm:p-4 rounded"
                 >
+<<<<<<< HEAD
                   <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                     <p className="font-medium text-gray-800 text-sm sm:text-base">{c.name}</p>
                     <p className="text-xs sm:text-sm text-gray-500">
                       {formatTs(c.submittedAt)}
                     </p>
+=======
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-red-600 font-bold shadow-sm">
+                        {c.name?.charAt(0)}
+                      </div>
+                      <div>
+                        <p className="font-bold text-gray-900 leading-none">{c.name}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                          {formatTs(c.submittedAt)}
+                        </p>
+                      </div>
+                    </div>
+                    <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.rating === "Excellent" ? "bg-emerald-50 text-emerald-600" :
+                      c.rating === "Bad" ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"
+                      }`}>
+                      {c.rating}
+                    </span>
+>>>>>>> ce7fac5 (Save work before sync)
                   </div>
                   <p className="text-yellow-600 mt-1 text-sm sm:text-base">Rating: {c.rating}</p>
                   <p className="mt-2 text-gray-800 text-sm sm:text-base">{c.text}</p>
@@ -385,9 +509,15 @@ export default function ResultDetails() {
                 </select>
               </div>
             </div>
+<<<<<<< HEAD
             
             <div>
               <label className="block font-medium text-sm sm:text-base mb-1">Comment</label>
+=======
+
+            <div className="mb-6">
+              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Detailed Observations</label>
+>>>>>>> ce7fac5 (Save work before sync)
               <textarea
                 rows={3}
                 value={commentText}
@@ -397,6 +527,7 @@ export default function ResultDetails() {
                 placeholder="Write your comment…"
               />
             </div>
+<<<<<<< HEAD
             
             <div className="text-right">
               <button
@@ -405,6 +536,17 @@ export default function ResultDetails() {
                 className={`px-4 sm:px-6 py-2 sm:py-3 rounded text-white text-sm sm:text-base ${
                   submitting ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
                 }`}
+=======
+
+            <div className="flex justify-end">
+              <button
+                onClick={submitComment}
+                disabled={submitting}
+                className={`px-8 py-3 rounded-xl text-sm font-bold transition-all shadow-md ${submitting
+                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+                  : "bg-red-600 text-white hover:bg-red-700 shadow-red-100"
+                  }`}
+>>>>>>> ce7fac5 (Save work before sync)
               >
                 {submitting ? "Submitting…" : "Submit Comment"}
               </button>

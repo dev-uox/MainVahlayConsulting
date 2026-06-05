@@ -39,6 +39,22 @@ const formatLong = (iso) =>
 
 const todayLocalISO = () => toLocalISODate(new Date());
 
+const experiencedTerms = [
+  "The company will provide an 8-day training and evaluation program from our side.",
+  "Candidates who are currently working may attend the 8-day training without resigning from their current organization.",
+  "Upon successful completion and clearance of the 8-day training program, the company will issue an official confirmation email on the 9th day regarding training completion and selection status.",
+  "After receiving the confirmation email from the company, the candidate may proceed with resignation from their current organization and officially join our company.",
+  "Salary and employment benefits will begin only from the official joining date after the candidate leaves the previous organization and joins our company."
+];
+
+const fresherTerms = [
+  "The 8-day training period for freshers will be unpaid. No salary or stipend will be provided during the training duration.",
+  "Candidates are required to attend the complete training program regularly and maintain proper discipline, punctuality, and professionalism throughout the training period.",
+  "The training period will be used to assess the candidate’s communication skills, learning capability, work attitude, and overall performance.",
+  "If the candidate successfully clears the 8-day training program, the company will provide an official confirmation email regarding successful completion of training and selection status.",
+  "Once the trainer or management assigns the candidate to live customer handling or live work operations, the salary/payment process will officially begin from that date onward."
+];
+
 /* -----------------------------------------------------------
    Component
 ----------------------------------------------------------- */
@@ -108,6 +124,13 @@ export default function ApplicationForm() {
   const [noPreviousDoc, setNoPreviousDoc] = useState(false);
   const [dateList, setDateList] = useState([]); // ISO strings only
   const [trainingAccepted, setTrainingAccepted] = useState(false); //sales condition
+  const [candidateTerms, setCandidateTerms] = useState({
+    term1: false,
+    term2: false,
+    term3: false,
+    term4: false,
+    term5: false,
+  });
 
   // 18+ only
   const maxDOB = toLocalISODate(
@@ -152,6 +175,15 @@ export default function ApplicationForm() {
       });
     } else {
       setFormData((prev) => ({ ...prev, [name]: value }));
+      if (name === "firstJob") {
+        setCandidateTerms({
+          term1: false,
+          term2: false,
+          term3: false,
+          term4: false,
+          term5: false,
+        });
+      }
     }
   };
 
@@ -166,12 +198,12 @@ export default function ApplicationForm() {
     }
   };
 
+  const removeFile = (name) => {
+    setFormData((prev) => ({ ...prev, [name]: null }));
+  };
+
   // Robust file validation for iOS (MIME can be empty; HEIC allowed)
   const handleFileChange = (e) => {
-    const removeFile = (name) => {
-      setFormData((prev) => ({ ...prev, [name]: null }));
-    };
-
     const { name, files } = e.target;
     const file = files?.[0];
     const maxFileSize = 5 * 1024 * 1024;
@@ -285,6 +317,18 @@ export default function ApplicationForm() {
       return;
     }
 
+    if (
+      !candidateTerms.term1 ||
+      !candidateTerms.term2 ||
+      !candidateTerms.term3 ||
+      !candidateTerms.term4 ||
+      !candidateTerms.term5
+    ) {
+      setCurrentStep(2);
+      alert(`⚠️ Step 2 — Please read and agree to all 5 ${formData.firstJob === "No" ? "Experienced" : "Fresher"} Candidate Terms & Conditions under "Is This Your First Job?".`);
+      return;
+    }
+
     if (!termsAccepted) {
       setCurrentStep(3);
       alert("⚠️ Step 3 — Please accept the Terms and Conditions before submitting.");
@@ -383,6 +427,18 @@ export default function ApplicationForm() {
         previousCompanyExitReason: formData.previousCompanyExitReason || "",
         previousCompanyLastWorkingDate:
           formData.previousCompanyLastWorkingDate || "",
+<<<<<<< HEAD
+=======
+        formCompleted: true, // Mark as completed in the same doc
+        candidateTerms: {
+          term1: candidateTerms.term1,
+          term2: candidateTerms.term2,
+          term3: candidateTerms.term3,
+          term4: candidateTerms.term4,
+          term5: candidateTerms.term5,
+          termsType: formData.firstJob === "No" ? "Experienced" : "Fresher",
+        },
+>>>>>>> ce7fac5 (Save work before sync)
       });
 
       // Mark form as completed for this user
@@ -480,6 +536,16 @@ export default function ApplicationForm() {
       if (!formData.position) { alert("Please select the Position you are applying for."); return false; }
       if (!formData.joiningDate) { alert("Please select a Preferred Joining Date."); return false; }
       if (!formData.firstJob) { alert("Please answer: Is This Your First Job?"); return false; }
+      if (
+        !candidateTerms.term1 ||
+        !candidateTerms.term2 ||
+        !candidateTerms.term3 ||
+        !candidateTerms.term4 ||
+        !candidateTerms.term5
+      ) {
+        alert(`⚠️ Please read and agree to all 5 ${formData.firstJob === "No" ? "Experienced" : "Fresher"} Candidate Terms & Conditions under "Is This Your First Job?".`);
+        return false;
+      }
       if (!formData.nightShift) { alert("Please answer: Comfortable in Night Shift?"); return false; }
       if (!formData.pressure) { alert("Please answer: Able to Work Under Pressure?"); return false; }
       if (!formData.usSalesExperience) { alert("Please answer: Experience in US/Canada Market?"); return false; }
@@ -849,6 +915,51 @@ export default function ApplicationForm() {
                       <option value="Yes">Yes</option>
                       <option value="No">No</option>
                     </select>
+
+                    {q.name === "firstJob" && formData.firstJob && (
+                      <div className="mt-4 border border-red-200 bg-red-50/50 rounded-xl p-5 shadow-sm">
+                        <h4 className="text-sm font-bold text-red-800 mb-3 flex items-center gap-2">
+                          <svg className="w-5 h-5 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                          </svg>
+                          {formData.firstJob === "No"
+                            ? "Terms & Conditions for Experienced Candidates"
+                            : "Terms & Conditions for Fresher Candidates"}
+                        </h4>
+                        <p className="text-xs text-red-600 font-medium mb-3">
+                          Please read and agree to each of the following terms & conditions:
+                        </p>
+                        <div className="space-y-3">
+                          {(formData.firstJob === "No" ? experiencedTerms : fresherTerms).map((term, index) => {
+                            const termKey = `term${index + 1}`;
+                            return (
+                              <div key={index} className="flex items-start gap-3 p-2 rounded-lg hover:bg-red-50/80 transition duration-150">
+                                <input
+                                  type="checkbox"
+                                  id={`candidate-term-${index}`}
+                                  checked={candidateTerms[termKey]}
+                                  onChange={(e) =>
+                                    setCandidateTerms((prev) => ({
+                                      ...prev,
+                                      [termKey]: e.target.checked,
+                                    }))
+                                  }
+                                  className="mt-1 h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded cursor-pointer transition duration-150"
+                                  required
+                                />
+                                <label
+                                  htmlFor={`candidate-term-${index}`}
+                                  className="text-xs text-gray-700 cursor-pointer select-none font-medium leading-relaxed"
+                                >
+                                  <span className="text-red-800 font-semibold">{index + 1}. </span>
+                                  {term} <span className="text-red-500 font-bold">*</span>
+                                </label>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ))}
 
@@ -1102,9 +1213,11 @@ export default function ApplicationForm() {
                   </>
                 )}
 
+
+
                 {/* Terms */}
                 <div
-                  className="flex items-center text-sm mt-4"
+                  className="flex items-center text-sm mt-4 cursor-pointer"
                   onClick={() => setShowTermsModal(true)}
                 >
                   <input

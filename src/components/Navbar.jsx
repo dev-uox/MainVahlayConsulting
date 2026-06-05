@@ -1,160 +1,183 @@
 import React, { useState, useEffect, useRef } from "react";
-import { MdCall } from "react-icons/md";
-import { FaBars, FaTimes, FaChevronDown, FaAngleRight } from "react-icons/fa";
+import { MdSearch, MdLocationOn, MdCall } from "react-icons/md";
+import {
+  FaBars,
+  FaTimes,
+  FaChevronDown,
+  FaChevronUp,
+  FaAngleRight,
+} from "react-icons/fa";
 import { Link, useLocation } from "react-router-dom";
 import { db } from "../firebaseConfig";
 import { collection, getDocs, doc, getDoc } from "firebase/firestore";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
 import SearchComponent from "../pages/SearchComponent";
 import slugify from "slugify";
-import { motion, AnimatePresence } from "framer-motion";
 
 const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isServicesOpen, setIsServicesOpen] = useState(false); // Desktop use
-  const [isMobileServicesOpen, setIsMobileServicesOpen] = useState(false); // Mobile use
+  const [isServicesOpen, setIsServicesOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const [services, setServices] = useState([]);
+  const [filteredServices, setFilteredServices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [isCallOpen, setIsCallOpen] = useState(false);
   const [role, setRole] = useState("user");
-  const [scrolled, setScrolled] = useState(false);
-  const [mobileOpenServiceId, setMobileOpenServiceId] = useState(null);
 
   const auth = getAuth();
-  const mobileMenuRef = useRef(null);
-  const servicesDropdownRef = useRef(null);
+  const dropdownRef = useRef(null);
   const location = useLocation();
 
-  // Handle scroll effect
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 20);
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
-
-  // Desktop: Auto-select first service
+  // Select the first service when dropdown opens and services are fetched
   useEffect(() => {
     if (isServicesOpen && services.length > 0 && !selectedService) {
       setSelectedService(services[0]);
     }
   }, [isServicesOpen, services]);
 
-  // Auth Listener
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (authUser) => {
       if (authUser) {
         setUser(authUser);
-        checkUserRole(authUser.email);
+        await checkUserRole(authUser.email);
       } else {
         setUser(null);
         setRole("user");
         setIsAdmin(false);
       }
     });
+
     return () => unsubscribe();
+  }, []);
+
+  useEffect(() => {
+    const fetchServices = async () => {
+      setLoading(true);
+      const categoriesSnapshot = await getDocs(collection(db, "categories"));
+      const servicesData = [];
+      for (const categoryDoc of categoriesSnapshot.docs) {
+        const categoryId = categoryDoc.id;
+        const categoryName = categoryDoc.data().name;
+
+        const servicesCol = collection(db, `categories/${categoryId}/services`);
+        const servicesSnap = await getDocs(servicesCol);
+
+        for (const serviceDoc of servicesSnap.docs) {
+          const serviceId = serviceDoc.id;
+          const serviceName = serviceDoc.data().name;
+
+          const subSnap = await getDocs(
+            collection(
+              db,
+              `categories/${categoryId}/services/${serviceId}/subservices`
+            )
+          );
+
+          servicesData.push({
+            id: serviceId,
+            name: serviceName,
+            categoryId,
+            categoryName,
+            subservices: subSnap.docs.map((subDoc) => ({
+              id: subDoc.id,
+              name: subDoc.data().name,
+              icon: subDoc.data().icon,
+            })),
+          });
+        }
+      }
+
+      setServices(servicesData);
+      setLoading(false);
+    };
+
+    fetchServices();
   }, []);
 
   const checkUserRole = async (email) => {
     try {
-      const userDocSnapshot = await getDoc(doc(db, "users", email));
+      const userDocRef = doc(db, "users", email);
+      const userDocSnapshot = await getDoc(userDocRef);
+
       if (userDocSnapshot.exists()) {
-        const userRole = userDocSnapshot.data().role || "user";
+        const data = userDocSnapshot.data();
+        const userRole = data.role || "user";
         setRole(userRole);
         setIsAdmin(userRole === "admin");
+      } else {
+        setRole("user");
+        setIsAdmin(false);
       }
     } catch (err) {
       console.error("Role fetch error:", err);
+      setRole("user");
+      setIsAdmin(false);
     }
   };
 
-  // Fetch Firebase Data
+  // Close dropdown when clicking outside
   useEffect(() => {
-    const fetchServices = async () => {
-      setLoading(true);
-      try {
-        const categoriesSnapshot = await getDocs(collection(db, "categories"));
-        const servicesData = [];
-        for (const categoryDoc of categoriesSnapshot.docs) {
-          const categoryId = categoryDoc.id;
-          const categoryName = categoryDoc.data().name;
-          const servicesSnap = await getDocs(
-            collection(db, `categories/${categoryId}/services`),
-          );
-
-          for (const serviceDoc of servicesSnap.docs) {
-            const subSnap = await getDocs(
-              collection(
-                db,
-                `categories/${categoryId}/services/${serviceDoc.id}/subservices`,
-              ),
-            );
-            servicesData.push({
-              id: serviceDoc.id,
-              name: serviceDoc.data().name,
-              categoryId,
-              categoryName,
-              subservices: subSnap.docs.map((s) => ({ id: s.id, ...s.data() })),
-            });
-          }
-        }
-        setServices(servicesData);
-      } catch (error) {
-        console.error("Error fetching services:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchServices();
-  }, []);
-
-  // Click Outside
-  useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (
-        servicesDropdownRef.current &&
-        !servicesDropdownRef.current.contains(e.target)
-      )
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setIsServicesOpen(false);
-      if (
-        mobileMenuRef.current &&
-        !mobileMenuRef.current.contains(e.target) &&
-        isMenuOpen
-      )
-        toggleMenu();
+      }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [isMenuOpen]);
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null);
+      setRole("user");
+      setIsAdmin(false);
+      setIsMenuOpen(false);
+    } catch (error) {
+      console.error("Error signing out:", error);
+    }
+  };
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
-    document.body.style.overflow = !isMenuOpen ? "hidden" : "auto";
+    if (!isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
   };
 
-  const handleLogout = async () => {
-    await signOut(auth);
+  const toggleCall = () => setIsCallOpen(!isCallOpen);
+
+  useEffect(() => {
+    if (searchQuery) {
+      const filtered = services.filter((service) =>
+        service.name.toLowerCase().includes(searchQuery.toLowerCase())
+      );
+      setFilteredServices(filtered);
+    } else {
+      setFilteredServices([]);
+    }
+  }, [searchQuery, services]);
+
+  const isActive = (path) => {
+    return location.pathname === path
+      ? "text-red-600 font-semibold"
+      : "hover:text-red-600";
+  };
+
+  // Close mobile menu when route changes
+  useEffect(() => {
     setIsMenuOpen(false);
     document.body.style.overflow = "auto";
-  };
-
-  const isActive = (path) =>
-    location.pathname === path
-      ? "text-red-600 font-semibold"
-      : "hover:text-red-600 text-gray-800";
-
-  // Slug Generator Helper
-  const getSlugLink = (service, sub) => {
-    const catSlug = slugify(service.categoryName, { lower: true });
-    const servSlug = slugify(service.name, { lower: true });
-    const subSlug = slugify(sub.name, { lower: true });
-    return `/categories/${catSlug}/services/${servSlug}/subservices/${subSlug}`;
-  };
+  }, [location]);
 
   return (
     <>
+<<<<<<< HEAD
       <nav
         className={`bg-white py-2 px-4 md:px-8 sticky top-0 z-[60] transition-all duration-300 w-full ${scrolled ? "bg-white/90 backdrop-blur-sm shadow-sm" : "bg-white"}`}
       >
@@ -305,178 +328,304 @@ const Navbar = () => {
                 >
                   {role === "admin" ? "Admin Portal" : "Profile"}
                 </Link>
-                <button
-                  onClick={handleLogout}
-                  className="text-red-600 font-bold text-sm px-4 whitespace-nowrap"
-                >
-                  Logout
-                </button>
-              </div>
-            ) : (
-              <>
-                <Link
-                  to="/signup"
-                  className="text-gray-800 text-sm font-bold px-4 hover:text-red-600 whitespace-nowrap"
-                >
-                  Join Us
-                </Link>
-                <Link
-                  to="/careers"
-                  className="bg-red-600 text-white px-6 py-2 rounded-full text-sm font-bold hover:bg-red-700 shadow-lg transition-all whitespace-nowrap"
-                >
-                  Apply Now
-                </Link>
-              </>
-            )}
-          </div>
+=======
+      <nav className="bg-white py-1 px-4 md:px-8 shadow-md sticky top-0 z-50">
+        <div className="mx-auto">
+          <div className="flex items-center justify-between">
+            {/* Logo Section */}
+            <div className="flex items-center relative">
+              <Link to="/Home" className="flex items-center">
+                <div className="relative">
+                  <img
+                    src="/assets/logo1.png"
+                    alt="Vahlay Consulting Logo"
+                    className="h-16 w-auto"
+                  />
+                  <img
+                    src="/assets/logorings.png"
+                    className="h-16 w-auto absolute top-0 left-0 logoRingsSpin"
+                    alt="Logo Rings"
+                  />
+                </div>
+              </Link>
+            </div>
 
-          {/* Mobile Menu Button */}
-          <div className="lg:hidden flex items-center space-x-2">
-            <SearchComponent mobile={true} />
-            <button
-              onClick={toggleMenu}
-              className="p-2 text-gray-800 focus:outline-none"
-            >
-              {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
-            </button>
+            {/* Desktop Navigation */}
+            <div className="hidden lg:flex items-center space-x-3 text-gray-900 text-sm font-medium">
+              <Link
+                to="/"
+                className={`px-3 py-2 rounded-md transition-colors ${isActive("/")}`}
+              >
+                Home
+              </Link>
+
+              <div className="relative" ref={dropdownRef}>
+>>>>>>> ce7fac5 (Save work before sync)
+                <button
+                  className={`flex items-center text-gray-900 hover:text-red-600 transition-colors ${isActive(
+                    "/services"
+                  )}`}
+                  onClick={() => setIsServicesOpen(!isServicesOpen)}
+                >
+                  <span>Services</span>{" "}
+                  <FaChevronDown className="ml-1 text-xs" />
+                </button>
+
+                {isServicesOpen && (
+                  <div className="absolute left-0 mt-4 w-[800px] bg-white shadow-lg rounded-lg p-6 z-50">
+                    <div className="grid grid-cols-2 gap-6">
+                      {/* Services List */}
+                      <div>
+                        {loading ? (
+                          <div className="flex justify-center items-center h-40">
+                            <div
+                              className="spinner-border animate-spin inline-block w-8 h-8 border-4 border-t-4 border-red-500 rounded-full"
+                              role="status"
+                            >
+                              <span className="sr-only">Loading...</span>
+                            </div>
+                          </div>
+                        ) : (
+                          <ul className="space-y-4">
+                            {services.map((service) => (
+                              <li
+                                key={service.id}
+                                className={`p-2 py-4 text-center rounded-lg cursor-pointer text-sm transition-all ${selectedService?.id === service.id
+                                    ? "bg-red-500 text-white"
+                                    : "bg-gray-100 hover:bg-gray-200"
+                                  }`}
+                                onClick={() => setSelectedService(service)}
+                              >
+                                {service.name}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      {/* Subservices List */}
+                      <div className="border-l-2 border-gray-200 pl-6 text-left">
+                        {selectedService && (
+                          <div>
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">
+                              {selectedService.name} Subservices
+                            </h3>
+                            <ul className="text-gray-700 space-y-3 text-sm">
+                              {selectedService.subservices?.map((sub) => (
+                                <Link
+                                  key={sub.id}
+                                  to={
+                                    `/categories/${encodeURIComponent(
+                                      slugify(selectedService?.categoryName, {
+                                        replacement: "-",
+                                        lower: true,
+                                      })
+                                    )}` +
+                                    `/services/${encodeURIComponent(
+                                      slugify(selectedService?.name, {
+                                        replacement: "-",
+                                        lower: true,
+                                      })
+                                    )}` +
+                                    `/subservices/${encodeURIComponent(
+                                      slugify(sub.name, {
+                                        replacement: "-",
+                                        lower: true,
+                                      })
+                                    )}`
+                                  }
+                                  onClick={() => {
+                                    setIsServicesOpen(false);
+                                  }}
+                                >
+                                  <li className="hover:text-red-500 transition-all flex items-center space-x-3 p-2 rounded-lg hover:bg-gray-100">
+                                    <FaAngleRight className="text-red-500 text-xs" />
+                                    <img
+                                      src={sub.icon}
+                                      alt={sub.name}
+                                      className="w-4 h-4 object-contain"
+                                    />
+                                    <span className="text-sm font-medium">
+                                      {sub.name}
+                                    </span>
+                                  </li>
+                                </Link>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {[
+                { path: "/projects", label: "Projects" },
+                { path: "/solutions", label: "Solutions" },
+                { path: "/blogs", label: "Blogs" },
+                { path: "/about_us", label: "About Us" },
+                { path: "/contact_us", label: "Contact Us" },
+              ].map(({ path, label }) => (
+                <Link
+                  key={path}
+                  to={path}
+                  className={`px-3 py-2 rounded-md hover:text-red-600 transition-colors ${isActive(
+                    path
+                  )}`}
+                >
+                  {label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Desktop Right Section */}
+            <div className="hidden lg:flex items-center space-x-4 text-sm">
+              <div className="relative flex items-center bg-gray-100 rounded-full border">
+                <SearchComponent />
+              </div>
+
+              {user ? (
+                <>
+                  {/* Show Admin Portal button only for admin role */}
+                  {role === "admin" && (
+                    <Link
+                      to="/jobs"
+                      className="bg-gray-700 text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      Admin Portal
+                    </Link>
+                  )}
+
+                  {/* Show other role-specific buttons */}
+                  {role === "recruiter" && (
+                    <Link
+                      to="/manage-emp"
+                      className="bg-gray-700 text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      Recruiter Panel
+                    </Link>
+                  )}
+
+                  {role === "trainer" && (
+                    <Link
+                      to="/trainerdailyreport"
+                      className="bg-gray-700 text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      Trainer Panel
+                    </Link>
+                  )}
+
+                  {role === "user" && (
+                    <Link
+                      to="/profile"
+                      className="bg-gray-700 text-white px-4 py-2 rounded-full hover:bg-gray-800 transition-colors text-sm"
+                    >
+                      My Profile
+                    </Link>
+                  )}
+
+                  <button
+                    onClick={handleLogout}
+                    className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors text-sm"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to="/careers"
+                    className="bg-red-600 text-white px-4 py-2 rounded-full hover:bg-red-700 transition-colors text-sm"
+                  >
+                    Apply Now
+                  </Link>
+
+                  <Link
+                    to="/signup"
+                    className="border border-red-600 text-red-600 px-4 py-2 rounded-full hover:bg-red-600 hover:text-white transition-colors text-sm"
+                  >
+                    Join Us
+                  </Link>
+                </>
+              )}
+            </div>
+
+            {/* Mobile Menu Button */}
+            <div className="lg:hidden flex items-center space-x-4 justify-center">
+              {/* Mobile Search Icon */}
+              <div className="flex max-w-xs items-center">
+                <SearchComponent mobile={true} />
+              </div>
+
+              {/* Mobile Menu Toggle */}
+              <button
+                onClick={toggleMenu}
+                className="text-gray-700 hover:text-red-600 transition-colors p-2"
+                aria-label="Toggle menu"
+              >
+                {isMenuOpen ? <FaTimes size={24} /> : <FaBars size={24} />}
+              </button>
+            </div>
           </div>
         </div>
       </nav>
 
-      {/* Mobile Drawer */}
-      <AnimatePresence>
-        {isMenuOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={toggleMenu}
-              className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[80] lg:hidden"
-            />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.25, ease: "easeInOut" }}
-              className="fixed inset-y-0 right-0 w-[85%] max-w-sm bg-white z-[90] lg:hidden flex flex-col shadow-2xl"
-              ref={mobileMenuRef}
-            >
-              <div className="p-6 flex justify-between items-center border-b">
-                <img
-                  src="/assets/logo1.png"
-                  alt="Logo"
-                  className="h-10 w-auto object-contain"
-                />
+      {/* Mobile Menu Overlay */}
+      {isMenuOpen && (
+        <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-50 overflow-hidden">
+          {/* Mobile Menu Content */}
+          <div
+            className="fixed inset-y-0 right-0 w-full max-w-xs bg-white shadow-lg transform transition-transform duration-300 ease-in-out"
+            ref={dropdownRef}
+          >
+            <div className="flex flex-col h-full">
+              {/* Header */}
+              <div className="flex items-center justify-between p-4 border-b">
+                <div className="flex items-center">
+                  <Link to="/Home" onClick={() => setIsMenuOpen(false)}>
+                    <div className="relative">
+                      <img
+                        src="/assets/logo1.png"
+                        alt="Vahlay Consulting Logo"
+                        className="h-16 w-auto"
+                      />
+                      <img
+                        src="/assets/logorings.png"
+                        className="h-16 w-auto absolute top-0 left-0 logoRingsSpin"
+                        alt="Logo Rings"
+                      />
+                    </div>
+                  </Link>
+                </div>
                 <button
                   onClick={toggleMenu}
-                  className="p-2 bg-gray-100 rounded-full"
+                  className="text-gray-700 hover:text-red-600 p-2"
                 >
-                  <FaTimes size={18} />
+                  <FaTimes size={20} />
                 </button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                {user && (
-                  <div className="mb-6 p-4 bg-red-50 rounded-2xl flex items-center space-x-4">
-                    <div className="w-12 h-12 bg-red-600 rounded-full flex items-center justify-center text-white font-bold text-xl uppercase shrink-0">
-                      {user.email.charAt(0)}
-                    </div>
-                    <div className="min-w-0">
-                      <p className="font-bold text-gray-900 truncate">
-                        {user.email.split("@")[0]}
+              {/* Scrollable Content */}
+              <div className="flex-1 overflow-y-auto">
+                {/* User Status Section */}
+                <div className="p-4 bg-gray-50">
+                  {user ? (
+                    <div className="space-y-3">
+                      <p className="text-gray-700 font-medium">
+                        Welcome, {user.email?.split("@")[0]}
                       </p>
-                      <p className="text-xs text-red-600 font-bold uppercase">
-                        {role}
-                      </p>
-                    </div>
-                  </div>
-                )}
-
-                <Link
-                  to="/"
-                  onClick={toggleMenu}
-                  className="block p-4 text-gray-800 font-bold hover:bg-gray-50 rounded-xl"
-                >
-                  Home
-                </Link>
-
-                {/* Mobile Services Accordion */}
-                <div className="border-b border-gray-100 pb-2">
-                  <button
-                    onClick={() =>
-                      setIsMobileServicesOpen(!isMobileServicesOpen)
-                    }
-                    className="flex justify-between items-center w-full p-4 text-gray-800 font-bold"
-                  >
-                    Services{" "}
-                    <FaChevronDown
-                      className={`transition-transform ${isMobileServicesOpen ? "rotate-180 text-red-600" : ""}`}
-                    />
-                  </button>
-
-                  <AnimatePresence>
-                    {isMobileServicesOpen && (
-                      <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden pl-4 pr-2 space-y-1"
-                      >
-                        {loading ? (
-                          <div className="p-4 text-center text-sm text-gray-400">
-                            Loading services...
-                          </div>
-                        ) : (
-                          services.map((service) => (
-                            <div
-                              key={service.id}
-                              className="bg-gray-50 rounded-xl overflow-hidden"
-                            >
-                              <button
-                                onClick={() =>
-                                  setMobileOpenServiceId(
-                                    mobileOpenServiceId === service.id
-                                      ? null
-                                      : service.id,
-                                  )
-                                }
-                                className="flex justify-between items-center w-full p-4 text-sm font-bold text-gray-700"
-                              >
-                                {service.name}
-                                <FaChevronDown
-                                  className={`text-[10px] transition-transform ${mobileOpenServiceId === service.id ? "rotate-180" : ""}`}
-                                />
-                              </button>
-                              <AnimatePresence>
-                                {mobileOpenServiceId === service.id && (
-                                  <motion.div
-                                    initial={{ height: 0 }}
-                                    animate={{ height: "auto" }}
-                                    exit={{ height: 0 }}
-                                    className="overflow-hidden bg-white px-2 pb-2"
-                                  >
-                                    {service.subservices.map((sub) => (
-                                      <Link
-                                        key={sub.id}
-                                        to={getSlugLink(service, sub)}
-                                        onClick={toggleMenu}
-                                        className="flex items-center p-3 text-sm text-gray-600 hover:text-red-600 font-medium border-b border-gray-50 last:border-0"
-                                      >
-                                        <img
-                                          src={sub.icon}
-                                          alt=""
-                                          className="w-4 h-4 mr-3 opacity-60 object-contain"
-                                        />
-                                        {sub.name}
-                                      </Link>
-                                    ))}
-                                  </motion.div>
-                                )}
-                              </AnimatePresence>
-                            </div>
-                          ))
+                      <div className="flex flex-wrap gap-2">
+                        {role === "admin" && (
+                          <Link
+                            to="/jobs"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="bg-blue-600 text-white px-3 py-2 rounded-full hover:bg-blue-700 transition-colors text-xs flex-1 text-center"
+                          >
+                            Admin Portal
+                          </Link>
                         )}
+<<<<<<< HEAD
                       </motion.div>
                     )}
                   </AnimatePresence>
@@ -583,22 +732,270 @@ const Navbar = () => {
                         animate={{ height: "auto", opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         className="mt-2 space-y-2 overflow-hidden"
+=======
+                        {role === "recruiter" && (
+                          <Link
+                            to="/manage-emp"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="bg-green-600 text-white px-3 py-2 rounded-full hover:bg-green-700 transition-colors text-xs flex-1 text-center"
+                          >
+                            Recruiter Panel
+                          </Link>
+                        )}
+                        {role === "trainer" && (
+                          <Link
+                            to="/trainerdailyreport"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="bg-purple-600 text-white px-3 py-2 rounded-full hover:bg-purple-700 transition-colors text-xs flex-1 text-center"
+                          >
+                            Trainer Panel
+                          </Link>
+                        )}
+                        {role === "user" && (
+                          <Link
+                            to="/profile"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="bg-gray-700 text-white px-3 py-2 rounded-full hover:bg-gray-800 transition-colors text-xs flex-1 text-center"
+                          >
+                            My Profile
+                          </Link>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col space-y-2">
+                      <Link
+                        to="/signup"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="bg-red-600 text-white py-2 px-4 rounded-full hover:bg-red-700 transition-colors text-center text-sm"
+>>>>>>> ce7fac5 (Save work before sync)
                       >
-                        <div className="p-3 bg-gray-50 rounded-xl text-xs font-bold text-gray-600 text-center border">
-                          USA/Canada: +1 (408) 372-5981
-                        </div>
-                        <div className="p-3 bg-gray-50 rounded-xl text-xs font-bold text-gray-600 text-center border">
-                          India: +91 79492 17538
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
+                        Join Us
+                      </Link>
+                      <Link
+                        to="/careers"
+                        onClick={() => setIsMenuOpen(false)}
+                        className="border border-red-600 text-red-600 py-2 px-4 rounded-full hover:bg-red-600 hover:text-white transition-colors text-center text-sm"
+                      >
+                        Apply Now
+                      </Link>
+                    </div>
+                  )}
                 </div>
+
+                {/* Call Request Section */}
+                <div className="p-4 border-b">
+                  <button
+                    onClick={toggleCall}
+                    className="flex items-center justify-center mx-auto text-red-600 font-semibold text-sm"
+                  >
+                    <MdCall className="mr-2" /> Requesting A Call{" "}
+                    <FaChevronDown className="ml-2" />
+                  </button>
+                  {isCallOpen && (
+                    <div className="bg-gray-100 p-3 space-y-2 rounded-lg mt-2">
+                      <p className="bg-white text-gray-700 p-2 rounded text-center">
+                        USA, Canada: +1 (408) 372-5981
+                      </p>
+                      <p className="bg-white text-gray-700 p-2 rounded text-center">
+                        Bharat: +91 79492 17538
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Location Section */}
+                <div className="p-4 border-b">
+                  <h3 className="text-center text-red-700 font-semibold mb-3">
+                    We are located in
+                  </h3>
+                  <div className="flex justify-center space-x-4">
+                    <a
+                      href="https://www.google.com/maps/place/8+The+Green+Suite+A,+Dover,+DE+19901,+USA"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <img
+                        src="/assets/USA flag.png"
+                        alt="USA"
+                        className="w-8 h-5 rounded-md"
+                      />
+                    </a>
+                    <a
+                      href="https://www.google.com/maps/place/235+Ferguson+Ave,+Cambridge,+ON+N1R+6G1,+Canada"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <img
+                        src="/assets/Canada Flag.png"
+                        alt="Canada"
+                        className="w-8 h-5 rounded-md"
+                      />
+                    </a>
+                    <a
+                      href="https://maps.app.goo.gl/hw6RLAKHRzr73hL39"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="hover:opacity-80 transition-opacity"
+                    >
+                      <img
+                        src="/assets/India Flag.jpg"
+                        alt="India"
+                        className="w-8 h-5 rounded-md"
+                      />
+                    </a>
+                  </div>
+                </div>
+
+                {/* Navigation Links */}
+                <nav className="p-4">
+                  <ul className="space-y-1">
+                    <li>
+                      <Link
+                        to="/"
+                        onClick={() => setIsMenuOpen(false)}
+                        className={`block py-3 px-4 rounded-lg transition-colors ${isActive(
+                          "/"
+                        )}`}
+                      >
+                        Home
+                      </Link>
+                    </li>
+
+                    <li>
+                      <button
+                        onClick={() => setIsServicesOpen(!isServicesOpen)}
+                        className="flex items-center justify-between w-full py-3 px-4 rounded-lg hover:bg-gray-100 transition-colors"
+                      >
+                        <span>Services</span>
+                        {isServicesOpen ? (
+                          <FaChevronUp className="text-sm" />
+                        ) : (
+                          <FaChevronDown className="text-sm" />
+                        )}
+                      </button>
+
+                      {isServicesOpen && (
+                        <div className="mt-2 ml-4 space-y-2">
+                          {loading ? (
+                            <div className="text-center py-2">
+                              <div className="inline-block animate-spin rounded-full h-6 w-6 border-b-2 border-red-600"></div>
+                            </div>
+                          ) : (
+                            services.map((service) => (
+                              <div key={service.id} className="space-y-1">
+                                <button
+                                  onClick={() =>
+                                    setSelectedService(
+                                      selectedService?.id === service.id
+                                        ? null
+                                        : service
+                                    )
+                                  }
+                                  className="flex items-center justify-between w-full py-2 px-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+                                >
+                                  <span className="text-sm">{service.name}</span>
+                                  {selectedService?.id === service.id ? (
+                                    <FaChevronUp className="text-xs" />
+                                  ) : (
+                                    <FaChevronDown className="text-xs" />
+                                  )}
+                                </button>
+
+                                {selectedService?.id === service.id && (
+                                  <div className="ml-3 space-y-1">
+                                    {selectedService.subservices?.map(
+                                      (subservice) => (
+                                        <Link
+                                          key={subservice.id}
+                                          to={
+                                            `/categories/${encodeURIComponent(
+                                              slugify(service.categoryName, {
+                                                replacement: "-",
+                                                lower: true,
+                                              })
+                                            )}` +
+                                            `/services/${encodeURIComponent(
+                                              slugify(service.name, {
+                                                replacement: "-",
+                                                lower: true,
+                                              })
+                                            )}` +
+                                            `/subservices/${encodeURIComponent(
+                                              slugify(subservice.name, {
+                                                replacement: "-",
+                                                lower: true,
+                                              })
+                                            )}`
+                                          }
+                                          onClick={() => {
+                                            setIsServicesOpen(false);
+                                            setIsMenuOpen(false);
+                                          }}
+                                          className="flex items-center py-2 px-3 rounded-lg hover:bg-gray-100 transition-colors text-sm"
+                                        >
+                                          <FaAngleRight className="text-red-500 text-xs mr-2" />
+                                          <img
+                                            src={
+                                              subservice.icon ||
+                                              "/assets/default-icon.png"
+                                            }
+                                            alt={subservice.name}
+                                            className="w-4 h-4 mr-2 object-contain"
+                                          />
+                                          <span>{subservice.name}</span>
+                                        </Link>
+                                      )
+                                    )}
+                                  </div>
+                                )}
+                              </div>
+                            ))
+                          )}
+                        </div>
+                      )}
+                    </li>
+
+                    {[
+                      { path: "/projects", label: "Projects" },
+                      { path: "/solutions", label: "Solutions" },
+                      { path: "/blogs", label: "Blogs" },
+                      { path: "/about_us", label: "About Us" },
+                      { path: "/contact_us", label: "Contact Us" },
+                    ].map(({ path, label }) => (
+                      <li key={path}>
+                        <Link
+                          to={path}
+                          onClick={() => setIsMenuOpen(false)}
+                          className={`block py-3 px-4 rounded-lg transition-colors ${isActive(
+                            path
+                          )}`}
+                        >
+                          {label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </nav>
               </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
+
+              {/* Footer */}
+              <div className="p-4 border-t">
+                {user && (
+                  <button
+                    onClick={handleLogout}
+                    className="w-full bg-red-600 text-white py-3 rounded-lg hover:bg-red-700 transition-colors font-medium"
+                  >
+                    Logout
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </>
   );
 };

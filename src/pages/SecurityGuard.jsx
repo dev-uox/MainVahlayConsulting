@@ -32,26 +32,16 @@ const SecurityGuard = () => {
       };
     })();
  
-    // 🔹 5. Detect DevTools on Page Load & Block Page if Open
+    // 🔹 5. Detect DevTools on Page Load (Disabled debugger)
     const detectDevToolsOnLoad = () => {
-      let start = performance.now();
-      debugger; // Forces debugger to pause if DevTools is open
-      let end = performance.now();
-      if (end - start > 100) {
-        document.body.innerHTML = "<h1>DevTools Detected! Access Denied.</h1>";
-      }
+      // debugger; 
     };
     detectDevToolsOnLoad();
  
-    // 🔹 6. Continuously Monitor DevTools
+    // 🔹 6. Continuously Monitor DevTools (Disabled debugger)
     const detectDevToolsContinuous = setInterval(() => {
-      let before = new Date().getTime();
-      debugger;
-      let after = new Date().getTime();
-      if (after - before > 100) {
-        document.body.innerHTML = "<h1>DevTools Detected! Access Denied.</h1>";
-      }
-    }, 1000);
+      // debugger;
+    }, 2000);
  
     // 🔹 7. Prevent API Tampering (Fake Example)
     window.fetch = new Proxy(window.fetch, {

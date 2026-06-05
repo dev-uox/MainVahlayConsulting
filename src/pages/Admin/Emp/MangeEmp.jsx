@@ -8,6 +8,7 @@ import ClearableInput from "../../../components/common/ClearableInput";
 const ManageEmp = () => {
   const [applications, setApplications] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [searchDate, setSearchDate] = useState(""); // New state for date search
   const [filteredApplications, setFilteredApplications] = useState([]);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   // Selection and Delete states
@@ -17,6 +18,8 @@ const ManageEmp = () => {
   // Pagination states
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
+  // Sort state
+  const [sortOrder, setSortOrder] = useState("desc"); // "asc" or "desc"
 
   const fetchApplications = useCallback(async () => {
     try {
@@ -45,14 +48,19 @@ const ManageEmp = () => {
     fetchApplications();
   }, [fetchApplications]);
 
+<<<<<<< HEAD
   useEffect(() => {
     const trimmedSearchTerm = searchTerm.trim();
 
     if (trimmedSearchTerm === "") {
+=======
+    if (!query && !searchDate) {
+>>>>>>> ce7fac5 (Save work before sync)
       setFilteredApplications(applications);
       return;
     }
 
+<<<<<<< HEAD
     const lowerSearchTerm = trimmedSearchTerm.toLowerCase();
 
     setFilteredApplications(
@@ -67,14 +75,59 @@ const ManageEmp = () => {
       })
     );
   }, [searchTerm, applications]);
+=======
+    const searchWords = query.split(/\s+/).filter(word => word); // split by space
+
+    const filtered = applications.filter((app) => {
+      // Name search logic
+      let nameMatch = true;
+      if (query) {
+        const firstName = (app.firstName || "").toLowerCase();
+        const lastName = (app.lastName || "").toLowerCase();
+        const email = (app.email || "").toLowerCase();
+        const fullName = `${firstName} ${lastName}`.trim();
+
+        nameMatch = searchWords.every(word =>
+          firstName.includes(word) ||
+          lastName.includes(word) ||
+          fullName.includes(word)
+        ) || email.includes(query);
+      }
+
+      // Date search logic
+      let dateMatch = true;
+      if (searchDate) {
+        const appDate = (app.applicationDate || "").trim();
+        dateMatch = appDate === searchDate;
+      }
+
+      return nameMatch && dateMatch;
+    });
+
+    setFilteredApplications(filtered);
+  }, [searchTerm, searchDate, applications]);
+
+  // Function to handle sort toggle
+  const toggleSort = () => {
+    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"));
+    setPage(0); // Reset to first page when sorting changes
+  };
+
+  // Apply sorting to filtered applications
+  const sortedApplications = [...filteredApplications].sort((a, b) => {
+    const dateA = new Date(a.applicationDate || 0);
+    const dateB = new Date(b.applicationDate || 0);
+    return sortOrder === "desc" ? dateB - dateA : dateA - dateB;
+  });
+>>>>>>> ce7fac5 (Save work before sync)
 
   // Pagination logic
-  const totalApplications = filteredApplications.length;
+  const totalApplications = sortedApplications.length;
   const pageCount = Math.ceil(totalApplications / rowsPerPage);
 
   const startIndex = page * rowsPerPage;
   const endIndex = Math.min(startIndex + rowsPerPage, totalApplications);
-  const currentPageData = filteredApplications.slice(startIndex, endIndex);
+  const currentPageData = sortedApplications.slice(startIndex, endIndex);
 
   const handleChangePage = (newPage) => {
     setPage(newPage);
@@ -97,6 +150,7 @@ const ManageEmp = () => {
     setPage(0); // Reset to first page whenever rows per page changes
   };
 
+<<<<<<< HEAD
   // --- Delete Feature Handlers ---
   const handleSelectAll = (e) => {
     if (e.target.checked) {
@@ -162,6 +216,13 @@ const ManageEmp = () => {
     } finally {
       setIsDeleting(false);
     }
+=======
+  // Function to clear all filters
+  const clearFilters = () => {
+    setSearchTerm("");
+    setSearchDate("");
+    setPage(0);
+>>>>>>> ce7fac5 (Save work before sync)
   };
 
   return (
@@ -177,6 +238,7 @@ const ManageEmp = () => {
           Manage Employees
         </h1>
 
+<<<<<<< HEAD
           <div className=" flex items-center justify-between  gap-2 my-2">
             <ClearableInput
               id="searchInput"
@@ -204,11 +266,63 @@ const ManageEmp = () => {
               >
                 <button>Add Emp</button>
               </Link>
+=======
+        <main className="flex-1">
+
+          <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+              {" "}
+              Manage Employees
+            </h1>
+
+            <div className="flex flex-col gap-3 my-4">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
+                <input
+                  id="searchInput"
+                  type="text"
+                  placeholder="Search by name or email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="flex-1 min-w-[200px] pl-2 pr-4 py-3 border border-gray-300 rounded-xl sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+                <input
+                  id="dateInput"
+                  type="date"
+                  placeholder="Search by date..."
+                  value={searchDate}
+                  onChange={(e) => setSearchDate(e.target.value)}
+                  className="flex-1 min-w-[150px] pl-2 pr-4 py-3 border border-gray-300 rounded-xl sm:text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+               
+                <Link
+                  to={"/multistepform"}
+                  className="inline-block px-4 py-3 bg-red-500 text-white text-sm rounded-xl hover:bg-red-600 transition whitespace-nowrap"
+                >
+                  <button>Add Emp</button>
+                </Link>
+              </div>
+              {(searchTerm || searchDate) && (
+                <div className="flex items-center justify-between">
+                  <div className="text-sm text-gray-600">
+                    Results: {filteredApplications.length} employee(s)
+                    {searchTerm && <span> matching "{searchTerm}"</span>}
+                    {searchDate && <span> on {searchDate}</span>}
+                  </div>
+                  <button
+                    onClick={clearFilters}
+                    className="px-4 py-2 bg-gray-400 text-white text-sm rounded-lg hover:bg-gray-500 transition font-medium"
+                  >
+                    ✕ Clear Filters
+                  </button>
+                </div>
+              )}
+>>>>>>> ce7fac5 (Save work before sync)
             </div>
           </div>
 
           {/* Search Input */}
 
+<<<<<<< HEAD
           {/* Card for Table (Desktop/Tablet) */}
           <div className="hidden md:block bg-white rounded-lg shadow-lg overflow-hidden border border-gray-200">
             <table className="min-w-full divide-y divide-gray-200">
@@ -274,6 +388,69 @@ const ManageEmp = () => {
                       <Link
                         to={`/manage-emp/${app.id}`}
                         className="inline-block px-4 py-2 text-red-600 underline text-sm rounded hover:bg-red-600 transition hover:text-white"
+=======
+            {/* Card for Table (Desktop/Tablet) */}
+            <div className="hidden md:block bg-white rounded-lg shadow-lg overflow-hidden">
+              <table className="min-w-full divide-y divide-gray-200">
+                <thead className="bg-red-500">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                      First Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                      Last Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">
+                      Email
+                    </th>
+                    <th 
+                      className="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider cursor-pointer hover:bg-red-600 transition"
+                      onClick={toggleSort}
+                      title="Click to toggle sort order"
+                    >
+                      Application Date {sortOrder === "desc" ? "↓" : "↑"}
+                    </th>
+                    <th className="px-6 py-3 text-center text-xs font-medium text-white uppercase tracking-wider">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-gray-100 text-xs">
+                  {currentPageData.map((app) => (
+                    <tr
+                      key={app.id}
+                      className="hover:bg-gray-100 transition-colors"
+                    >
+                      <td className="px-6 py-2 whitespace-nowrap  text-gray-700">
+                        {app.firstName}
+                      </td>
+                      <td className="px-6 py-2 whitespace-nowrap  text-gray-700">
+                        {app.lastName}
+                      </td>
+                      <td className="px-6 py-2 whitespace-nowrap  text-gray-700">
+                        {app.email}
+                      </td>
+                      <td className="px-6 py-2 whitespace-nowrap  text-gray-700">
+                        {app.applicationDate}
+                      </td>
+                      <td className="px-6 py-2 whitespace-nowrap text-center">
+                        <Link
+                          to={`/manage-emp/${app.id}`}
+                          className="inline-block px-4 py-2 text-red-600 underline text-sm rounded hover:bg-red-600 transition hover:text-white"
+                        >
+                          More Details
+                        </Link>
+                      </td>
+                    </tr>
+                  ))}
+
+                  {/* If no results */}
+                  {currentPageData.length === 0 && (
+                    <tr>
+                      <td
+                        colSpan={5}
+                        className="px-6 py-4 text-center text-gray-500"
+>>>>>>> ce7fac5 (Save work before sync)
                       >
                         More Details
                       </Link>

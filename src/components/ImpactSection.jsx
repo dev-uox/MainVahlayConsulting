@@ -303,4 +303,8 @@ const ImpactSection = () => {
   );
 };
 
+<<<<<<< HEAD
 export default ImpactSection;
+=======
+export default ImpactSection;
+>>>>>>> ce7fac5 (Save work before sync)

@@ -20,7 +20,7 @@ const Footer = () => {
     { icon: FaXTwitter, url: "https://x.com/vahlayinc", color: "hover:text-gray-900" }, // X (Twitter) black/dark gray
     { icon: FaInstagram, url: "https://www.instagram.com/vahlayinc", color: "hover:text-pink-600" },
     { icon: FaYoutube, url: "https://www.youtube.com/@vahlayinc", color: "hover:text-red-600" },
-    { icon: FaLinkedin, url: "https://www.linkedin.com/in/vahlay-inc-0a28162b8/", color: "hover:text-blue-700" },
+    { icon: FaLinkedin, url: "https://www.linkedin.com/company/vahlay-consulting-inc/?viewAsMember=true", color: "hover:text-blue-700" },
   ];
 
   const sitemapLinks = [

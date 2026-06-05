@@ -19,6 +19,7 @@ export default function DashboardLayout() {
   }, []);
 
   return (
+<<<<<<< HEAD
     <div className="min-h-screen flex flex-col bg-gray-100">
       {/* ✅ Mobile Toggle Button (Sticky) */}
       <div className="md:hidden w-4 h-12 flex items-center justify-center bg-red-600 sticky top-20 z-30">
@@ -38,6 +39,30 @@ export default function DashboardLayout() {
 
         {/* Main Content */}
         <main className="flex-1 min-w-0">
+=======
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-50">
+      {/* Sidebar (always mounted) */}
+      <MemoSideBar isOpen={sidebarOpen} onClose={setSidebarOpen} />
+
+      <div className="flex-1 flex flex-col min-w-0">
+        {/* ✅ Mobile Header (Sticky) */}
+        <div className="md:hidden flex items-center justify-between bg-white border-b px-4 h-16 sticky top-0 z-30">
+          <div className="flex items-center gap-2">
+             <img src="/assets/logo1.png" alt="Logo" className="h-8 w-auto" />
+             <span className="font-bold text-red-600 text-sm">ADMIN PANEL</span>
+          </div>
+          <button
+            onClick={() => setSidebarOpen(true)}
+            className="p-2 text-gray-600 hover:text-red-600 transition-colors"
+            aria-label="Open Sidebar"
+          >
+            <BiArrowFromLeft className="text-2xl" />
+          </button>
+        </div>
+
+        {/* Main Content */}
+        <main className="flex-1 p-4 md:p-8 overflow-x-hidden">
+>>>>>>> ce7fac5 (Save work before sync)
           <Outlet />
         </main>
       </div>

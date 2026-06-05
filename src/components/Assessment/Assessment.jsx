@@ -9,7 +9,7 @@ import {
   getDoc,
   updateDoc,
   serverTimestamp,
-  setDoc 
+  setDoc
 } from "firebase/firestore";
 import { db, storage } from "../../firebaseConfig";
 import { ref as storageRef, uploadBytes } from "firebase/storage";
@@ -676,9 +676,8 @@ function VoiceSection({ userDocId, onNext, setSubmitting, title, children }) {
         </button>
       ) : (
         <button
-          className={`w-full px-4 py-2 rounded text-white ${
-            micAllowed ? "bg-red-600" : "bg-gray-400"
-          }`}
+          className={`w-full px-4 py-2 rounded text-white ${micAllowed ? "bg-red-600" : "bg-gray-400"
+            }`}
           onClick={micAllowed ? startRecording : null}
         >
           Start Recording
@@ -835,87 +834,87 @@ function SectionPersonalBackground({ userDocId, onNext, setSubmitting }) {
   const [already, setAlready] = useState(false);
 
   const QUESTIONS = [
-  // Personal info
-  "Can you please tell me about yourself?",
-  "What is your full name?",
+    // Personal info
+    "Can you please tell me about yourself?",
+    "What is your full name?",
 
-  // Family
-  "Please let me know about your Family Background. Who manages the expenses?",
+    // Family
+    "Please let me know about your Family Background. Who manages the expenses?",
 
-  // Logistics / relocation
-  "How much time would it take for you to relocate to Ahmedabad if you get selected?",
-  "How will you manage living in Ahmedabad?",
+    // Logistics / relocation
+    "How much time would it take for you to relocate to Ahmedabad if you get selected?",
+    "How will you manage living in Ahmedabad?",
 
-  // Career / current job
-  "What’s your current salary package, and what are your expectations?",
-  "Do you have any part time job, freelancing, or studies during the day time apart from this job?",
+    // Career / current job
+    "What’s your current salary package, and what are your expectations?",
+    "Do you have any part time job, freelancing, or studies during the day time apart from this job?",
 
-  // Education
-  "What is the highest education you’ve completed, and in which year?",
+    // Education
+    "What is the highest education you’ve completed, and in which year?",
 
-  // Career background
-  "Briefly describe your total work experience.",
-  "What was your last job? What were your responsibilities?",
-  "Why did you leave your previous job?",
-  "Are you looking for a long-term career opportunity or a short-term job?",
-  "How many months or years are you planning to stay and grow in the corporate world?",
-  "What does job stability mean to you?",
+    // Career background
+    "Briefly describe your total work experience.",
+    "What was your last job? What were your responsibilities?",
+    "Why did you leave your previous job?",
+    "Are you looking for a long-term career opportunity or a short-term job?",
+    "How many months or years are you planning to stay and grow in the corporate world?",
+    "What does job stability mean to you?",
 
-  // Skills
-  "What skills have you learned from your past experience that will help you in this role?",
-  "What are your strongest qualities that make you a good fit for a corporate environment?",
-  "How comfortable are you with communication, computer usage, and learning new tools or software?",
-  "What areas do you feel you need to improve, and how are you working on them?",
-  "How do you handle pressure, targets, or difficult situations?",
-  "Describe a situation where you took responsibility to complete a task successfully.",
-  "Are you open to training and learning new things continuously?",
-  "What new skills do you want to learn in the next 6–12 months?",
+    // Skills
+    "What skills have you learned from your past experience that will help you in this role?",
+    "What are your strongest qualities that make you a good fit for a corporate environment?",
+    "How comfortable are you with communication, computer usage, and learning new tools or software?",
+    "What areas do you feel you need to improve, and how are you working on them?",
+    "How do you handle pressure, targets, or difficult situations?",
+    "Describe a situation where you took responsibility to complete a task successfully.",
+    "Are you open to training and learning new things continuously?",
+    "What new skills do you want to learn in the next 6–12 months?",
 
-  // Motivation
-  "Why do you want this job?",
-  "What motivates you the most—money, growth, stability, or learning?",
+    // Motivation
+    "Why do you want this job?",
+    "What motivates you the most—money, growth, stability, or learning?",
 
-  // Work ethics / company policies
-  "Are you ready to follow company policies, attendance requirements, and performance expectations?",
+    // Work ethics / company policies
+    "Are you ready to follow company policies, attendance requirements, and performance expectations?",
 
-  // Availability
-  "Are you available for full-time work with fixed office timings?",
-  "Do you have any commitments that may affect your attendance or performance?",
-  "Are you comfortable working in our company for at least 1–2 years?",
+    // Availability
+    "Are you available for full-time work with fixed office timings?",
+    "Do you have any commitments that may affect your attendance or performance?",
+    "Are you comfortable working in our company for at least 1–2 years?",
 
-  // Goals
-  "What are your short-term goals (next 1 year)?",
-  "What are your long-term goals (next 5 years)?",
-  "How does this job fit into your career plan?",
+    // Goals
+    "What are your short-term goals (next 1 year)?",
+    "What are your long-term goals (next 5 years)?",
+    "How does this job fit into your career plan?",
 
-  // Final fit
-  "Why should we select you over other candidates?",
-  "What makes you confident that you will stay committed and grow with us?",
-  "Is there anything else you want us to know about your dedication or expectations?",
-  "(Optional) Please share one personal challenge you overcame and what you learned from it.",
+    // Final fit
+    "Why should we select you over other candidates?",
+    "What makes you confident that you will stay committed and grow with us?",
+    "Is there anything else you want us to know about your dedication or expectations?",
+    "(Optional) Please share one personal challenge you overcame and what you learned from it.",
 
-  // Probation / company rules
-  "3 months’ probation period, so initially you would get the digital copy of offer letter and after 3 months you will get the papers.",
-  "We do not approve leaves during probation period except in emergencies.",
-  "We only follow US holidays and we do not follow Indian holidays.",
-  "We follow attire rules for Formals & ID cards."
-];
+    // Probation / company rules
+    "3 months’ probation period, so initially you would get the digital copy of offer letter and after 3 months you will get the papers.",
+    "We do not approve leaves during probation period except in emergencies.",
+    "We only follow US holidays and we do not follow Indian holidays.",
+    "We follow attire rules for Formals & ID cards."
+  ];
 
-  
-async function saveQuestionsToFirestore() {
-  try {
-    await setDoc(doc(db, "campusDriveQuitions", "quitions"), {
-      personalQuitions: QUESTIONS
-    });
-    console.log("Questions saved successfully!");
-  } catch (error) {
-    console.error("Error saving questions:", error);
+
+  async function saveQuestionsToFirestore() {
+    try {
+      await setDoc(doc(db, "campusDriveQuitions", "quitions"), {
+        personalQuitions: QUESTIONS
+      });
+      console.log("Questions saved successfully!");
+    } catch (error) {
+      console.error("Error saving questions:", error);
+    }
   }
-}
 
-useEffect(() => { 
-  saveQuestionsToFirestore();
-}, []);
+  useEffect(() => {
+    saveQuestionsToFirestore();
+  }, []);
 
   useEffect(() => {
     (async () => {
@@ -935,35 +934,35 @@ useEffect(() => {
     }));
   };
 
- const handleSubmit = async (e) => {
-  e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-  // Validate all questions
-  for (let i = 0; i < QUESTIONS.length; i++) {
-    if (!answers[i] || !answers[i].trim()) {
-      alert(`Please answer question ${i + 1}: "${QUESTIONS[i]}"`);
-      return;
+    // Validate all questions
+    for (let i = 0; i < QUESTIONS.length; i++) {
+      if (!answers[i] || !answers[i].trim()) {
+        alert(`Please answer question ${i + 1}: "${QUESTIONS[i]}"`);
+        return;
+      }
     }
-  }
 
-  const answersArray = QUESTIONS.map((_, i) => answers[i]);
+    const answersArray = QUESTIONS.map((_, i) => answers[i]);
 
-  setSubmitting(true);
-  try {
-    await updateDoc(doc(db, "campusDrive", userDocId), {
-      personalBackground: answersArray,
-      personalBackgroundSubmittedAt: serverTimestamp()
-    });
+    setSubmitting(true);
+    try {
+      await updateDoc(doc(db, "campusDrive", userDocId), {
+        personalBackground: answersArray,
+        personalBackgroundSubmittedAt: serverTimestamp()
+      });
 
-    alert("Personal Background Section Submitted.");
-    onNext();
-  } catch (error) {
-    console.error(error);
-    alert("Error submitting section.");
-  } finally {
-    setSubmitting(false);
-  }
-};
+      alert("Personal Background Section Submitted.");
+      onNext();
+    } catch (error) {
+      console.error(error);
+      alert("Error submitting section.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
 
   if (already) {
@@ -1140,11 +1139,10 @@ function Section1({ userDocId, onNext, setSubmitting }) {
           <button
             onClick={handleReplay}
             disabled={replayCount >= 1}
-            className={`mt-2 px-4 py-2 rounded ${
-              replayCount >= 1
+            className={`mt-2 px-4 py-2 rounded ${replayCount >= 1
                 ? "bg-gray-300 text-gray-600 cursor-not-allowed"
                 : "bg-gray-200 text-gray-800 hover:bg-gray-300"
-            }`}
+              }`}
           >
             {replayCount === 0 ? "Play Again (one-time)" : "Replay Used"}
           </button>

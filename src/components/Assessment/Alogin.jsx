@@ -19,8 +19,12 @@ export default function CampusDrive() {
     number: "",
     religion: "",
     city: "",
+<<<<<<< HEAD
     
 
+=======
+    religion: "",
+>>>>>>> ce7fac5 (Save work before sync)
   });
   const [isSubmitting, setIsSubmitting] = useState(false);    // ← new
 
@@ -139,13 +143,26 @@ export default function CampusDrive() {
           />
         </div>
 
+        {/* Religion */}
+        <div>
+          <label className="block text-sm font-medium mb-1">Religion</label>
+          <input
+            type="text"
+            name="religion"
+            required
+            disabled={isSubmitting}
+            value={formData.religion}
+            onChange={handleChange}
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
         {/* Submit */}
         <button
           type="submit"
           disabled={isSubmitting}
-          className={`w-full py-2 rounded text-white ${
-            isSubmitting ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
-          }`}
+          className={`w-full py-2 rounded text-white ${isSubmitting ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
+            }`}
         >
           {isSubmitting ? "Loging…" : "Login"}
         </button>

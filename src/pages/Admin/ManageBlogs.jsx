@@ -9,8 +9,47 @@ import {
   Timestamp,
 } from "firebase/firestore";
 import { db, storage } from "../../firebaseConfig";
+<<<<<<< HEAD
 import ClearableInput from "../../components/common/ClearableInput";
 import PageHeader from "../../components/common/PageHeader";
+=======
+import { X } from "lucide-react";
+
+// -----------------------------
+// UI Helpers (Moved outside to prevent focus loss)
+// -----------------------------
+const Card = ({ title, children, right }) => (
+  <div className="bg-white rounded-xl shadow p-4 sm:p-5 mb-6 border border-gray-100">
+    {(title || right) && (
+      <div className="flex items-start justify-between gap-3 mb-4">
+        {title ? <h2 className="text-base sm:text-lg font-semibold text-gray-800">{title}</h2> : <div />}
+        {right}
+      </div>
+    )}
+    {children}
+  </div>
+);
+
+const ClearableInput = ({ value, setValue, placeholder, type = "text", className = "" }) => (
+  <div className="relative w-full group">
+    <input
+      type={type}
+      value={value}
+      onChange={(e) => setValue(e.target.value)}
+      placeholder={placeholder}
+      className={`w-full pr-10 border p-2.5 rounded-lg focus:ring-2 focus:ring-red-200 outline-none transition-all ${className}`}
+    />
+    {value && (
+      <button
+        onClick={() => setValue("")}
+        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-red-500 transition-colors p-1"
+      >
+        <X size={16} />
+      </button>
+    )}
+  </div>
+);
+>>>>>>> ce7fac5 (Save work before sync)
 
 const AdminBlogPage = () => {
   // -----------------------------
@@ -301,6 +340,7 @@ const AdminBlogPage = () => {
   // RENDER
   // -----------------------------
   return (
+<<<<<<< HEAD
     <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
  
 <h1 className="text-2xl sm:text-3xl font-bold text-red-600 w-fit mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
@@ -385,6 +425,105 @@ const AdminBlogPage = () => {
                 placeholder="Ex: Emerging trends for 2026"
               />
             </div>
+=======
+    <div className="min-h-screen bg-gray-50">
+      <main className="w-full">
+
+
+        <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
+          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
+            Manage Blogs
+          </h1>
+
+          <div className="space-y-4 sm:space-y-6">
+            {/* Category */}
+            <Card title="Select Category">
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Category
+              </label>
+              <select
+                className="w-full border p-2.5 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-200"
+                value={selectedCategory}
+                onChange={handleCategoryChange}
+              >
+                <option value="">-- Choose a Category --</option>
+                {categories.map((cat) => (
+                  <option key={cat.id} value={cat.id}>
+                    {cat.name || cat.title || "Unnamed Category"}
+                  </option>
+                ))}
+              </select>
+            </Card>
+
+            {/* Blog Basics */}
+            <Card
+              title={editingBlogId ? "Edit Blog" : "Create New Blog"}
+              right={
+                editingBlogId ? (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setEditingBlogId(null);
+                      setTitle("");
+                      setSubtitle("");
+                      setHeaderParagraph("");
+                      setBeforeSectionParagraph("");
+                      setImageFile(null);
+                      setImageUrl("");
+                      setSections([]);
+                      setConclusion("");
+                      setSheduleBlog("");
+                      setMetatitle("");
+                      setMetadescription("");
+                      setSeokeywords("");
+                      setremoveSheduling(false);
+                    }}
+                    className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
+                  >
+                    Cancel Edit
+                  </button>
+                ) : null
+              }
+            >
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Blog Title</label>
+                  <ClearableInput
+                    value={title}
+                    setValue={setTitle}
+                    placeholder="My Complex Blog"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Blog Subtitle</label>
+                  <ClearableInput
+                    value={subtitle}
+                    setValue={setSubtitle}
+                    placeholder="Subtitle text"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Meta Title</label>
+                  <ClearableInput
+                    value={metatitle}
+                    setValue={setMetatitle}
+                    placeholder="Meta title"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    SEO Keywords (comma separated)
+                  </label>
+                  <ClearableInput
+                    value={seoKeywords}
+                    setValue={setSeokeywords}
+                    placeholder="e.g. marketing, ecommerce, web development"
+                  />
+                </div>
+>>>>>>> ce7fac5 (Save work before sync)
 
             <div>
               <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-2">SEO Meta Title</label>

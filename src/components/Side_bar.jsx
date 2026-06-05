@@ -6,29 +6,50 @@ import { db } from "../firebaseConfig";
 
 import { IoIosArrowBack } from "react-icons/io";
 import {
-  FaUserFriends,
-  FaUserTie,
+  FaUserCircle,
+  FaUsers,
+  FaUserGraduate,
   FaBriefcase,
-  FaBlogger,
-  FaServicestack,
+  FaNewspaper,
+  FaTools,
   FaProjectDiagram,
+<<<<<<< HEAD
   FaCalendarAlt,
   FaClipboardList,
   FaExternalLinkAlt,
   FaTrash,
+=======
+  FaCalendarCheck,
+  FaFileContract,
+  FaGraduationCap,
+  FaCommentDots,
+  FaFileAlt,
+  FaUserLock,
+  FaShieldAlt,
+  FaUsersCog,
+>>>>>>> ce7fac5 (Save work before sync)
 } from "react-icons/fa";
 
 const MENU = [
   {
+<<<<<<< HEAD
+=======
+    to: "/profile",
+    label: "My Profile",
+    icon: <FaUserCircle size={18} />,
+    key: "profile",
+  },
+  {
+>>>>>>> ce7fac5 (Save work before sync)
     to: "/manage-emp",
     label: "Manage Emp",
-    icon: <FaUserFriends size={18} />,
+    icon: <FaUsers size={18} />,
     key: "manage-emp",
   },
   {
     to: "/interestedcandidates",
     label: "Candidates List",
-    icon: <FaUserTie size={18} />,
+    icon: <FaUserGraduate size={18} />,
     key: "interestedcandidates",
   },
   {
@@ -40,13 +61,17 @@ const MENU = [
   {
     to: "/manageblogs",
     label: "Manage Blogs",
-    icon: <FaBlogger size={18} />,
+    icon: <FaNewspaper size={18} />,
     key: "manageblogs",
   },
   {
     to: "/manageservices",
     label: "Manage Services",
+<<<<<<< HEAD
     icon: <FaServicestack size={18} />,
+=======
+    icon: <FaTools size={18} />,
+>>>>>>> ce7fac5 (Save work before sync)
     key: "manageservices",
   },
   {
@@ -58,13 +83,13 @@ const MENU = [
   {
     to: "/managejoiningdates",
     label: "Onboarding Dates",
-    icon: <FaCalendarAlt size={18} />,
+    icon: <FaCalendarCheck size={18} />,
     key: "managejoiningdates",
   },
   {
     to: "/manageagreements",
     label: "Manage Agreements",
-    icon: <FaCalendarAlt size={18} />,
+    icon: <FaFileContract size={18} />,
     key: "manageagreements",
   },
   {
@@ -82,25 +107,25 @@ const MENU = [
   {
     to: "/result",
     label: "Test Result",
-    icon: <FaClipboardList size={18} />,
+    icon: <FaGraduationCap size={18} />,
     key: "result",
   },
   {
     to: "/FeedbackToTrainee",
     label: "Feedback To Trainee",
-    icon: <FaClipboardList size={18} />,
+    icon: <FaCommentDots size={18} />,
     key: "feedbacktotrainee",
   },
   {
     to: "/trainerdailyreport",
     label: "Trainer Daily Report",
-    icon: <FaClipboardList size={18} />,
+    icon: <FaFileAlt size={18} />,
     key: "trainerdailyreport",
   },
   {
     to: "/approve-users",
     label: "Training Access",
-    icon: <FaExternalLinkAlt size={18} />,
+    icon: <FaUserLock size={18} />,
     key: "trainingaccess",
   },
   {
@@ -142,6 +167,7 @@ const SideBar = ({ isOpen, onClose }) => {
           return;
         }
         setUser(authUser);
+<<<<<<< HEAD
         const snap = await getDoc(
           doc(db, "users", authUser.email.toLowerCase()),
         );
@@ -150,6 +176,46 @@ const SideBar = ({ isOpen, onClose }) => {
             ? String(snap.data()?.role || "user").toLowerCase()
             : "user",
         );
+=======
+        const userEmail = authUser.email.toLowerCase().trim();
+        const userSnap = await getDoc(doc(db, "users", userEmail));
+        let userRole = null;
+        if (userSnap.exists()) {
+          userRole = String(userSnap.data()?.role || "user").toLowerCase();
+        } else {
+          // Fallback: Query jobApplications by email field
+          const q = query(collection(db, "jobApplications"), where("email", "==", userEmail));
+          const querySnapshot = await getDocs(q);
+          if (!querySnapshot.empty) {
+            userRole = String(querySnapshot.docs[0].data()?.role || "user").toLowerCase();
+          }
+        }
+
+        if (userRole) {
+          setRole(userRole);
+          // Fetch role permissions from "roles" collection
+          const roleSnap = await getDoc(doc(db, "roles", userRole));
+          let permissions = [];
+
+          if (roleSnap.exists()) {
+            permissions = roleSnap.data()?.permissions || [];
+          } else if (userRole === "admin") {
+            permissions = MENU.map((m) => m.key);
+          }
+
+          // Any role except 'user' gets 'profile' by default
+          if (userRole !== "user") {
+            if (!permissions.includes("profile")) {
+              permissions.push("profile");
+            }
+          }
+
+          setAllowedKeys(permissions);
+        } else {
+          setRole("user");
+          setAllowedKeys([]);
+        }
+>>>>>>> ce7fac5 (Save work before sync)
       } catch (err) {
         console.error(err);
         setRole("user");
@@ -185,9 +251,8 @@ const SideBar = ({ isOpen, onClose }) => {
   if (loading) {
     return (
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-white transform transition-transform duration-300 z-50 ${
-          isOpen ? "translate-x-0" : "-translate-x-full"
-        }`}
+        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-white transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
       >
         <div className="flex items-center justify-center h-full">
           Loading...
@@ -228,10 +293,9 @@ const SideBar = ({ isOpen, onClose }) => {
                     end={to === "/"}
                     className={({ isActive }) =>
                       `flex items-center px-4 py-3.5 rounded-lg transition-all duration-200 mx-1
-                      ${
-                        isActive
-                          ? "bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20"
-                          : "hover:bg-gray-800 hover:translate-x-1"
+                      ${isActive
+                        ? "bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20"
+                        : "hover:bg-gray-800 hover:translate-x-1"
                       }`
                     }
                     onClick={() => onClose && onClose(false)}

@@ -38,6 +38,21 @@ function createDownloadLink(url) {
   return `${baseUrl}${encodeURIComponent(cleaned)}?alt=media`;
 }
 
+const experiencedTerms = [
+  "The company will provide an 8-day training and evaluation program from our side.",
+  "Candidates who are currently working may attend the 8-day training without resigning from their current organization.",
+  "Upon successful completion and clearance of the 8-day training program, the company will issue an official confirmation email on the 9th day regarding training completion and selection status.",
+  "After receiving the confirmation email from the company, the candidate may proceed with resignation from their current organization and officially join our company.",
+  "Salary and employment benefits will begin only from the official joining date after the candidate leaves the previous organization and joins our company."
+];
+
+const fresherTerms = [
+  "The 8-day training period for freshers will be unpaid. No salary or stipend will be provided during the training duration.",
+  "Upon successful completion and clearance of the 8-day training program, the company will issue an official confirmation email on the 9th day regarding training completion and selection status.",
+  "After receiving the confirmation email from the company, the candidate will be officially select and join our company.",
+  "Salary and employment benefits will begin only from the official joining date after successfully clearing the 8-day training program.",
+  "Candidates who fail to clear the 8-day training and evaluation program will not be selected or offered employment with the company."
+];
 
 const ManageEmpDetails = () => {
   const { id } = useParams(); // Document ID from the URL
@@ -204,6 +219,11 @@ const ManageEmpDetails = () => {
         text: `Date: ${application.applicationDate}`,
         style: "smallText",
         margin: [0, 10],
+      },
+      { text: `Candidate Specific Terms & Conditions (${application.firstJob === "No" ? "Experienced" : "Fresher"})`, style: "subheader", margin: [0, 15, 0, 5] },
+      {
+        ul: (application.firstJob === "No" ? experiencedTerms : fresherTerms).map(term => ({ text: term, bold: true })),
+        margin: [0, 5, 0, 15]
       },
       { text: "Terms and Conditions", style: "subheader" },
       {
@@ -1591,7 +1611,38 @@ const ManageEmpDetails = () => {
                   </div>
                 </div>
               )}
-            </dl>
+             </dl>
+
+            {/* Candidate-Specific Terms & Conditions */}
+            <div className="mt-6 border border-red-200 bg-red-50/50 rounded-xl p-6 shadow-sm">
+              <h3 className="text-lg font-bold text-red-800 mb-3 flex items-center gap-2">
+                <svg className="w-5 h-5 text-red-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                {application.firstJob === "No"
+                  ? "Agreed Terms & Conditions (Experienced Candidate)"
+                  : "Agreed Terms & Conditions (Fresher Candidate)"}
+              </h3>
+              <p className="text-xs text-red-600 font-medium mb-4">
+                The candidate agreed to each of the following terms & conditions:
+              </p>
+              <div className="space-y-3">
+                {(application.firstJob === "No" ? experiencedTerms : fresherTerms).map((term, index) => (
+                  <div key={index} className="flex items-start gap-3 p-3 bg-white rounded-lg border border-red-100 shadow-sm transition duration-150 hover:shadow-md">
+                    <span className="mt-0.5 text-green-600 flex-shrink-0">
+                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+                      </svg>
+                    </span>
+                    <p className="text-xs text-gray-700 font-semibold leading-relaxed">
+                      <span className="text-red-800 font-bold">{index + 1}. </span>
+                      {term}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
             <div className="mt-6 bg-gray-50 p-6 rounded-lg border border-gray-200">
               <h4 className="text-lg font-semibold mb-2">Declaration</h4>
               <p>

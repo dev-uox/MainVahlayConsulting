@@ -34,9 +34,9 @@ const About = () => {
 
       {/* --- HERO SECTION --- */}
       {/* Changed absolute positioning to flex centering for perfect responsiveness */}
-      <div className="relative h-[280px] sm:h-[640px] flex items-center justify-center overflow-hidden bg-gray-950">
+      <div className="relative h-[40vh] sm:h-[60vh] md:h-[70vh] min-h-[300px] flex items-center justify-center overflow-hidden bg-gray-950">
         <video
-          className="absolute inset-0 w-full h-full object-cover md:object-fill z-0"
+          className="absolute inset-0 w-full h-full object-cover z-0"
           src={BGVideo}
           autoPlay
           loop
@@ -51,18 +51,17 @@ const About = () => {
         {/* This creates the smooth transition to your white section below */}
         <div className="absolute bottom-0 left-0 w-full h-16 bg-gradient-to-t from-white via-white/30 to-transparent z-10" />
 
-        <div className="container relative z-10 px-4 text-center">
+        <div className="container relative z-10 px-4 flex flex-col items-center justify-center h-full">
           <motion.div
             initial="hidden"
             animate="visible"
             variants={staggerContainer}
+            className="text-center"
           >
-            {/* Kept your exact text positioning as requested */}
             <motion.h1
               variants={fadeInUp}
-              className="text-xl md:text-2xl lg:text-3xl absolute top-[-120px] sm:top-[-280px] font-gray-950 text-white drop-shadow-lg"
+              className="text-4xl md:text-6xl lg:text-7xl font-extrabold text-white drop-shadow-2xl"
             >
-              About Vahlay Consulting<span className="text-red-600">.</span>
             </motion.h1>
           </motion.div>
         </div>

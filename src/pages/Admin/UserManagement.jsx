@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
+<<<<<<< HEAD
 import { Shield, Loader2, Search, UserCheck, ChevronLeft, ChevronRight } from "lucide-react";
+=======
+import { Users, Shield, Loader2, UserPlus, Search, UserCheck, ChevronLeft, ChevronRight, X } from "lucide-react";
+>>>>>>> ce7fac5 (Save work before sync)
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -108,17 +112,24 @@ export default function UserManagement() {
             User Role Management
           </h1>
 
-
         </div>
-        <div className="relative w-full md:w-ful p-2">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
+        <div className="relative w-full p-2 group">
+          <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
             placeholder="Search users by email..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-gray-200 rounded-lg shadow-sm focus:ring-2 focus:ring-red-500 outline-none transition"
+            className="w-full pl-12 pr-10 py-3 bg-white border border-gray-200 rounded-xl shadow-sm focus:ring-2 focus:ring-red-500 outline-none transition-all"
           />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-400 hover:text-red-500 transition-colors p-1 hover:bg-red-50 rounded-full"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          )}
         </div>
         <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
 

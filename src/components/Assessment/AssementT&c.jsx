@@ -10,7 +10,7 @@ export default function TermsAndConditionsPage() {
 
   useEffect(() => {
     if (!email) {
-    
+
       navigate("/campusdrive");
     }
   }, [email, navigate]);
