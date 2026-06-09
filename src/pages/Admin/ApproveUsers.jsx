@@ -3,6 +3,7 @@ import { collection, doc, updateDoc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { CheckCircle, User, Loader2, ShieldOff } from "lucide-react";
 import { motion } from "framer-motion";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -86,17 +87,9 @@ const AdminDashboard = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 font-poppins text-gray-900 pb-12">
-      <div className="p-4 md:p-8">
-        <div className="max-w-8xl mx-auto">
-          <header className="mb-8 pt-4">
-            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
-          Manage Training Approval
-        </h1>
-           
-          </header>
-
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+    <AdminPageShell title="Training Access" subtitle="Approve or revoke training web access for applicants">
+      <AdminCard>
+          <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
             <div className="flex border-b border-gray-200 overflow-x-auto">
               <button
                 onClick={() => setFilter("pending")}
@@ -216,9 +209,8 @@ const AdminDashboard = () => {
               ))}
             </div>
           )}
-        </div>
-      </div>
-    </div>
+      </AdminCard>
+    </AdminPageShell>
   );
 };
 

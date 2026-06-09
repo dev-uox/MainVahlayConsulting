@@ -271,7 +271,7 @@
 
 import { useState, useEffect } from "react";
 import { db, storage } from "../../firebaseConfig"; 
-import Side_bar from "../../components/Side_bar";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 import {
   collection,
   getDocs,
@@ -520,15 +520,8 @@ const ManageSubservices = () => {
   // Render
   //---------------------------------------------
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="w-full md:w-1/4 bg-white shadow-lg">
-        <Side_bar />
-      </div>
-
-      {/* Main Content */}
-      <div className="w-full md:w-3/4 p-8 bg-white shadow-md rounded-lg m-4">
-        <h2 className="text-xl font-bold mb-4">Manage Subservices</h2>
+    <AdminPageShell title="Manage Subservices" subtitle="Add and edit subservices under each service">
+      <AdminCard>
 
         {/* Select Service */}
         <select
@@ -694,8 +687,8 @@ const ManageSubservices = () => {
             </tbody>
           </table>
         )}
-      </div>
-    </div>
+      </AdminCard>
+    </AdminPageShell>
   );
 };
 

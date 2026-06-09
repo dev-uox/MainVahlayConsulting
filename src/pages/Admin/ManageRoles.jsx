@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, setDoc, deleteDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { Plus, Trash2, Edit2, Check, X } from "lucide-react";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 
 const PERMISSIONS = [
   { key: "manage-emp", label: "Manage Employees" },
@@ -18,6 +19,10 @@ const PERMISSIONS = [
   { key: "trainingaccess", label: "Training Access" },
   { key: "manageroles", label: "Manage Roles" },
   { key: "usermanagement", label: "User Management" },
+  { key: "trash-emp", label: "Trash Employees" },
+  { key: "managesubservices", label: "Manage Subservices" },
+  { key: "manageseo", label: "Manage SEO" },
+  { key: "profile", label: "My Profile" },
 ];
 
 export default function ManageRoles() {
@@ -89,23 +94,23 @@ export default function ManageRoles() {
   };
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex justify-between items-center mb-8">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-            Manage Roles
-          </h1>
-          <button
-            onClick={() => {
-              setIsEditing(true);
-              setCurrentRole({ id: "", permissions: [] });
-            }}
-            className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-red-700 transition shadow-md"
-          >
-            <Plus className="w-5 h-5" />
-            Add New Role
-          </button>
-        </div>
+    <AdminPageShell
+      title="Manage Roles"
+      subtitle="Create roles and configure page-level permissions"
+      actions={
+        <button
+          onClick={() => {
+            setIsEditing(true);
+            setCurrentRole({ id: "", permissions: [] });
+          }}
+          className="inline-flex items-center gap-2 rounded-xl bg-red-600 px-4 py-2.5 text-sm font-medium text-white transition hover:bg-red-700"
+          type="button"
+        >
+          <Plus className="h-5 w-5" />
+          Add New Role
+        </button>
+      }
+    >
 
         {isEditing && (
           <div className="bg-white p-6 rounded-xl shadow-lg mb-8 border border-red-100">
@@ -236,7 +241,6 @@ export default function ManageRoles() {
             </tbody>
           </table>
         </div>
-      </div>
-    </div>
+    </AdminPageShell>
   );
 }

@@ -3,6 +3,7 @@ import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
 import { useNavigate } from "react-router-dom";
 import ClearableInput from "../../components/common/ClearableInput";
+import AdminPageShell, { AdminCard, AdminTable } from "../../components/common/AdminPageShell";
 
 const ManageAgreements = () => {
   const [users, setUsers] = useState([]);
@@ -106,59 +107,30 @@ const ManageAgreements = () => {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-slate-600 text-lg">Loading agreements...</div>
-      </div>
+      <AdminPageShell title="Manage Agreements" subtitle="Loading agreement data...">
+        <AdminCard>
+          <div className="py-12 text-center text-gray-500">Loading agreements...</div>
+        </AdminCard>
+      </AdminPageShell>
     );
   }
 
   return (
-    
-  <div className="min-h-screen bg-gray-100 flex">
-      
-      <main className="flex-1 ">
-        
-        <div className="md:w-full w-5/6 px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
-          Manage Agreements
-        </h1>
-
-        {/* Desktop Header */}
-        <div className="hidden lg:block mb-4 md:mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 md:gap-4">
-            <div>
-              
-              <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                View all users and manage their employment agreements.
-              </p>
-            </div>
-
-            {/* Search - Full width on mobile, fixed width on desktop */}
-            <div className="w-full sm:w-auto sm:min-w-[280px] md:w-72">
-              <ClearableInput
-                id="desktop-search"
-                placeholder="Search by name or email..."
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="w-full rounded-full border border-slate-200 px-4 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Mobile Search - Below mobile header */}
-        <div className="lg:hidden mb-4">
-          <ClearableInput
-            id="mobile-search"
-            placeholder="Search by name or email..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full rounded-full border border-slate-200 px-4 py-2 text-sm bg-white shadow-sm focus:outline-none focus:ring-2 focus:ring-red-200 focus:border-red-300"
-          />
-        </div>
-
-        {/* Tabs - Responsive with scroll on mobile */}
-        <div className="mb-4 md:mb-6">
+    <AdminPageShell
+      title="Manage Agreements"
+      subtitle="View all users and manage their employment agreements"
+      actions={
+        <ClearableInput
+          id="agreement-search"
+          placeholder="Search by name or email..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full min-w-[200px] sm:w-72 rounded-xl border border-gray-300 bg-white px-4 py-2.5 text-sm shadow-sm focus:border-red-500 focus:ring-2 focus:ring-red-100"
+        />
+      }
+    >
+      <AdminCard noPadding>
+        <div className="border-b border-gray-100 px-5 pt-4 dark:border-slate-700">
           <div className="flex overflow-x-auto pb-2 -mx-2 px-2 md:mx-0 md:px-0">
             <div className="flex items-center gap-1 md:gap-2 min-w-max border-b border-slate-200">
               <button
@@ -206,6 +178,7 @@ const ManageAgreements = () => {
           </div>
         </div>
 
+        <div className="p-5">
         {/* Cards View for Mobile, Table View for Desktop */}
         <div className="lg:hidden">
           {/* Mobile Cards View */}
@@ -349,29 +322,15 @@ const ManageAgreements = () => {
 
         {/* Desktop Table View */}
         <div className="hidden lg:block">
-          <div className="bg-white rounded-xl shadow-sm border border-slate-100 overflow-hidden">
-            <div className="overflow-x-auto">
-              <table className="min-w-full text-sm">
-                <thead className="bg-slate-50 border-b border-slate-200">
+          <AdminTable>
+                <thead>
                   <tr>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      #
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      Name
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      Email
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      Position
-                    </th>
-                    <th className="text-left px-4 py-3 font-semibold text-slate-500">
-                      Status
-                    </th>
-                    <th className="text-right px-4 py-3 font-semibold text-slate-500">
-                      Actions
-                    </th>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Position</th>
+                    <th>Status</th>
+                    <th className="text-right">Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -456,9 +415,7 @@ const ManageAgreements = () => {
                     })
                   )}
                 </tbody>
-              </table>
-            </div>
-          </div>
+          </AdminTable>
           {filteredUsers.length > itemsPerPage && (
             <div className="mt-6 flex flex-col sm:flex-row sm:items-center sm:justify-between py-4 border-t border-slate-100 px-1">
               <p className="text-sm text-slate-500 mb-4 sm:mb-0 order-2 sm:order-1">
@@ -522,9 +479,9 @@ const ManageAgreements = () => {
             </div>
           )}
         </div>
-      </div>
-      </main>
-    </div>
+        </div>
+      </AdminCard>
+    </AdminPageShell>
   );
 };
 

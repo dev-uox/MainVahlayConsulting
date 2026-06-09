@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "../../firebaseConfig"; // Adjust as needed
 import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import Side_bar from "../../components/Side_bar";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 
 // Helper function to create a complete download URL from a file path.
 function createDownloadLink(filePath) {
@@ -32,8 +32,6 @@ const InterestedCandidates = () => {
   const [selectedJobTitle, setSelectedJobTitle] = useState("All");
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   // Fetch candidates from Firestore on component mount.
   useEffect(() => {
     const fetchCandidates = async () => {
@@ -109,19 +107,8 @@ const InterestedCandidates = () => {
   };
 
   return (
-        
-  <div className="min-h-screen bg-gray-100 flex">
-      
-      <main className="flex-1">
-        
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 w-fit sm:mb-6 border-b-4 border-red-500 pb-2">
-          {" "}
-           Interested Candidates
-        </h1>
-
-       
-          {/* Filter Dropdown for Job Title */}
+    <AdminPageShell title="Interested Candidates" subtitle="View and filter candidates who expressed interest in job openings">
+      <AdminCard>
           <div className="mb-4">
             <label className="font-semibold text-gray-700 mr-2">
               Filter by Job Title:
@@ -340,9 +327,8 @@ const InterestedCandidates = () => {
               </button>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+      </AdminCard>
+    </AdminPageShell>
   );
 };
 

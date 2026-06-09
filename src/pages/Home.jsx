@@ -10,10 +10,7 @@ import { Navigation, Autoplay, Pagination } from "swiper/modules";
 import Navbar from "../components/Navbar";
 import { Helmet } from 'react-helmet-async';
 import { motion, AnimatePresence } from 'framer-motion';
-<<<<<<< HEAD
 import { GoDotFill } from "react-icons/go";
-=======
->>>>>>> ce7fac5 (Save work before sync)
 const APImage = "/assets/ApplicationDevelopmentVC.png";
 const WBImage = "/assets/WebsiteDevelopmentVC.png";
 const TSImage = "/assets/TeleSalesVC.png";
@@ -236,24 +233,8 @@ const Home = () => {
         stroke-width: 2.2;
       }
     }
-    @keyframes lineSpread {
-      0% {
-        opacity: 0;
-        transform: scale(0.1);
-      }
-      50% {
-        opacity: 0.8;
-        transform: scale(1.05);
-      }
-      100% {
-        opacity: 0.4;
-        transform: scale(1);
-      }
-    }
     .animated-line {
-      animation: lineSpread 3.5s ease-out forwards;
-      transform-origin: center;
-      transform-box: fill-box;
+      animation: lineGlow 4s ease-in-out infinite;
     }
     .logoRingsSpin {
       animation: spin 20s linear infinite;
@@ -374,6 +355,14 @@ const Home = () => {
 
   const [activeSlide, setActiveSlide] = useState(0);
 
+  // Preload hero images to prevent flash on slide change
+  useEffect(() => {
+    slides.forEach((slide) => {
+      const img = new Image();
+      img.src = slide.image;
+    });
+  }, []);
+
   // Handle button click to navigate to specific page
   const handleKnowMore = (pageLink) => {
     if (pageLink) {
@@ -483,17 +472,21 @@ const Home = () => {
       </Helmet>
 
       {/* Enhanced Slider Section */}
-      <section
-        className={`relative w-full h-auto min-h-[70vh] md:h-[calc(100vh-6rem)] overflow-hidden transition-colors duration-700 ${slides[activeSlide].bgColor}`}
-      >
+      <section className="relative w-full h-auto min-h-[70vh] md:h-[calc(100vh-6rem)] overflow-hidden bg-white">
+
+        {/* Crossfading slide backgrounds (avoids layout/color flash) */}
+        {slides.map((slide, index) => (
+          <div
+            key={slide.id}
+            aria-hidden={index !== activeSlide}
+            className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${slide.bgColor} ${
+              index === activeSlide ? "opacity-100" : "opacity-0"
+            }`}
+          />
+        ))}
 
         {/* Animated Background SVG Lines */}
-        <motion.div 
-          className="absolute inset-0 z-0 pointer-events-none overflow-hidden"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 0.4 }}
-          transition={{ duration: 0.8 }}
-        >
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-40">
           <svg
             viewBox="0 0 3200 1800"
             preserveAspectRatio="xMidYMid slice"
@@ -526,13 +519,13 @@ const Home = () => {
               ))}
             </g>
           </svg>
-        </motion.div>
+        </div>
 
         {/* Glass Red Background Circles with Animation */}
         <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
           {/* Large primary circle */}
           <motion.div 
-            className="absolute -bottom-32 -right-32 w-[320px] h-[320px] rounded-full bg-red-500/10 backdrop-blur-3xl"
+            className="absolute -bottom-32 -right-32 w-[320px] h-[320px] rounded-full bg-red-500/10"
             animate={{
               x: [0, 20, -10, 0],
               y: [0, -15, 10, 0],
@@ -545,7 +538,7 @@ const Home = () => {
           />
           {/* Secondary circle for depth */}
           <motion.div 
-            className="absolute top-20 -left-40 w-[280px] h-[280px] rounded-full bg-red-500/5 backdrop-blur-3xl"
+            className="absolute top-20 -left-40 w-[280px] h-[280px] rounded-full bg-red-500/5"
             animate={{
               x: [0, -15, 20, 0],
               y: [0, 15, -10, 0],
@@ -635,86 +628,70 @@ const Home = () => {
               transition={{ type: "spring", stiffness: 400 }}
             >
               <motion.div
-                initial={{ width: activeSlide === index ? 24 : 8 }}
-                animate={{ width: activeSlide === index ? 24 : 8, backgroundColor: activeSlide === index ? "#dc2626" : "#d1d5db" }}
-                transition={{ type: "spring", stiffness: 300, damping: 20, duration: 0.4 }}
+                animate={{
+                  width: activeSlide === index ? 24 : 8,
+                  backgroundColor: activeSlide === index ? "#dc2626" : "#d1d5db",
+                }}
+                transition={{ type: "spring", stiffness: 300, damping: 20 }}
                 className="h-2 rounded-full"
               />
             </motion.button>
           ))}
         </div>
 
-        <div className="relative w-full h-full flex flex-col-reverse md:flex-row items-center px-6 md:px-16 lg:px-24 py-10 md:py-0">
-          {/* Text Content */}
-          <motion.div 
-            className="w-full md:w-1/2 z-20 mt-8 md:mt-0"
-            key={`text-${activeSlide}`}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, ease: "easeOut" }}
-          >
-            <motion.h1 
-              className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6"
-              initial={{ opacity: 0, x: -30 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.1, ease: "easeOut" }}
+        <div className="relative w-full min-h-[50vh] md:min-h-0 md:h-full px-6 md:px-16 lg:px-24 py-10 md:py-0 z-10">
+          <AnimatePresence initial={false}>
+            <motion.div
+              key={activeSlide}
+              className="w-full flex flex-col-reverse md:flex-row items-center md:absolute md:inset-0 md:px-16 lg:px-24 md:py-0"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, ease: "easeInOut" }}
             >
-              {slides[activeSlide].title}
-              <motion.div 
-                className="h-1 w-20 bg-red-600 rounded-full mt-4" 
-                initial={{ width: 0 }}
-                animate={{ width: 80 }}
-                transition={{ duration: 0.8, delay: 0.3, ease: "easeOut" }}
-              />
-            </motion.h1>
+              {/* Text Content */}
+              <div className="w-full md:w-1/2 z-20 mt-8 md:mt-0">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-800 mb-6">
+                  {slides[activeSlide].title}
+                  <div className="h-1 w-20 bg-red-600 rounded-full mt-4" />
+                </h1>
 
-            <motion.p 
-              className="text-lg text-gray-600 max-w-lg mb-8"
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.7, delay: 0.2, ease: "easeOut" }}
-            >
-              {slides[activeSlide].subtitle}
-            </motion.p>
+                <p className="text-lg text-gray-600 max-w-lg mb-8">
+                  {slides[activeSlide].subtitle}
+                </p>
 
-            <motion.button
-              onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
-              className="px-8 py-4 bg-red-600 text-white rounded-full font-bold tracking-wide shadow-lg hover:bg-red-700 transition-colors duration-300"
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.6, delay: 0.3, ease: "easeOut" }}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              {slides[activeSlide].buttonText}
-            </motion.button>
-          </motion.div>
+                <motion.button
+                  onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
+                  className="px-8 py-4 bg-red-600 text-white rounded-full font-bold tracking-wide shadow-lg hover:bg-red-700 transition-colors duration-300"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  {slides[activeSlide].buttonText}
+                </motion.button>
+              </div>
 
-          {/* Image Area */}
-          <motion.div 
-            className="w-full md:w-1/2 relative flex justify-center items-center"
-            key={`image-${activeSlide}`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.7, ease: "easeOut" }}
-          >
-            <motion.div 
-              className="relative w-[85%] max-w-xl aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-8 border-white"
-              whileHover={{ scale: 1.02, boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)" }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            >
-              <img
-                src={slides[activeSlide].image}
-                alt="Slide"
-                className="w-full h-full object-cover"
-                loading={activeSlide === 0 ? "eager" : "lazy"}
-              />
-              <div
-                className="absolute inset-0 cursor-pointer"
-                onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
-              />
+              {/* Image Area */}
+              <div className="w-full md:w-1/2 relative flex justify-center items-center">
+                <motion.div
+                  className="relative w-[85%] max-w-xl aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border-8 border-white"
+                  whileHover={{ scale: 1.02, boxShadow: "0 20px 60px rgba(0, 0, 0, 0.3)" }}
+                  transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                >
+                  <img
+                    src={slides[activeSlide].image}
+                    alt={slides[activeSlide].title}
+                    className="w-full h-full object-cover"
+                    loading="eager"
+                    decoding="async"
+                  />
+                  <div
+                    className="absolute inset-0 cursor-pointer"
+                    onClick={() => handleKnowMore(slides[activeSlide].pageLink)}
+                  />
+                </motion.div>
+              </div>
             </motion.div>
-          </motion.div>
+          </AnimatePresence>
         </div>
 
         {/* Static Subtle Background Grid */}

@@ -16,6 +16,7 @@ import {
 } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import ClearableInput from "../components/common/ClearableInput";
+import AdminPageShell, { AdminCard, adminBtnPrimary, adminBtnSecondary } from "../components/common/AdminPageShell";
 
 const TRAINING_DAYS_LIMIT = 8;
 const ATTENDANCE_PRESENT = "Present";
@@ -33,7 +34,6 @@ export default function TrainerDailyReport() {
   const [employees, setEmployees] = useState([]);
   const [availableEmployees, setAvailableEmployees] = useState([]);
   const [selectedEmployee, setSelectedEmployee] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const navigate = useNavigate();
 
@@ -48,7 +48,6 @@ export default function TrainerDailyReport() {
   const [showReportPopup, setShowReportPopup] = useState(false);
   const [showViewReportPopup, setShowViewReportPopup] = useState(false);
   const [showBatchReportsPopup, setShowBatchReportsPopup] = useState(false);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [viewReportsFor, setViewReportsFor] = useState(null);
 
   // Lists states
@@ -915,20 +914,6 @@ export default function TrainerDailyReport() {
     URL.revokeObjectURL(url);
   };
 
-  // Toggle sidebar function
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  // Prevent body scroll when sidebar is open on mobile
-  useEffect(() => {
-    if (isSidebarOpen && window.innerWidth < 768) {
-      document.body.style.overflow = "hidden";
-    } else {
-      document.body.style.overflow = "auto";
-    }
-  }, [isSidebarOpen]);
-
   // Handle manual trainee form input change
   const handleManualTraineeChange = (field, value) => {
     setManualTraineeData((prev) => ({
@@ -978,60 +963,43 @@ export default function TrainerDailyReport() {
   const { runningCount, approvedCount, deniedCount, leftCount } = getTabCounts();
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Mobile Overlay when sidebar is open */}
-      {isSidebarOpen && (
-        <div
-          className="md:hidden fixed inset-0 bg-black bg-opacity-50 z-30"
-          onClick={() => setIsSidebarOpen(false)}
-        />
-      )}
-
-      {/* MAIN CONTENT */}
-      <div className="flex-1 w-full md:flex overflow-x-hidden">
-        <div className="w-full">
-          {/* DESKTOP HEADER - IMPROVED LAYOUT */}
-          <div className="flex items-center md:justify-between justify-center p-4 sm:p-6 bg-white md:border-b">
-           <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-          Training Batch Manager
-        </h1>
-
-            <div className="flex items-center gap-4">
-              {selectedBatch ? (
-                <>
-                  <div className="hidden md:block">
-                    <h2 className="text-lg font-bold text-red-800">
-                      {selectedBatch.batchName}
-                    </h2>
-                  </div>
-                  <button
-                    onClick={() => {
-                      setSelectedBatch(null);
-                      setEmployees([]);
-                      setActiveTab(TAB_RUNNING);
-                    }}
-                    className="px-4 py-2 bg-white text-red-700  rounded-lg hover:bg-red-50 text-sm font-medium whitespace-nowrap"
-                  >
-                    Close Batch
-                  </button>
-                </>
-              ) : (
-                <button
-                  onClick={() => {
-                    const today = new Date().toISOString().split("T")[0];
-                    setBatchDate(today);
-                    setShowBatchForm(true);
-                  }}
-                  className="px-4 py-2.5 bg-red-600 hover:bg-red-700 text-white rounded-lg shadow text-sm font-medium"
-                >
-                  + Create Batch
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* CONTENT CONTAINER */}
-          <div className="p-3 sm:p-4 md:p-6">
+    <AdminPageShell
+      title="Trainer Daily Report"
+      subtitle={
+        selectedBatch
+          ? `Batch: ${selectedBatch.batchName}${selectedBatch.batchDate ? ` • ${selectedBatch.batchDate}` : ""}`
+          : "Manage training batches, trainees, and daily reports"
+      }
+      wide
+      actions={
+        selectedBatch ? (
+          <button
+            type="button"
+            onClick={() => {
+              setSelectedBatch(null);
+              setEmployees([]);
+              setActiveTab(TAB_RUNNING);
+            }}
+            className={adminBtnSecondary}
+          >
+            Close Batch
+          </button>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              const today = new Date().toISOString().split("T")[0];
+              setBatchDate(today);
+              setShowBatchForm(true);
+            }}
+            className={adminBtnPrimary}
+          >
+            + Create Batch
+          </button>
+        )
+      }
+    >
+      <AdminCard>
             {/* BATCH LIST (if no batch selected) */}
             {!selectedBatch && (
               <>
@@ -1480,9 +1448,7 @@ export default function TrainerDailyReport() {
                 </div>
               </div>
             )}
-          </div>
-        </div>
-      </div>
+      </AdminCard>
 
       {/* ===== MODALS ===== */}
 
@@ -2192,7 +2158,7 @@ export default function TrainerDailyReport() {
           </div>
         </Modal>
       )}
-    </div>
+    </AdminPageShell>
   );
 }
 

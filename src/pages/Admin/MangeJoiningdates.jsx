@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
 import { db } from "../../firebaseConfig";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 import {
   addDoc,
   collection,
@@ -113,21 +114,8 @@ const ManageJoiningDates = () => {
   };
 
   return (
-  <div className="min-h-screen bg-gray-100 ">
-      
-      <main className="flex-1">
-        
-        <div className=" md:w-full w-[21rem]  px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold w-fit text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-          Manage Joining Dates
-        </h1>
-
-        {/* Add Date Card */}
-        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow mb-6 w-full">
-          <label className="block text-sm font-medium text-gray-700 mb-3">
-            Add Joining Date & Time
-          </label>
-
+    <AdminPageShell title="Manage Joining Dates" subtitle="Configure onboarding date and time slots for new hires">
+        <AdminCard title="Add Joining Date & Time">
           <div className="flex flex-col gap-3">
             <input
               type="date"
@@ -155,10 +143,9 @@ const ManageJoiningDates = () => {
               Add
             </button>
           </div>
-        </div>
+        </AdminCard>
 
-        {/* Date List */}
-        <div className="bg-white p-4 sm:p-6 rounded-2xl shadow space-y-3">
+        <AdminCard title="Scheduled Dates">
           {dateList.length === 0 ? (
             <p className="text-gray-500 text-sm text-center py-3">
               No upcoming dates found.
@@ -180,10 +167,8 @@ const ManageJoiningDates = () => {
               </div>
             ))
           )}
-        </div>
-      </div>
-      </main>
-    </div>
+        </AdminCard>
+    </AdminPageShell>
   );
 };
 

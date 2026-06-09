@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { collection, getDocs, doc, onSnapshot, setDoc } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-<<<<<<< HEAD
-import { Shield, Loader2, Search, UserCheck, ChevronLeft, ChevronRight } from "lucide-react";
-=======
-import { Users, Shield, Loader2, UserPlus, Search, UserCheck, ChevronLeft, ChevronRight, X } from "lucide-react";
->>>>>>> ce7fac5 (Save work before sync)
+import { Shield, Loader2, Search, UserCheck, ChevronLeft, ChevronRight, X } from "lucide-react";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 
 export default function UserManagement() {
   const [users, setUsers] = useState([]);
@@ -105,15 +102,10 @@ export default function UserManagement() {
   }, [searchQuery, rowsPerPage]);
 
   return (
-    <div className="p-6 bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 w-fit mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-            User Role Management
-          </h1>
-
-        </div>
-        <div className="relative w-full p-2 group">
+    <AdminPageShell title="User Role Management" subtitle="Assign roles and permissions to registered users">
+      <AdminCard noPadding>
+        <div className="border-b border-gray-100 p-4 dark:border-slate-700">
+        <div className="relative w-full group">
           <Search className="absolute left-6 top-1/2 -translate-y-1/2 text-gray-400 w-5 h-5" />
           <input
             type="text"
@@ -131,19 +123,18 @@ export default function UserManagement() {
             </button>
           )}
         </div>
-        <div className="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-
+        </div>
           <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 border-b border-gray-100">
+            <table className="admin-table w-full text-left">
+              <thead>
                 <tr>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">User Email</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Current Role</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Assign New Role</th>
-                  <th className="px-6 py-4 text-xs font-bold text-gray-400 uppercase tracking-wider">Status</th>
+                  <th>User Email</th>
+                  <th>Current Role</th>
+                  <th>Assign New Role</th>
+                  <th>Status</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-100 italic">
+              <tbody>
                 {loading ? (
                   <tr>
                     <td colSpan="4" className="px-6 py-10 text-center">
@@ -257,10 +248,7 @@ export default function UserManagement() {
               </div>
             </div>
           )}
-        </div>
-
-
-      </div>
-    </div>
+      </AdminCard>
+    </AdminPageShell>
   );
 }

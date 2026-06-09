@@ -9,8 +9,8 @@ import {
   doc,
 } from "firebase/firestore";
 import { db } from "../../firebaseConfig";
-import Side_Bar from "../../components/Side_bar";
 import ClearableInput from "../../components/common/ClearableInput";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 
 const AdminPortal = () => {
   const navigate = useNavigate();
@@ -36,8 +36,6 @@ const AdminPortal = () => {
   const [newBullet, setNewBullet] = useState("");
   const [editingJob, setEditingJob] = useState(null);
   const [editingSectionIndex, setEditingSectionIndex] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   useEffect(() => {
     const fetchJobs = async () => {
       const jobSnapshot = await getDocs(collection(db, "jobs"));
@@ -150,15 +148,8 @@ const AdminPortal = () => {
   };
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-100 flex">
-        <main className="flex-1">
-          <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-            <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 w-fit border-b-4 border-red-500 pb-2">
-              {" "}
-              Add New Job
-            </h1>
-            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 mb-6 md:mb-8  my-2">
+    <AdminPageShell title="Manage Jobs" subtitle="Create, edit, and publish job postings">
+      <AdminCard title="Add New Job">
               <form
                 onSubmit={handleSubmit}
                 className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4"
@@ -532,13 +523,9 @@ const AdminPortal = () => {
                   </button>
                 </div>
               </form>
-            </div>
+      </AdminCard>
 
-            {/* Job List Card */}
-            <div className="bg-white rounded-lg shadow-lg p-4 sm:p-6 border border-gray-200">
-              <h2 className="text-xl sm:text-2xl font-bold text-gray-800 mb-4">
-                Job Openings
-              </h2>
+      <AdminCard title="Job Openings">
               <div className="grid grid-cols-1 gap-3 sm:gap-4">
                 {jobs.map((job) => (
                   <div
@@ -576,11 +563,8 @@ const AdminPortal = () => {
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    </>
+      </AdminCard>
+    </AdminPageShell>
   );
 };
 

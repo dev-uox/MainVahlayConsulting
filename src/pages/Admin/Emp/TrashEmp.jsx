@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { collection, getDocs, doc, deleteDoc, getDoc, addDoc } from "firebase/firestore";
 import { db } from "../../../firebaseConfig";
-import Side_bar from "../../../components/Side_bar";
+import AdminPageShell, { AdminCard } from "../../../components/common/AdminPageShell";
 import ClearableInput from "../../../components/common/ClearableInput";
 
 const TrashEmp = () => {
@@ -134,14 +134,9 @@ const TrashEmp = () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex">
-      <main className="flex-1">
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-         <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
-          Trash (Deleted Employees)
-        </h1>
-
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 my-4">
+    <AdminPageShell title="Trash" subtitle="Restore or permanently delete soft-deleted employee records">
+      <AdminCard>
+          <div className="mb-4 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <ClearableInput
               id="searchInput"
               type="text"
@@ -209,9 +204,8 @@ const TrashEmp = () => {
               </div>
             </div>
           </div>
-        </div>
-      </main>
-    </div>
+      </AdminCard>
+    </AdminPageShell>
   );
 };
 

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NavLink, Link, useLocation } from "react-router-dom";
 import { getAuth, onAuthStateChanged, signOut } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
+import { doc, getDoc, collection, query, where, getDocs } from "firebase/firestore";
 import { db } from "../firebaseConfig";
 
 import { IoIosArrowBack } from "react-icons/io";
@@ -13,12 +13,10 @@ import {
   FaNewspaper,
   FaTools,
   FaProjectDiagram,
-<<<<<<< HEAD
   FaCalendarAlt,
   FaClipboardList,
   FaExternalLinkAlt,
   FaTrash,
-=======
   FaCalendarCheck,
   FaFileContract,
   FaGraduationCap,
@@ -27,20 +25,20 @@ import {
   FaUserLock,
   FaShieldAlt,
   FaUsersCog,
->>>>>>> ce7fac5 (Save work before sync)
+  FaUserTie,
+  FaUserFriends,
+  FaSearch,
+  FaLayerGroup,
 } from "react-icons/fa";
 
 const MENU = [
   {
-<<<<<<< HEAD
-=======
-    to: "/profile",
+    to: "/admin/profile",
     label: "My Profile",
     icon: <FaUserCircle size={18} />,
     key: "profile",
   },
   {
->>>>>>> ce7fac5 (Save work before sync)
     to: "/manage-emp",
     label: "Manage Emp",
     icon: <FaUsers size={18} />,
@@ -67,12 +65,20 @@ const MENU = [
   {
     to: "/manageservices",
     label: "Manage Services",
-<<<<<<< HEAD
-    icon: <FaServicestack size={18} />,
-=======
     icon: <FaTools size={18} />,
->>>>>>> ce7fac5 (Save work before sync)
     key: "manageservices",
+  },
+  {
+    to: "/managesubservices",
+    label: "Manage Subservices",
+    icon: <FaLayerGroup size={18} />,
+    key: "managesubservices",
+  },
+  {
+    to: "/manageseo",
+    label: "Manage SEO",
+    icon: <FaSearch size={18} />,
+    key: "manageseo",
   },
   {
     to: "/manageprojects",
@@ -111,7 +117,7 @@ const MENU = [
     key: "result",
   },
   {
-    to: "/FeedbackToTrainee",
+    to: "/feedbacktotrainee",
     label: "Feedback To Trainee",
     icon: <FaCommentDots size={18} />,
     key: "feedbacktotrainee",
@@ -139,6 +145,7 @@ const MENU = [
 const ALLOWED_KEYS_BY_ROLE = {
   admin: [...MENU.map((m) => m.key), "trainingaccess"],
   recruiter: [
+    "profile",
     "result",
     "itresult",
     "interestedcandidates",
@@ -146,14 +153,15 @@ const ALLOWED_KEYS_BY_ROLE = {
     "trainerdailyreport",
     "feedbacktotrainee",
   ],
-  trainer: ["trainerdailyreport", "FeedbackToTrainee"],
-  user: [],
+  trainer: ["profile", "trainerdailyreport", "feedbacktotrainee"],
+  user: ["profile"],
 };
 
 const SideBar = ({ isOpen, onClose }) => {
   const [role, setRole] = useState(null);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
+  const [allowedKeys, setAllowedKeys] = useState([]);
   const location = useLocation();
 
   useEffect(() => {
@@ -163,27 +171,18 @@ const SideBar = ({ isOpen, onClose }) => {
         if (!authUser?.email) {
           setUser(null);
           setRole(null);
+          setAllowedKeys([]);
           setLoading(false);
           return;
         }
         setUser(authUser);
-<<<<<<< HEAD
-        const snap = await getDoc(
-          doc(db, "users", authUser.email.toLowerCase()),
-        );
-        setRole(
-          snap.exists()
-            ? String(snap.data()?.role || "user").toLowerCase()
-            : "user",
-        );
-=======
         const userEmail = authUser.email.toLowerCase().trim();
         const userSnap = await getDoc(doc(db, "users", userEmail));
-        let userRole = null;
+        let userRole = "user";
+        
         if (userSnap.exists()) {
           userRole = String(userSnap.data()?.role || "user").toLowerCase();
         } else {
-          // Fallback: Query jobApplications by email field
           const q = query(collection(db, "jobApplications"), where("email", "==", userEmail));
           const querySnapshot = await getDocs(q);
           if (!querySnapshot.empty) {
@@ -191,34 +190,28 @@ const SideBar = ({ isOpen, onClose }) => {
           }
         }
 
-        if (userRole) {
-          setRole(userRole);
-          // Fetch role permissions from "roles" collection
-          const roleSnap = await getDoc(doc(db, "roles", userRole));
-          let permissions = [];
+        setRole(userRole);
+        
+        // Fetch role permissions or use static map
+        const roleSnap = await getDoc(doc(db, "roles", userRole));
+        let permissions = [];
 
-          if (roleSnap.exists()) {
-            permissions = roleSnap.data()?.permissions || [];
-          } else if (userRole === "admin") {
-            permissions = MENU.map((m) => m.key);
-          }
-
-          // Any role except 'user' gets 'profile' by default
-          if (userRole !== "user") {
-            if (!permissions.includes("profile")) {
-              permissions.push("profile");
-            }
-          }
-
-          setAllowedKeys(permissions);
+        if (roleSnap.exists()) {
+          permissions = roleSnap.data()?.permissions || [];
         } else {
-          setRole("user");
-          setAllowedKeys([]);
+          permissions = ALLOWED_KEYS_BY_ROLE[userRole] || [];
         }
->>>>>>> ce7fac5 (Save work before sync)
+
+        // Ensure profile is always there for logged in users
+        if (userRole !== "user" && !permissions.includes("profile")) {
+          permissions.push("profile");
+        }
+
+        setAllowedKeys(permissions);
       } catch (err) {
         console.error(err);
         setRole("user");
+        setAllowedKeys(["profile"]);
       } finally {
         setLoading(false);
       }
@@ -245,13 +238,12 @@ const SideBar = ({ isOpen, onClose }) => {
     };
   }, [isOpen]);
 
-  const allowedKeys = ALLOWED_KEYS_BY_ROLE[role] || [];
   const visibleMenu = MENU.filter((item) => allowedKeys.includes(item.key));
 
   if (loading) {
     return (
       <aside
-        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-white transform transition-transform duration-300 z-50 ${isOpen ? "translate-x-0" : "-translate-x-full"
+        className={`fixed top-0 left-0 h-full w-72 bg-gray-900 text-white transform transition-transform duration-300 z-50 md:z-20 ${isOpen ? "translate-x-0" : "-translate-x-full"
           }`}
       >
         <div className="flex items-center justify-center h-full">
@@ -266,11 +258,9 @@ const SideBar = ({ isOpen, onClose }) => {
   return (
     <>
       <aside
-        className={` fixed top-0 left-0 h-full overflow-scroll w-56 bg-gradient-to-b from-gray-900 to-gray-800 text-white
-          transform transition-transform duration-300 ease-out z-50
-          flex-shrink-0
+        className={`fixed top-0 left-0 h-full w-72 bg-gradient-to-b from-[#0a1225] via-[#0b1327] to-[#111b30] text-white transform transition-transform duration-300 ease-out z-50 md:z-20
           ${isOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"}
-          md:translate-x-0 md:sticky md:top-20 md:h-[calc(100vh-5rem)] md:z-40 border-r border-gray-700
+          md:translate-x-0 md:sticky md:top-0 md:h-screen md:shadow-none border-r border-white/10 overflow-hidden
         `}
       >
         <div className="flex flex-col h-full">
@@ -282,20 +272,22 @@ const SideBar = ({ isOpen, onClose }) => {
             <IoIosArrowBack size={26} />
           </button>
 
-          <h1 className="p-4 text-2xl font-bold">Admin Panel</h1>
+          <div className="px-6 pt-6 pb-5 border-b border-white/10">
+            <h1 className="text-2xl font-bold tracking-tight">Admin Panel</h1>
+          </div>
 
-          <nav className="flex-1  py-4 scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-900">
-            <ul className="space-y-1">
+          <nav className="flex-1 overflow-y-auto px-4 py-6 hide-scrollbar">
+            <ul className="space-y-3">
               {visibleMenu.map(({ to, label, icon, key }) => (
                 <li key={key}>
                   <NavLink
                     to={to}
                     end={to === "/"}
                     className={({ isActive }) =>
-                      `flex items-center px-4 py-3.5 rounded-lg transition-all duration-200 mx-1
+                      `flex items-center w-full gap-3 px-4 py-3.5 rounded-3xl transition-all duration-200 text-sm font-medium
                       ${isActive
-                        ? "bg-gradient-to-r from-red-600 to-red-500 shadow-lg shadow-red-500/20"
-                        : "hover:bg-gray-800 hover:translate-x-1"
+                        ? "bg-red-600 text-white shadow-lg shadow-red-500/25"
+                        : "text-slate-200 hover:bg-white/10 hover:text-white"
                       }`
                     }
                     onClick={() => onClose && onClose(false)}
@@ -309,29 +301,6 @@ const SideBar = ({ isOpen, onClose }) => {
               ))}
             </ul>
           </nav>
-
-          {/* User Profile Section */}
-          <div className="border-t border-gray-700 p-4 bg-gray-900/50">
-            <Link to="/profile" className="flex items-center gap-3 mb-3 hover:opacity-80 transition-opacity cursor-pointer block">
-              <div className="h-10 w-10 rounded-full bg-red-600 flex items-center justify-center text-white font-bold text-lg shadow-inner">
-                {user?.email?.charAt(0).toUpperCase() || "U"}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">
-                  {user?.email?.split("@")[0] || "User"}
-                </p>
-                <p className="text-xs text-gray-400 truncate capitalize">
-                  {role || "Admin"}
-                </p>
-              </div>
-            </Link>
-            <button
-              onClick={() => signOut(getAuth())}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 text-sm font-medium text-gray-300 bg-gray-800 hover:bg-red-600 hover:text-white rounded-lg transition-all duration-200 border border-gray-700 hover:border-red-500"
-            >
-              Sign Out
-            </button>
-          </div>
         </div>
       </aside>
 

@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { ref as storageRef, getDownloadURL } from "firebase/storage";
 import ClearableInput from "../../components/common/ClearableInput";
-import PageHeader from "../../components/common/PageHeader";
+import AdminPageShell, { AdminCard } from "../../components/common/AdminPageShell";
 
 export default function ResultsTable() {
   const [users, setUsers] = useState([]); // all users
@@ -12,8 +12,6 @@ export default function ResultsTable() {
   const [audioURLs, setAudioURLs] = useState({});
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-
   // pagination
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -129,13 +127,8 @@ export default function ResultsTable() {
   }
 
   return (
-    <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-    <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
-          Test Results
-        </h1>
-      <div className="space-y-6 mt-6">
-        {/* Controls & Search */}
-        <section className="premium-card p-4 sm:p-6">
+    <AdminPageShell title="Test Results" subtitle="Campus drive assessment results and candidate scores">
+        <AdminCard>
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="w-full md:max-w-sm">
               <label className="block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2">Search Candidates</label>
@@ -169,7 +162,7 @@ export default function ResultsTable() {
               </select>
             </div>
           </div>
-        </section>
+        </AdminCard>
 
         {/* Desktop Data Grid */}
         <div className="hidden lg:block premium-card overflow-hidden">
@@ -312,7 +305,6 @@ export default function ResultsTable() {
             </button>
           </div>
         </footer>
-      </div>
-    </div>
+    </AdminPageShell>
   );
 }

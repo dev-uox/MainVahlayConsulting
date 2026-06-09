@@ -1,5 +1,6 @@
 import React, { useState, Suspense, lazy } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
+import { isAdminPath } from "./utils/adminRoutes";
 
 /* Common Components - Keep these loaded immediately */
 import Navbar from "./components/Navbar";
@@ -97,27 +98,20 @@ const PageLoader = () => (
   </div>
 );
 
-const App = () => {
+const AppContent = () => {
   const [showPopup, setShowPopup] = useState(true);
+  const location = useLocation();
+  const isAdmin = isAdminPath(location.pathname);
 
   return (
-    <Router
-      future={{
-        v7_startTransition: true,
-        v7_relativeSplatPath: true,
-      }}
-    >
-      <ScrollToTop />
-      <SEO />
-      <div className="flex flex-col min-h-screen">
-        {showPopup && <PopupBox onClose={() => setShowPopup(false)} />}
+    <div className="flex flex-col min-h-screen">
+      {showPopup && !isAdmin && <PopupBox onClose={() => setShowPopup(false)} />}
 
-        <Navbar />
+      {!isAdmin && <Navbar />}
 
-        <main className="flex-grow">
-          {/* WRAP ROUTES IN SUSPENSE FOR LAZY LOADING */}
-          <Suspense fallback={<PageLoader />}>
-            <Routes>
+      <main className={isAdmin ? "flex-grow min-h-screen" : "flex-grow"}>
+        <Suspense fallback={<PageLoader />}>
+          <Routes>
               {/* Public */}
               <Route path="/" element={<Home />} />
               <Route path="/home" element={<Home />} />
@@ -174,7 +168,6 @@ const App = () => {
                 element={<CandidateAgreementPage />}
               />
 
-              {/* Assessment Public */}
               <Route path="/assessmentlogin" element={<Alogin />} />
               <Route path="/assessmentt&c" element={<AtreamsAndCondition />} />
               <Route path="/assessment" element={<Assessment />} />
@@ -182,6 +175,14 @@ const App = () => {
 
               {/* Admin Layout */}
               <Route element={<AdminSidebarLayout />}>
+                <Route
+                  path="/admin/profile"
+                  element={
+                    <ProtectedRoute roles={["admin"]}>
+                      <UserProfile />
+                    </ProtectedRoute>
+                  }
+                />
                 <Route
                   path="/manageblogs"
                   element={
@@ -433,14 +434,26 @@ const App = () => {
 
               {/* 404 */}
               <Route path="*" element={<PageNotFound />} />
-            </Routes>
-          </Suspense>
-        </main>
+          </Routes>
+        </Suspense>
+      </main>
 
-        <Footer />
-      </div>
-    </Router>
+      {!isAdmin && <Footer />}
+    </div>
   );
 };
+
+const App = () => (
+  <Router
+    future={{
+      v7_startTransition: true,
+      v7_relativeSplatPath: true,
+    }}
+  >
+    <ScrollToTop />
+    <SEO />
+    <AppContent />
+  </Router>
+);
 
 export default App;

@@ -11,47 +11,7 @@ import {
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { db, storage } from "../../firebaseConfig";
 import { v4 as uuidv4 } from "uuid";
-<<<<<<< HEAD
-import ClearableInput from "../../components/common/ClearableInput";
-import PageHeader from "../../components/common/PageHeader";
-=======
-import { X } from "lucide-react";
-
-// -----------------------------
-// UI Helper (Moved outside to prevent focus loss)
-// -----------------------------
-const Card = ({ title, right, children }) => (
-  <div className="bg-white rounded-xl shadow p-4 sm:p-5 mb-6 border border-gray-100">
-    {(title || right) && (
-      <div className="flex items-start justify-between gap-3 mb-4">
-        <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
-        {right}
-      </div>
-    )}
-    {children}
-  </div>
-);
-
-const ClearableInput = ({ value, setValue, placeholder, type = "text", className = "" }) => (
-  <div className="relative w-full group">
-    <input
-      type={type}
-      value={value}
-      onChange={(e) => setValue(e.target.value)}
-      placeholder={placeholder}
-      className={`w-full pr-10 border p-2.5 rounded-lg focus:ring-2 focus:ring-red-200 outline-none transition-all ${className}`}
-    />
-    {value && (
-      <button
-        onClick={() => setValue("")}
-        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-300 hover:text-red-500 transition-colors p-1"
-      >
-        <X size={16} />
-      </button>
-    )}
-  </div>
-);
->>>>>>> ce7fac5 (Save work before sync)
+import AdminPageShell from "../../components/common/AdminPageShell";
 
 const ManageHierarchyPage = () => {
   // ==============================
@@ -540,8 +500,8 @@ const ManageHierarchyPage = () => {
       impact: sub.impact || "",
       keyFeatures: sub.keyFeatures || [],
       seoKeywords: (sub.seoKeywords || []).join(", "),
-      seoTitle: sub.seoTitle || "", // ✅ fixed
-      seoDescription: sub.seoDescription || "", // ✅ fixed
+      seoTitle: sub.seoTitle || "", // Γ£à fixed
+      seoDescription: sub.seoDescription || "", // Γ£à fixed
     });
     setEditingSubserviceId(sub.id);
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -626,66 +586,26 @@ const ManageHierarchyPage = () => {
     }));
   };
 
-<<<<<<< HEAD
-=======
+  // ==============================
+  // UI: Card wrapper
+  // ==============================
+  const Card = ({ title, right, children }) => (
+    <div className="bg-white rounded-xl shadow p-4 sm:p-5">
+      {(title || right) && (
+        <div className="flex items-start justify-between gap-3 mb-4">
+          <h2 className="text-lg font-semibold text-gray-800">{title}</h2>
+          {right}
+        </div>
+      )}
+      {children}
+    </div>
+  );
 
-
->>>>>>> ce7fac5 (Save work before sync)
   // ==============================
   // RENDER
   // ==============================
   return (
-<<<<<<< HEAD
-    <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-    <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 w-fit border-red-500 pb-2">
-          Manage Services
-        </h1>
-      <div className="space-y-8 mt-6">
-        {/* ==================== CATEGORIES SECTION ==================== */}
-        <section className="premium-card p-6 ">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white">Master Categories</h2>
-            {editingCategoryId && (
-              <button
-                onClick={resetCategoryForm}
-                className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition-colors"
-              >
-                Cancel Edit
-              </button>
-            )}
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Category Name</label>
-                <ClearableInput
-                  id="category-name"
-                  type="text"
-                  placeholder="e.g. Technology"
-                  value={newCategory.name}
-                  onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-red-200"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Display Title</label>
-                <ClearableInput
-                  id="category-title"
-                  type="text"
-                  placeholder="e.g. IT Solutions"
-                  value={newCategory.title}
-                  onChange={(e) => setNewCategory({ ...newCategory, title: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-red-200"
-=======
-    <div className="min-h-screen bg-gray-50">
-      <main className="w-full">
-
-        <div className="mx-auto w-full max-w-6xl px-3 sm:px-6 lg:px-8 py-4 sm:py-6">
-          <h1 className="text-2xl sm:text-3xl font-bold text-red-600 mb-4 sm:mb-6 border-b-4 border-red-500 pb-2">
-            Manage Services
-          </h1>
-
+    <AdminPageShell title="Manage Services" subtitle="Manage categories, services, and subservices" wide>
           <div className="space-y-4 sm:space-y-6">
             {/* -------------------- CATEGORIES -------------------- */}
             <Card
@@ -702,474 +622,414 @@ const ManageHierarchyPage = () => {
               }
             >
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                <ClearableInput
+                <input
+                  type="text"
                   placeholder="Category Name"
                   value={newCategory.name}
-                  setValue={(val) => setNewCategory({ ...newCategory, name: val })}
+                  onChange={(e) => setNewCategory({ ...newCategory, name: e.target.value })}
+                  className="p-2.5 border rounded-lg w-full"
                 />
-                <ClearableInput
+                <input
+                  type="text"
                   placeholder="Category Title"
                   value={newCategory.title}
-                  setValue={(val) => setNewCategory({ ...newCategory, title: val })}
+                  onChange={(e) => setNewCategory({ ...newCategory, title: e.target.value })}
+                  className="p-2.5 border rounded-lg w-full"
                 />
-                <ClearableInput
+                <input
+                  type="text"
                   placeholder="Category Description"
                   value={newCategory.description}
-                  setValue={(val) => setNewCategory({ ...newCategory, description: val })}
->>>>>>> ce7fac5 (Save work before sync)
+                  onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
+                  className="p-2.5 border rounded-lg w-full"
                 />
-              </div>
-            </div>
 
-<<<<<<< HEAD
-            <div className="lg:col-span-2">
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Description</label>
-              <textarea
-                rows={4}
-                placeholder="Briefly describe this business category..."
-                value={newCategory.description}
-                onChange={(e) => setNewCategory({ ...newCategory, description: e.target.value })}
-                className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:outline-none focus:ring-2 focus:ring-red-200"
-              />
-            </div>
-
-            <div className="md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">SEO Title</label>
-                <ClearableInput
-                  id="category-seo-title"
+                <input
                   type="text"
-                  placeholder="Keyword rich title"
-                  value={newCategory.seoTitle}
-                  onChange={(e) => setNewCategory({ ...newCategory, seoTitle: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-red-200"
-                />
-              </div>
-              <div className="md:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">SEO Keywords</label>
-                <ClearableInput
-                  id="category-seo-keywords"
-                  type="text"
-                  placeholder="tech, cloud, dev (comma separated)"
+                  placeholder="SEO Keywords (comma separated)"
                   value={newCategory.seoKeywords}
                   onChange={(e) => setNewCategory({ ...newCategory, seoKeywords: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-red-200"
+                  className="p-2.5 border rounded-lg w-full md:col-span-2"
                 />
-              </div>
-            </div>
-=======
-                <div className="md:col-span-2">
-                  <ClearableInput
-                    placeholder="SEO Keywords (comma separated)"
-                    value={newCategory.seoKeywords}
-                    setValue={(val) => setNewCategory({ ...newCategory, seoKeywords: val })}
-                  />
-                </div>
-                <ClearableInput
+                <input
+                  type="text"
                   placeholder="SEO Title"
                   value={newCategory.seoTitle}
-                  setValue={(val) => setNewCategory({ ...newCategory, seoTitle: val })}
+                  onChange={(e) => setNewCategory({ ...newCategory, seoTitle: e.target.value })}
+                  className="p-2.5 border rounded-lg w-full"
                 />
-                <div className="md:col-span-2">
-                  <ClearableInput
-                    placeholder="SEO Description"
-                    value={newCategory.seoDescription}
-                    setValue={(val) => setNewCategory({ ...newCategory, seoDescription: val })}
-                  />
-                </div>
->>>>>>> ce7fac5 (Save work before sync)
+                <input
+                  type="text"
+                  placeholder="SEO Description"
+                  value={newCategory.seoDescription}
+                  onChange={(e) => setNewCategory({ ...newCategory, seoDescription: e.target.value })}
+                  className="p-2.5 border rounded-lg w-full md:col-span-2"
+                />
 
-            <div className="md:col-span-2 lg:col-span-3">
-              <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Image Asset</label>
-              <div className="flex flex-col sm:flex-row items-center gap-4 p-4 border border-slate-100 dark:border-slate-800 rounded-xl bg-slate-50 dark:bg-slate-900/50">
                 <input
                   type="file"
                   ref={categoryImageRef}
-                  className="block w-full text-sm text-slate-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-bold
-                    file:bg-red-50 file:text-red-700
-                    hover:file:bg-red-100
-                    dark:file:bg-red-900/20 dark:file:text-red-400"
+                  className="p-2.5 border rounded-lg w-full"
                   onChange={(e) => setNewCategory({ ...newCategory, image: e.target.files?.[0] || null })}
                 />
+
                 <button
                   onClick={editingCategoryId ? handleUpdateCategory : handleAddCategory}
-                  className="w-full sm:w-auto bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 px-8 rounded-lg shadow-lg shadow-red-600/20 transition-all active:scale-95 disabled:opacity-50"
+                  className="bg-red-600 text-white px-4 py-2.5 rounded-lg w-full md:w-auto"
                   disabled={categoryLoading}
                 >
-                  {categoryLoading ? "Syncing..." : editingCategoryId ? "Update Category" : "Publish Category"}
+                  {categoryLoading
+                    ? "Saving..."
+                    : editingCategoryId
+                      ? "Update Category"
+                      : "Add Category"}
                 </button>
               </div>
-            </div>
-          </div>
 
-          {/* Category browser */}
-          <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800">
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">Active Segments</p>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((cat) => (
-                <div
-                  key={cat.id}
-                  className={`flex items-center gap-3 pl-4 pr-2 py-2 rounded-full border transition-all cursor-pointer group ${
-                    cat.id === selectedCategory
-                      ? "bg-red-600 border-red-600 text-white shadow-md shadow-red-600/20"
-                      : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:border-red-400"
-                  }`}
-                  onClick={() => setSelectedCategory(cat.id)}
-                >
-                  <span className="text-sm font-bold">{cat.name}</span>
-                  <div className="flex items-center gap-1 border-l border-white/20 pl-2">
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleEditCategory(cat); }}
-                      className={`p-1 hover:scale-110 transition-transform ${cat.id === selectedCategory ? "text-white" : "text-slate-400 hover:text-blue-500"}`}
-                    >
-                      <FaEdit className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={(e) => { e.stopPropagation(); handleDeleteCategory(cat.id); }}
-                      className={`p-1 hover:scale-110 transition-transform ${cat.id === selectedCategory ? "text-white" : "text-slate-400 hover:text-red-500"}`}
-                    >
-                      <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                    </button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ===================== SERVICES SECTION ===================== */}
-        {selectedCategory && (
-          <section className="premium-card p-6 border-t-4 border-t-blue-500 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Core Services</h2>
-                <p className="text-xs text-slate-400 font-medium">Managing services for <span className="text-blue-500">{categories.find(c => c.id === selectedCategory)?.name}</span></p>
-              </div>
-              {editingServiceId && (
-                <button
-                  onClick={resetServiceForm}
-                  className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition-colors"
-                >
-                  Cancel Edit
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Service Name</label>
-                <ClearableInput
-                  id="service-name"
-                  type="text"
-                  placeholder="e.g. Web Development"
-                  value={newService.name}
-                  onChange={(e) => setNewService({ ...newService, name: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Service Title</label>
-                <ClearableInput
-                  id="service-title"
-                  type="text"
-                  placeholder="e.g. Custom Web Solutions"
-                  value={newService.title}
-                  onChange={(e) => setNewService({ ...newService, title: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
-              <div className="md:col-span-2 lg:col-span-1">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Asset Upload</label>
-                <input
-                  type="file"
-                  ref={serviceImageRef}
-                  className="block w-full text-sm text-slate-500
-                    file:mr-4 file:py-2 file:px-4
-                    file:rounded-full file:border-0
-                    file:text-sm file:font-semibold
-                    file:bg-blue-50 file:text-blue-700
-                    hover:file:bg-blue-100 dark:file:bg-blue-900/20"
-                  onChange={(e) => setNewService({ ...newService, image: e.target.files?.[0] || null })}
-                />
-              </div>
-
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Service Philosophy</label>
-                <textarea
-                  rows={4}
-                  placeholder="Core value proposition..."
-                  value={newService.description}
-                  onChange={(e) => setNewService({ ...newService, description: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-200"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Key Selling Points</label>
-                <div className="flex gap-2">
-                  <ClearableInput
-                    id="service-bullet"
-                    type="text"
-                    placeholder="Add a reason to choose us"
-                    value={newServiceBullet}
-                    onChange={(e) => setNewServiceBullet(e.target.value)}
-                    className="flex-1 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-blue-200"
-                  />
+              {/* Category chips (mobile horizontal scroll) */}
+              <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+                {categories.map((cat) => (
                   <button
-                    onClick={handleAddServiceBullet}
-                    className="bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors shadow-sm"
+                    key={cat.id}
+                    onClick={() => setSelectedCategory(cat.id)}
+                    className={`flex items-center gap-2 px-3 py-2 rounded-full border whitespace-nowrap ${cat.id === selectedCategory
+                        ? "bg-red-100 border-red-300"
+                        : "bg-gray-50 border-gray-300"
+                      }`}
                   >
-                    Add
+                    <span className="underline text-gray-700">{cat.name}</span>
+
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleEditCategory(cat);
+                      }}
+                      className="text-red-500"
+                      title="Edit"
+                    >
+                      <FaEdit />
+                    </span>
+
+                    <span
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDeleteCategory(cat.id);
+                      }}
+                      className="text-red-500 text-lg leading-none"
+                      title="Delete"
+                    >
+                      ├ù
+                    </span>
                   </button>
-                </div>
-                <div className="max-h-32 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                  {newService.whyChooseUs?.map((point, idx) => (
-                    <div key={idx} className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                      <span className="text-xs font-medium text-slate-600 dark:text-slate-400 truncate">{point}</span>
-                      <button onClick={() => handleRemoveServiceBullet(idx)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 border-t border-slate-50 dark:border-slate-800">
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">SEO Title</label>
-                  <ClearableInput
-                    id="service-seo-title"
-                    type="text"
-                    value={newService.seoTitle}
-                    onChange={(e) => setNewService({ ...newService, seoTitle: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-blue-200"
-                  />
-                </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">SEO Keywords</label>
-                  <ClearableInput
-                    id="service-seo-keywords"
-                    type="text"
-                    value={newService.seoKeywords}
-                    onChange={(e) => setNewService({ ...newService, seoKeywords: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-blue-200"
-                  />
-                </div>
-              </div>
-
-              <div className="md:col-span-2 lg:col-span-3 flex justify-end pt-4">
-                <button
-                  onClick={editingServiceId ? handleUpdateService : handleAddService}
-                  className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-10 rounded-lg shadow-lg shadow-blue-500/20 transition-all active:scale-95 disabled:opacity-50"
-                  disabled={serviceLoading}
-                >
-                  {serviceLoading ? "Processing..." : editingServiceId ? "Update Service" : "Create Service"}
-                </button>
-              </div>
-            </div>
-
-            {/* Service selector */}
-            <div className="mt-8 pt-6 border-t border-slate-100 dark:border-slate-800 overflow-x-auto">
-              <div className="flex gap-4">
-                {services.map((svc) => (
-                  <div
-                    key={svc.id}
-                    className={`relative min-w-[240px] p-4 rounded-xl border transition-all cursor-pointer group ${
-                      svc.id === selectedService
-                        ? "bg-blue-50 dark:bg-blue-900/20 border-blue-600 shadow-md"
-                        : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 hover:border-blue-400 shadow-sm"
-                    }`}
-                    onClick={() => setSelectedService(svc.id)}
-                  >
-                    <div className="flex items-center justify-between mb-2">
-                      <h3 className={`font-bold truncate ${svc.id === selectedService ? "text-blue-700 dark:text-blue-400" : "text-slate-900 dark:text-white"}`}>
-                        {svc.name}
-                      </h3>
-                      <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={(e) => { e.stopPropagation(); handleEditService(svc); }} className="p-1.5 text-slate-400 hover:text-blue-500"><FaEdit className="w-3 h-3" /></button>
-                        <button onClick={(e) => { e.stopPropagation(); handleDeleteService(svc.id); }} className="p-1.5 text-slate-400 hover:text-red-500"><svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg></button>
-                      </div>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 line-clamp-2">{svc.description}</p>
-                    {svc.id === selectedService && (
-                      <div className="absolute -bottom-1.5 left-1/2 -translate-x-1/2 w-12 h-1 bg-blue-600 rounded-full" />
-                    )}
-                  </div>
                 ))}
               </div>
-            </div>
-          </section>
-        )}
+            </Card>
 
-        {/* ===================== SUBSERVICES SECTION ===================== */}
-        {selectedService && (
-          <section className="premium-card p-6 border-t-4 border-t-emerald-500 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">Granular Expertise</h2>
-                <p className="text-xs text-slate-400 font-medium">Specialized units for <span className="text-emerald-500">{services.find(s => s.id === selectedService)?.name}</span></p>
-              </div>
-              {editingSubserviceId && (
-                <button
-                  onClick={resetSubserviceForm}
-                  className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-red-600 transition-colors"
-                >
-                  Cancel Edit
-                </button>
-              )}
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Unit Name</label>
-                <ClearableInput
-                  id="sub-name"
-                  type="text"
-                  placeholder="e.g. React Frontend"
-                  value={newSubservice.name}
-                  onChange={(e) => setNewSubservice({ ...newSubservice, name: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-emerald-200"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Unit Display Title</label>
-                <ClearableInput
-                  id="sub-title"
-                  type="text"
-                  placeholder="e.g. Scalable React Apps"
-                  value={newSubservice.title}
-                  onChange={(e) => setNewSubservice({ ...newSubservice, title: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-emerald-200"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Strategic Impact</label>
-                <ClearableInput
-                  id="sub-impact"
-                  type="text"
-                  placeholder="e.g. Boost conversion by 40%"
-                  value={newSubservice.impact}
-                  onChange={(e) => setNewSubservice({ ...newSubservice, impact: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-emerald-200"
-                />
-              </div>
-
-              <div className="lg:col-span-2">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Unit Description</label>
-                <textarea
-                  rows={4}
-                  placeholder="Deep dive into this specialization..."
-                  value={newSubservice.description}
-                  onChange={(e) => setNewSubservice({ ...newSubservice, description: e.target.value })}
-                  className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:outline-none focus:ring-2 focus:ring-emerald-200"
-                />
-              </div>
-
-              <div className="space-y-4">
-                <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Technical Features</label>
-                <div className="flex gap-2">
-                  <ClearableInput
-                    id="sub-bullet"
+            {/* -------------------- SERVICES -------------------- */}
+            {selectedCategory && (
+              <Card
+                title="Services"
+                right={
+                  editingServiceId ? (
+                    <button
+                      onClick={resetServiceForm}
+                      className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
+                    >
+                      Cancel Edit
+                    </button>
+                  ) : null
+                }
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input
                     type="text"
-                    placeholder="Add a key feature"
-                    value={newSubserviceBullet}
-                    onChange={(e) => setNewSubserviceBullet(e.target.value)}
-                    className="flex-1 dark:bg-slate-900 border-slate-200 dark:border-slate-700 rounded-lg focus:ring-emerald-200"
+                    placeholder="Service Name"
+                    value={newService.name}
+                    onChange={(e) => setNewService({ ...newService, name: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
                   />
+                  <input
+                    type="text"
+                    placeholder="Service Title"
+                    value={newService.title}
+                    onChange={(e) => setNewService({ ...newService, title: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Service Description"
+                    value={newService.description}
+                    onChange={(e) => setNewService({ ...newService, description: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="SEO Keywords (comma separated)"
+                    value={newService.seoKeywords}
+                    onChange={(e) => setNewService({ ...newService, seoKeywords: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full md:col-span-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="SEO Title"
+                    value={newService.seoTitle}
+                    onChange={(e) => setNewService({ ...newService, seoTitle: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="SEO Description"
+                    value={newService.seoDescription}
+                    onChange={(e) => setNewService({ ...newService, seoDescription: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full md:col-span-2"
+                  />
+
+                  <input
+                    type="file"
+                    ref={serviceImageRef}
+                    className="p-2.5 border rounded-lg w-full"
+                    onChange={(e) => setNewService({ ...newService, image: e.target.files?.[0] || null })}
+                  />
+
+                  <div className="md:col-span-3 flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      placeholder="Add Why Choose Us bullet"
+                      value={newServiceBullet}
+                      onChange={(e) => setNewServiceBullet(e.target.value)}
+                      className="p-2.5 border rounded-lg flex-1"
+                    />
+                    <button
+                      onClick={handleAddServiceBullet}
+                      className="bg-green-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      Add Bullet
+                    </button>
+                  </div>
+
+                  {newService.whyChooseUs?.length > 0 && (
+                    <ul className="md:col-span-3 space-y-1 bg-gray-50 p-3 rounded-lg">
+                      {newService.whyChooseUs.map((b, i) => (
+                        <li key={i} className="flex justify-between text-sm text-gray-700">
+                          ΓÇó {b}
+                          <button
+                            onClick={() => handleRemoveServiceBullet(i)}
+                            className="text-red-500 ml-2"
+                          >
+                            ├ù
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
                   <button
-                    onClick={handleAddSubserviceBullet}
-                    className="bg-slate-900 dark:bg-slate-800 text-white px-4 py-2 rounded-lg hover:bg-emerald-600 transition-colors shadow-sm"
+                    onClick={editingServiceId ? handleUpdateService : handleAddService}
+                    className="bg-green-600 text-white px-4 py-2.5 rounded-lg w-full md:w-auto mt-2"
+                    disabled={serviceLoading}
                   >
-                    Add
+                    {serviceLoading
+                      ? "Saving..."
+                      : editingServiceId
+                        ? "Update Service"
+                        : "Add Service"}
                   </button>
                 </div>
-                <div className="max-h-32 overflow-y-auto space-y-2 pr-1 custom-scrollbar">
-                  {newSubservice.keyFeatures?.map((f, i) => (
-                    <div key={i} className="flex items-center justify-between gap-2 bg-slate-50 dark:bg-slate-900/50 p-2 rounded-lg border border-slate-100 dark:border-slate-800">
-                      <span className="text-xs font-medium text-slate-600 dark:text-slate-400 truncate">{f}</span>
-                      <button onClick={() => handleRemoveSubserviceBullet(i)} className="text-red-500 p-1 hover:bg-red-50 dark:hover:bg-red-900/20 rounded">
-                        <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" /></svg>
-                      </button>
-                    </div>
+
+                <div className="mt-4 flex gap-2 overflow-x-auto pb-2">
+                  {services.map((svc) => (
+                    <button
+                      key={svc.id}
+                      onClick={() => setSelectedService(svc.id)}
+                      className={`flex items-center gap-2 px-3 py-2 rounded-lg border whitespace-nowrap ${svc.id === selectedService
+                          ? "bg-green-100 border-green-300 shadow-sm"
+                          : "bg-gray-50 border-gray-300"
+                        }`}
+                    >
+                      <span className="underline text-gray-700">{svc.name}</span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEditService(svc);
+                        }}
+                        className="text-red-600"
+                        title="Edit"
+                      >
+                        <FaEdit />
+                      </span>
+                      <span
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteService(svc.id);
+                        }}
+                        className="text-red-600 text-lg leading-none"
+                        title="Delete"
+                      >
+                        ├ù
+                      </span>
+                    </button>
                   ))}
                 </div>
-              </div>
+              </Card>
+            )}
 
-              <div className="md:col-span-2 lg:col-span-3 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pt-4 border-t border-slate-50 dark:border-slate-800">
-                <div className="md:col-span-2 lg:col-span-1">
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Icon Asset</label>
+            {/* -------------------- SUBSERVICES -------------------- */}
+            {selectedService && (
+              <Card
+                title="Subservices"
+                right={
+                  editingSubserviceId ? (
+                    <button
+                      onClick={resetSubserviceForm}
+                      className="text-sm px-3 py-2 rounded-lg border hover:bg-gray-50"
+                    >
+                      Cancel Edit
+                    </button>
+                  ) : null
+                }
+              >
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Subservice Name"
+                    value={newSubservice.name}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, name: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Subservice Title"
+                    value={newSubservice.title}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, title: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="Subservice Description"
+                    value={newSubservice.description}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, description: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="Subservice Impact"
+                    value={newSubservice.impact}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, impact: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+
+                  <input
+                    type="text"
+                    placeholder="SEO Keywords (comma separated)"
+                    value={newSubservice.seoKeywords}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, seoKeywords: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full md:col-span-2"
+                  />
+                  <input
+                    type="text"
+                    placeholder="SEO Title"
+                    value={newSubservice.seoTitle}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, seoTitle: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full"
+                  />
+                  <input
+                    type="text"
+                    placeholder="SEO Description"
+                    value={newSubservice.seoDescription}
+                    onChange={(e) => setNewSubservice({ ...newSubservice, seoDescription: e.target.value })}
+                    className="p-2.5 border rounded-lg w-full md:col-span-2"
+                  />
+
                   <input
                     type="file"
                     ref={subserviceIconRef}
-                    className="block w-full text-sm text-slate-500
-                      file:mr-4 file:py-2 file:px-4
-                      file:rounded-full file:border-0
-                      file:text-sm file:font-semibold
-                      file:bg-emerald-50 file:text-emerald-700
-                      hover:file:bg-emerald-100 dark:file:bg-emerald-900/20"
+                    className="p-2.5 border rounded-lg w-full"
                     onChange={(e) => setNewSubservice({ ...newSubservice, icon: e.target.files?.[0] || null })}
                   />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">SEO Title</label>
-                  <ClearableInput
-                    id="sub-seo-title"
-                    type="text"
-                    value={newSubservice.seoTitle}
-                    onChange={(e) => setNewSubservice({ ...newSubservice, seoTitle: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-emerald-200"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1.5">SEO Keywords</label>
-                  <ClearableInput
-                    id="sub-seo-keywords"
-                    type="text"
-                    value={newSubservice.seoKeywords}
-                    onChange={(e) => setNewSubservice({ ...newSubservice, seoKeywords: e.target.value })}
-                    className="w-full border border-slate-200 dark:border-slate-700 dark:bg-slate-900 p-2.5 rounded-lg dark:text-white focus:ring-2 focus:ring-emerald-200"
-                  />
-                </div>
-              </div>
 
-              <div className="md:col-span-2 lg:col-span-3 flex justify-end pt-4">
-                <button
-                  onClick={editingSubserviceId ? handleUpdateSubservice : handleAddSubservice}
-                  className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-12 rounded-lg shadow-lg shadow-emerald-500/20 transition-all active:scale-95 disabled:opacity-50"
-                  disabled={subserviceLoading}
-                >
-                  {subserviceLoading ? "Optimizing..." : editingSubserviceId ? "Update Sub-Unit" : "Define Sub-Unit"}
-                </button>
-              </div>
-            </div>
+                  <div className="md:col-span-3 flex flex-col sm:flex-row gap-2">
+                    <input
+                      type="text"
+                      placeholder="Add Key Feature bullet"
+                      value={newSubserviceBullet}
+                      onChange={(e) => setNewSubserviceBullet(e.target.value)}
+                      className="p-2.5 border rounded-lg flex-1"
+                    />
+                    <button
+                      onClick={handleAddSubserviceBullet}
+                      className="bg-purple-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      Add Bullet
+                    </button>
+                  </div>
 
-            {/* Subservice display list */}
-            <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-              {subservices.map((sub) => (
-                <div key={sub.id} className="premium-card p-4 bg-white dark:bg-slate-900 border-slate-100 dark:border-slate-800 flex items-center justify-between group hover:border-emerald-400 transition-colors">
-                  <div className="flex items-center gap-4 flex-1 min-w-0">
-                    <div className="h-10 w-10 bg-emerald-50 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                      {sub.icon ? <img src={sub.icon} className="h-6 w-6 object-contain" alt="" /> : <FaEdit className="text-emerald-500" />}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-bold text-slate-900 dark:text-white truncate">{sub.name}</h4>
-                      <p className="text-[10px] text-emerald-600 dark:text-emerald-400 font-bold uppercase tracking-widest">{sub.impact}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEditSubservice(sub)} className="p-2 text-slate-400 hover:text-blue-500"><FaEdit className="w-4 h-4" /></button>
-                    <button onClick={() => handleDeleteSubservice(sub.id)} className="p-2 text-slate-400 hover:text-red-500"><svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg></button>
-                  </div>
+                  {newSubservice.keyFeatures?.length > 0 && (
+                    <ul className="md:col-span-3 space-y-1 bg-gray-50 p-3 rounded-lg">
+                      {newSubservice.keyFeatures.map((b, i) => (
+                        <li key={i} className="flex justify-between text-sm text-gray-700">
+                          ΓÇó {b}
+                          <button
+                            onClick={() => handleRemoveSubserviceBullet(i)}
+                            className="text-red-500 ml-2"
+                          >
+                            ├ù
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+
+                  <button
+                    onClick={editingSubserviceId ? handleUpdateSubservice : handleAddSubservice}
+                    className="bg-purple-600 text-white px-4 py-2.5 rounded-lg w-full md:w-auto mt-2"
+                    disabled={subserviceLoading}
+                  >
+                    {subserviceLoading
+                      ? "Saving..."
+                      : editingSubserviceId
+                        ? "Update Subservice"
+                        : "Add Subservice"}
+                  </button>
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
-      </div>
-    </div>
+
+                {/* Subservice grid matches the image */}
+                <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {subservices.map((sub) => (
+                    <div
+                      key={sub.id}
+                      className="p-4 border rounded-xl bg-white shadow-sm relative group hover:border-purple-300 transition-colors"
+                    >
+                      <div className="flex justify-between items-start mb-2">
+                        <h4 className="font-bold text-gray-900 border-b-2 border-gray-100 pb-1">
+                          {sub.name}
+                        </h4>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={() => handleEditSubservice(sub)}
+                            className="text-red-500 hover:scale-110 transition-transform"
+                          >
+                            <FaEdit size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteSubservice(sub.id)}
+                            className="text-red-500 hover:scale-110 transition-transform text-lg leading-none"
+                          >
+                            ├ù
+                          </button>
+                        </div>
+                      </div>
+                      <p className="text-xs text-gray-500 line-clamp-2">
+                        {sub.description}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            )}
+          </div>
+    </AdminPageShell>
   );
 };
 

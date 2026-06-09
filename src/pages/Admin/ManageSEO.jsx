@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { collection, getDocs, addDoc, updateDoc, doc, deleteDoc } from 'firebase/firestore';
 import { db } from '../../firebaseConfig'; // Adjust path as needed
-import Side_bar from "../../components/Side_bar";
 import { FaEdit, FaTrash } from 'react-icons/fa';
+import AdminPageShell, { AdminCard, AdminTable, adminInputClass, adminBtnPrimary } from "../../components/common/AdminPageShell";
 
 const SeoManagePage = () => {
   // State for existing SEO entries
@@ -95,158 +95,90 @@ const SeoManagePage = () => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row min-h-screen bg-gray-100">
-      {/* Sidebar */}
-      <div className="hidden md:block md:w-1/5 shadow-lg">
-        <Side_bar />
-      </div>
+    <AdminPageShell title="SEO Management" subtitle="Manage meta titles, descriptions, and keywords for site pages">
+      <AdminCard title={editingEntry ? "Edit SEO Entry" : "Add New SEO Entry"}>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Page URL or Slug</label>
+            <input type="text" name="page" value={formData.page} onChange={handleChange} placeholder="/about, /contact, etc." required className={adminInputClass} />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Meta Title</label>
+            <input type="text" name="metaTitle" value={formData.metaTitle} onChange={handleChange} placeholder="Enter meta title" required className={adminInputClass} />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Meta Description</label>
+            <textarea name="metaDescription" value={formData.metaDescription} onChange={handleChange} placeholder="Enter meta description" required className={adminInputClass} rows={3} />
+          </div>
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700">Keywords (comma separated)</label>
+            <input type="text" name="keywords" value={formData.keywords} onChange={handleChange} placeholder="e.g. react, seo, javascript" className={adminInputClass} />
+          </div>
+          <button type="submit" className={adminBtnPrimary}>
+            {editingEntry ? "Update Entry" : "Add Entry"}
+          </button>
+        </form>
+      </AdminCard>
 
-      {/* Main Content */}
-      <div className="flex-1 p-6">
-        <h1 className="text-3xl font-bold mb-4">SEO Management</h1>
-
-        {/* Form Section */}
-        <div className="mb-8 bg-white p-6 rounded-lg shadow">
-          <h2 className="text-xl font-semibold mb-4">
-            {editingEntry ? 'Edit SEO Entry' : 'Add New SEO Entry'}
-          </h2>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <label className="block font-medium mb-1">Page URL or Slug</label>
-              <input
-                type="text"
-                name="page"
-                value={formData.page}
-                onChange={handleChange}
-                placeholder="/about, /contact, etc."
-                required
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Meta Title</label>
-              <input
-                type="text"
-                name="metaTitle"
-                value={formData.metaTitle}
-                onChange={handleChange}
-                placeholder="Enter meta title"
-                required
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Meta Description</label>
-              <textarea
-                name="metaDescription"
-                value={formData.metaDescription}
-                onChange={handleChange}
-                placeholder="Enter meta description"
-                required
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Keywords (comma separated)</label>
-              <input
-                type="text"
-                name="keywords"
-                value={formData.keywords}
-                onChange={handleChange}
-                placeholder="e.g. react, seo, javascript"
-                className="w-full border border-gray-300 p-2 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors"
-            >
-              {editingEntry ? 'Update Entry' : 'Add Entry'}
-            </button>
-          </form>
-        </div>
-
-        {/* Desktop View: Table */}
-        <div className="hidden md:block bg-white p-6 rounded-lg shadow overflow-x-auto">
-          <h2 className="text-xl font-semibold mb-4">Existing SEO Entries</h2>
-          <table className="min-w-full divide-y divide-gray-200 text-sm">
-            <thead className="bg-gray-200">
-              <tr>
-                <th className="px-4 py-2 text-left">Page</th>
-                <th className="px-4 py-2 text-left">Meta Title</th>
-                <th className="px-4 py-2 text-left">Meta Description</th>
-                <th className="px-4 py-2 text-left">Keywords</th>
-                <th className="px-4 py-2 text-center">Actions</th>
+      <AdminCard title="Existing SEO Entries" className="hidden md:block" noPadding>
+        <AdminTable>
+          <thead>
+            <tr>
+              <th>Page</th>
+              <th>Meta Title</th>
+              <th>Meta Description</th>
+              <th>Keywords</th>
+              <th className="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {seoEntries.map((entry) => (
+              <tr key={entry.id}>
+                <td>{entry.page}</td>
+                <td>{entry.metaTitle}</td>
+                <td>{entry.metaDescription}</td>
+                <td>{entry.keywords}</td>
+                <td>
+                  <div className="flex justify-center gap-2">
+                    <button onClick={() => handleEdit(entry)} className="rounded-lg p-2 text-red-600 hover:bg-red-50" type="button" aria-label="Edit">
+                      <FaEdit size={18} />
+                    </button>
+                    <button onClick={() => handleDelete(entry.id)} className="rounded-lg p-2 text-red-600 hover:bg-red-50" type="button" aria-label="Delete">
+                      <FaTrash size={18} />
+                    </button>
+                  </div>
+                </td>
               </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-100">
-              {seoEntries.map(entry => (
-                <tr key={entry.id}>
-                  <td className="px-4 py-2">{entry.page}</td>
-                  <td className="px-4 py-2">{entry.metaTitle}</td>
-                  <td className="px-4 py-2">{entry.metaDescription}</td>
-                  <td className="px-4 py-2">{entry.keywords}</td>
-                  <td className="px-4 py-2 text-center">
-                    <div className=' flex '>
-                    <button
-                      onClick={() => handleEdit(entry)}
-                      className=" text-white px-2 py-1 rounded mr-2 hover:bg-yellow-600 transition-colors"
-                    >
-                      <FaEdit size={20} className='text-red-600' />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(entry.id)}
-                      className=" text-white px-2 py-1 rounded hover:bg-red-600 transition-colors"
-                    >
-                     <FaTrash size={20} className='text-red-600' />
-                    </button>
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {seoEntries.length === 0 && (
-                <tr>
-                  <td colSpan="5" className="text-center py-4">
-                    No SEO entries found.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+            ))}
+            {seoEntries.length === 0 && (
+              <tr>
+                <td colSpan="5" className="py-8 text-center text-gray-500">No SEO entries found.</td>
+              </tr>
+            )}
+          </tbody>
+        </AdminTable>
+      </AdminCard>
 
-        {/* Mobile View: Card Layout */}
-        <div className="block md:hidden space-y-4">
-          <h2 className="text-xl font-semibold mb-4">Existing SEO Entries</h2>
-          {seoEntries.length > 0 ? (
-            seoEntries.map(entry => (
-              <div key={entry.id} className="bg-white p-4 rounded-lg shadow">
-                <p className="mb-1"><span className="font-medium">Page:</span> {entry.page}</p>
-                <p className="mb-1"><span className="font-medium">Meta Title:</span> {entry.metaTitle}</p>
-                <p className="mb-1"><span className="font-medium">Meta Description:</span> {entry.metaDescription}</p>
-                <p className="mb-1"><span className="font-medium">Keywords:</span> {entry.keywords}</p>
-                <div className="flex justify-between mt-2">
-                  <button
-                    onClick={() => handleEdit(entry)}
-                    className=" text-white px-3 py-1 rounded hover:bg-yellow-600 transition-colors"
-                  >
-                   <FaEdit size={20} className='text-red-600' />
-                  </button>
-                  <button
-                    onClick={() => handleDelete(entry.id)}
-                    className=" text-white px-3 py-1 rounded hover:bg-red-600 transition-colors"
-                  >
-                    <FaTrash size={20} className='text-red-600' />
-                  </button>
-                </div>
+      <div className="space-y-4 md:hidden">
+        <h2 className="text-lg font-semibold text-slate-900">Existing SEO Entries</h2>
+        {seoEntries.length > 0 ? (
+          seoEntries.map((entry) => (
+            <AdminCard key={entry.id}>
+              <p className="mb-1"><span className="font-medium">Page:</span> {entry.page}</p>
+              <p className="mb-1"><span className="font-medium">Meta Title:</span> {entry.metaTitle}</p>
+              <p className="mb-1"><span className="font-medium">Meta Description:</span> {entry.metaDescription}</p>
+              <p className="mb-1"><span className="font-medium">Keywords:</span> {entry.keywords}</p>
+              <div className="mt-3 flex gap-2">
+                <button onClick={() => handleEdit(entry)} className="rounded-lg p-2 text-red-600 hover:bg-red-50" type="button"><FaEdit size={18} /></button>
+                <button onClick={() => handleDelete(entry.id)} className="rounded-lg p-2 text-red-600 hover:bg-red-50" type="button"><FaTrash size={18} /></button>
               </div>
-            ))
-          ) : (
-            <p className="text-center text-gray-500 py-4">No SEO entries found.</p>
-          )}
-        </div>
+            </AdminCard>
+          ))
+        ) : (
+          <p className="py-4 text-center text-gray-500">No SEO entries found.</p>
+        )}
       </div>
-    </div>
+    </AdminPageShell>
   );
 };
 
