@@ -19,14 +19,8 @@ export default function CampusDrive() {
     number: "",
     religion: "",
     city: "",
-<<<<<<< HEAD
-    
-
-=======
-    religion: "",
->>>>>>> ce7fac5 (Save work before sync)
   });
-  const [isSubmitting, setIsSubmitting] = useState(false);    // ← new
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,7 +38,7 @@ export default function CampusDrive() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);    // ← start loading
+    setIsSubmitting(true);
 
     if (await checkEmailExistence()) {
       alert("This email is already registered.");
@@ -66,7 +60,7 @@ export default function CampusDrive() {
       {/* Overlay while submitting */}
       {isSubmitting && (
         <div className="absolute inset-0 bg-opacity-50 flex items-center justify-center rounded">
-          <p className="text-white text-lg">Loging...</p>
+          <p className="text-white text-lg">Logging...</p>
         </div>
       )}
 
@@ -116,7 +110,8 @@ export default function CampusDrive() {
             className="w-full border px-3 py-2 rounded"
           />
         </div>
- {/* religion */}
+
+        {/* religion */}
         <div>
           <label className="block text-sm font-medium mb-1">Religion</label>
           <input
@@ -129,6 +124,7 @@ export default function CampusDrive() {
             className="w-full border px-3 py-2 rounded"
           />
         </div>
+
         {/* City */}
         <div>
           <label className="block text-sm font-medium mb-1">Your Current City</label>
@@ -143,20 +139,6 @@ export default function CampusDrive() {
           />
         </div>
 
-        {/* Religion */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Religion</label>
-          <input
-            type="text"
-            name="religion"
-            required
-            disabled={isSubmitting}
-            value={formData.religion}
-            onChange={handleChange}
-            className="w-full border px-3 py-2 rounded"
-          />
-        </div>
-
         {/* Submit */}
         <button
           type="submit"
@@ -164,7 +146,7 @@ export default function CampusDrive() {
           className={`w-full py-2 rounded text-white ${isSubmitting ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
             }`}
         >
-          {isSubmitting ? "Loging…" : "Login"}
+          {isSubmitting ? "Logging…" : "Login"}
         </button>
       </form>
     </div>

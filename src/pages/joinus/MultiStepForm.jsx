@@ -427,8 +427,6 @@ export default function ApplicationForm() {
         previousCompanyExitReason: formData.previousCompanyExitReason || "",
         previousCompanyLastWorkingDate:
           formData.previousCompanyLastWorkingDate || "",
-<<<<<<< HEAD
-=======
         formCompleted: true, // Mark as completed in the same doc
         candidateTerms: {
           term1: candidateTerms.term1,
@@ -438,7 +436,6 @@ export default function ApplicationForm() {
           term5: candidateTerms.term5,
           termsType: formData.firstJob === "No" ? "Experienced" : "Fresher",
         },
->>>>>>> ce7fac5 (Save work before sync)
       });
 
       // Mark form as completed for this user

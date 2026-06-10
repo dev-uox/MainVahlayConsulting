@@ -11,14 +11,12 @@ import {
 import { getDownloadURL, ref as storageRef } from "firebase/storage";
 import { MdDelete } from "react-icons/md";
 import { db, storage } from "../../firebaseConfig";
-import Side_bar from "../../components/Side_bar";
 
 const RECRUITERS = [
   "Hansal Kava (CEO)",
   "Harshad Prajapati (Manager)",
   "KanakSinh Zala (CSA)",
   "Rahul Rana (STE)",
-
   "Rochit Joshi (Trainer)",
   "Janet Robbin(Recruiter)",
 ];
@@ -90,7 +88,6 @@ export default function ResultDetails() {
         return;
       }
       const data = snap.docs[0].data();
-      console.log("Loaded questions:", data);
       setQuestions(data);
     }
     loadQuestions();
@@ -147,39 +144,24 @@ export default function ResultDetails() {
       </div>
     );
 
-  // Helper to turn Firestore maps into ordered arrays
   const mapToArray = (m) =>
     m && typeof m === "object" ? Object.values(m) : [];
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen bg-gray-50">
-      {/* Mobile Header with Menu Toggle */}
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between p-4 bg-white border-b shadow-sm sticky top-0 z-10">
-        
         <h1 className="text-lg font-semibold text-gray-800">User Details</h1>
-        
         <div className="w-10"></div>
       </div>
 
-    
-
-      {/* Main Content */}
       <main className="flex-1 p-3 sm:p-4 md:p-6 space-y-4 sm:space-y-6 md:space-y-8">
-        {/* Back Link */}
         <Link to="/result" className="text-red-600 hover:underline text-sm sm:text-base inline-block">
           ← Back to Dashboard
         </Link>
 
         {/* User Info Card */}
-<<<<<<< HEAD
-        <div className="bg-white shadow rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
-          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
-            <h2 className="text-lg sm:text-xl font-semibold text-gray-900">{user.name}</h2>
-            <p className="mt-1 sm:mt-0 text-xs sm:text-sm text-gray-600">
-              Registered: {formatTs(user.registeredAt)}
-            </p>
-=======
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+        <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
             <div>
               <h2 className="text-2xl font-bold text-gray-900">{user.name}</h2>
@@ -198,87 +180,76 @@ export default function ResultDetails() {
               <MdDelete className="text-lg" />
               Delete Profile
             </button>
->>>>>>> ce7fac5 (Save work before sync)
           </div>
 
-          {/* User details grid */}
-          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-            <div className="p-3 bg-gray-50 rounded">
-              <p className="text-xs text-gray-500 uppercase">Email</p>
-              <p className="mt-1 text-sm sm:text-base break-all">{user.email}</p>
+          <div className="grid grid-cols-1 xs:grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Email</p>
+              <p className="mt-1 text-sm sm:text-base break-all font-medium">{user.email}</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded">
-              <p className="text-xs text-gray-500 uppercase">Phone</p>
-              <p className="mt-1 text-sm sm:text-base">{user.number}</p>
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Phone</p>
+              <p className="mt-1 text-sm sm:text-base font-medium">{user.number}</p>
             </div>
-            <div className="p-3 bg-gray-50 rounded">
-              <p className="text-xs text-gray-500 uppercase">City</p>
-              <p className="mt-1 text-sm sm:text-base">{user.city}</p>
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">City</p>
+              <p className="mt-1 text-sm sm:text-base font-medium">{user.city}</p>
             </div>
-            <div className="bg-gray-50 border border-gray-100 p-5 rounded-xl">
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">Religion</p>
-              <p className="text-gray-900 font-bold">{user.religion || <span className="text-gray-400 italic">Not Provided</span>}</p>
+            <div className="p-3 bg-gray-50 rounded-xl border border-gray-100">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Religion</p>
+              <p className="mt-1 text-sm sm:text-base font-medium">{user.religion || "—"}</p>
             </div>
           </div>
         </div>
 
         {/* Section 0: Personal Questions */}
-        <section className="bg-white shadow rounded-lg p-4 sm:p-6">
-          <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Personal Questions</h3>
-          <ol className="list-decimal pl-4 sm:pl-6 mt-2 space-y-3 sm:space-y-4">
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
+            <h3 className="text-xl font-bold text-gray-900">Personal Background</h3>
+          </div>
+          <div className="space-y-6">
             {mapToArray(questions?.personalQuitions || []).map((q, i) => (
-              <li key={i} className="pb-3 sm:pb-4 border-b last:border-b-0">
-                <p className="font-medium text-gray-700 text-sm sm:text-base">{q}</p>
-                <p className="mt-2 text-gray-800 text-sm sm:text-base bg-gray-50 p-3 rounded">
-                  {user.personalBackground?.[i] || "Not Answered"}
-                </p>
-              </li>
+              <div key={i} className="pb-6 border-b border-gray-100 last:border-b-0 last:pb-0">
+                <p className="font-bold text-gray-700 text-sm mb-3">Q: {q}</p>
+                <div className="bg-gray-50 p-4 rounded-xl border border-gray-100">
+                  <p className="text-gray-800 text-sm leading-relaxed italic">
+                    "{user.personalBackground?.[i] || "Not Answered"}"
+                  </p>
+                </div>
+              </div>
             ))}
-          </ol>
+          </div>
         </section>
 
         {/* Section 1: Listening */}
-<<<<<<< HEAD
-        <section className="bg-white shadow rounded-lg p-4 sm:p-6">
-          <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Listening</h3>
-          <div className="flex flex-col items-center mb-4 sm:mb-6">
-            <video 
-              controls 
-              className="w-full max-w-md sm:max-w-lg md:max-w-xl lg:max-w-2xl xl:max-w-3xl mt-4 rounded"
-            >
-              <source src="/assets/Listening%20test.mp4" type="video/mp4" />
-              Your browser does not support video.
-            </video>
-=======
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
           <div className="flex items-center gap-2 mb-6">
             <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
             <h3 className="text-xl font-bold text-gray-900">Listening Assessment</h3>
           </div>
           <div className="flex flex-col items-center mb-8">
             <div className="w-full max-w-3xl aspect-video bg-black rounded-2xl overflow-hidden shadow-2xl">
-              <video
-                controls
-                className="w-full h-full"
-              >
+              <video controls className="w-full h-full">
                 <source src="/assets/Listening%20test.mp4" type="video/mp4" />
                 Your browser does not support video.
               </video>
             </div>
->>>>>>> ce7fac5 (Save work before sync)
           </div>
 
-          <div className="bg-gray-50 p-3 sm:p-4 rounded">
-            <p className="font-medium text-gray-700 text-sm sm:text-base whitespace-pre-wrap">
+          <div className="bg-gray-50 p-4 sm:p-6 rounded-xl border border-gray-100">
+            <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Prompt Content:</p>
+            <p className="font-medium text-gray-800 text-sm whitespace-pre-wrap leading-relaxed">
               {questions?.listening || "No listening prompt available."}
             </p>
-            <div className="mt-3 sm:mt-4 p-3 bg-white rounded border">
-              <p className="text-gray-800 text-sm sm:text-base">
-                {user.listening?.text || "No transcript."}
+            <div className="mt-6 p-5 bg-white rounded-xl border border-gray-200 shadow-sm">
+              <p className="text-xs font-bold text-red-600 uppercase tracking-widest mb-3">User Transcription:</p>
+              <p className="text-gray-800 text-sm leading-loose">
+                {user.listening?.text || <span className="text-gray-400 italic">No summary provided.</span>}
               </p>
             </div>
             {user.listening?.submittedAt && (
-              <p className="text-xs sm:text-sm text-gray-500 mt-3">
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">
                 Submitted: {formatTs(user.listening.submittedAt)}
               </p>
             )}
@@ -287,65 +258,32 @@ export default function ResultDetails() {
 
         {/* Sections 2–4: Speaking, Selling, Problem Solving */}
         {["speaking", "selling", "problemSolving"].map((sec) => {
-          const prompt =
-            questions?.[sec]?.que || questions?.[sec] || "No prompt available.";
-          const tasks = questions?.[sec]?.tasks
-            ? Object.values(questions[sec]?.tasks)
-            : [];
+          const prompt = questions?.[sec]?.que || questions?.[sec] || "No prompt available.";
+          const tasks = questions?.[sec]?.tasks ? Object.values(questions[sec]?.tasks) : [];
           const hasAudio = Boolean(audioURLs[sec]);
           const submittedAt = user?.[sec]?.submittedAt;
 
           return (
-            <section key={sec} className="bg-white shadow rounded-lg p-4 sm:p-6">
-              <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4 capitalize">
-                {sec.replace(/([A-Z])/g, " $1")}
-              </h3>
+            <section key={sec} className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
+                <h3 className="text-xl font-bold text-gray-900 capitalize">
+                  {sec.replace(/([A-Z])/g, " $1")} Assessment
+                </h3>
+              </div>
 
-              <div className="bg-gray-50 p-3 sm:p-4 rounded">
-                {/* Main prompt */}
-                <p className="font-medium text-gray-700 text-sm sm:text-base whitespace-pre-wrap">
+              <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
+                <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Main Prompt:</p>
+                <p className="font-bold text-gray-800 text-sm whitespace-pre-wrap leading-relaxed mb-6">
                   {prompt}
                 </p>
 
-                {/* Tasks list */}
                 {tasks.length > 0 && (
-<<<<<<< HEAD
-                  <ol className="list-decimal pl-4 sm:pl-6 mt-3 sm:mt-4 space-y-2 text-gray-800 text-sm sm:text-base">
-                    {tasks.map((task, i) => (
-                      <li key={i} className="pb-2 last:pb-0">
-                        {task}
-                      </li>
-                    ))}
-                  </ol>
-                )}
-
-                {/* Audio player */}
-                {hasAudio ? (
-                  <div className="mt-4">
-                    <audio 
-                      controls 
-                      src={audioURLs[sec]} 
-                      className="w-full"
-                    />
-                  </div>
-                ) : (
-                  <p className="italic text-gray-500 mt-4 text-sm sm:text-base">
-                    {user?.[sec]?.audioPath ? "Loading audio…" : "No recording."}
-                  </p>
-                )}
-
-                {/* Submitted timestamp */}
-                {submittedAt && (
-                  <p className="text-xs sm:text-sm text-gray-500 mt-3">
-                    Submitted: {formatTs(submittedAt)}
-                  </p>
-                )}
-=======
                   <div className="mb-8">
                     <p className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Specific Tasks:</p>
                     <ul className="space-y-2">
                       {tasks.map((task, i) => (
-                        <li key={i} className="flex gap-3 text-gray-800 leading-relaxed">
+                        <li key={i} className="flex gap-3 text-gray-800 text-sm leading-relaxed">
                           <span className="w-5 h-5 rounded bg-white border border-gray-200 flex items-center justify-center text-[10px] font-bold text-gray-400 shrink-0">{i + 1}</span>
                           {task}
                         </li>
@@ -357,18 +295,14 @@ export default function ResultDetails() {
                 <div className="bg-white border border-gray-100 p-6 rounded-2xl shadow-sm">
                   <p className="text-xs font-bold text-red-600 uppercase tracking-widest mb-4 text-center">Voice Submission:</p>
                   {hasAudio ? (
-                    <audio
-                      controls
-                      src={audioURLs[sec]}
-                      className="w-full accent-red-600"
-                    />
+                    <audio controls src={audioURLs[sec]} className="w-full accent-red-600" />
                   ) : (
                     <div className="flex flex-col items-center py-4">
                       <svg className="w-12 h-12 text-gray-200 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z" />
                       </svg>
-                      <p className="text-gray-400 text-sm font-medium italic">
-                        {user?.[sec]?.audioPath ? "Processing audio recording..." : "No recording available."}
+                      <p className="text-gray-400 text-sm italic">
+                        {user?.[sec]?.audioPath ? "Processing audio..." : "No recording available."}
                       </p>
                     </div>
                   )}
@@ -378,192 +312,120 @@ export default function ResultDetails() {
                     </p>
                   )}
                 </div>
->>>>>>> ce7fac5 (Save work before sync)
               </div>
             </section>
           );
         })}
 
-        {/* Section 5: Quick Aptitude */}
-        <section className="bg-white shadow rounded-lg p-4 sm:p-6">
-          <h3 className="text-xl sm:text-2xl font-semibold text-gray-900 mb-3 sm:mb-4">Quick Aptitude Test</h3>
-          <div className="bg-gray-50 p-3 sm:p-4 rounded">
+        {/* Section 5: Aptitude */}
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
+          <div className="flex items-center gap-2 mb-6">
+            <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
+            <h3 className="text-xl font-bold text-gray-900">Aptitude Results</h3>
+          </div>
+          <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
             {questions?.aptitude && questions.aptitude.length > 0 ? (
-              <ol className="list-decimal pl-4 sm:pl-6 mt-2 space-y-3 sm:space-y-4">
+              <div className="space-y-6">
                 {questions.aptitude.map((q, i) => (
-                  <li key={i} className="pb-3 sm:pb-4 border-b last:border-b-0">
-                    <p className="font-medium text-gray-700 text-sm sm:text-base">{q}</p>
-                    <p className="mt-2 text-gray-800 text-sm sm:text-base bg-white p-3 rounded">
-                      <strong className="text-gray-700">Ans:</strong> {user.aptitude?.answers?.[i] ?? "—"}
+                  <div key={i} className="pb-6 border-b border-gray-200 last:border-b-0 last:pb-0">
+                    <p className="font-bold text-gray-700 text-sm mb-3">Question {i + 1}: {q}</p>
+                    <p className="bg-white p-3 rounded-lg border border-gray-100 text-sm">
+                      <span className="font-bold text-red-600 mr-2">Answer:</span>
+                      {user.aptitude?.answers?.[i] ?? <span className="text-gray-400 italic">No answer</span>}
                     </p>
-                  </li>
+                  </div>
                 ))}
-              </ol>
-            ) : (
-<<<<<<< HEAD
-              <p className="italic text-gray-500 text-sm sm:text-base">No aptitude questions available.</p>
-=======
-              <div className="flex items-center gap-3 text-gray-400 italic py-4">
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-                </svg>
-                No aptitude questions cataloged for this test.
               </div>
->>>>>>> ce7fac5 (Save work before sync)
+            ) : (
+              <p className="text-gray-400 italic text-sm">No aptitude cataloged.</p>
             )}
             {user.aptitude?.submittedAt && (
-              <p className="text-xs sm:text-sm text-gray-500 mt-3">
-                Submitted: {formatTs(user.aptitude.submittedAt)}
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-4">
+                Completed: {formatTs(user.aptitude.submittedAt)}
               </p>
             )}
           </div>
         </section>
 
         {/* Recruiter Comments */}
-<<<<<<< HEAD
-        <section className="bg-white shadow rounded-lg p-4 sm:p-6 space-y-4 sm:space-y-6">
-          <h3 className="text-xl sm:text-2xl font-semibold text-gray-900">Recruiter Comments</h3>
-          
-          <div className="space-y-3 sm:space-y-4">
-=======
-        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8 mb-8">
+        <section className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 sm:p-8">
           <div className="flex items-center gap-2 mb-8">
             <div className="w-1.5 h-6 bg-red-600 rounded-full"></div>
-            <h3 className="text-xl font-bold text-gray-900">Professional Evaluations</h3>
+            <h3 className="text-xl font-bold text-gray-900">Evaluations</h3>
           </div>
 
           <div className="space-y-4 mb-10">
->>>>>>> ce7fac5 (Save work before sync)
             {user.recruiterComments?.length > 0 ? (
               user.recruiterComments.map((c, i) => (
-                <div
-                  key={i}
-                  className="border-l-4 border-red-400 bg-gray-50 p-3 sm:p-4 rounded"
-                >
-<<<<<<< HEAD
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
-                    <p className="font-medium text-gray-800 text-sm sm:text-base">{c.name}</p>
-                    <p className="text-xs sm:text-sm text-gray-500">
-                      {formatTs(c.submittedAt)}
-                    </p>
-=======
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
+                <div key={i} className="border border-gray-100 bg-gray-50 p-5 rounded-2xl shadow-sm">
+                  <div className="flex items-center justify-between gap-2 mb-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-white border border-gray-200 flex items-center justify-center text-red-600 font-bold shadow-sm">
+                      <div className="w-10 h-10 rounded-full bg-red-600 flex items-center justify-center text-white font-bold">
                         {c.name?.charAt(0)}
                       </div>
                       <div>
-                        <p className="font-bold text-gray-900 leading-none">{c.name}</p>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">
+                        <p className="font-bold text-gray-900">{c.name}</p>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                           {formatTs(c.submittedAt)}
                         </p>
                       </div>
                     </div>
-                    <span className={`px-2.5 py-1 rounded-lg text-xs font-bold ${c.rating === "Excellent" ? "bg-emerald-50 text-emerald-600" :
-                      c.rating === "Bad" ? "bg-red-50 text-red-600" : "bg-blue-50 text-blue-600"
-                      }`}>
+                    <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                      c.rating === "Excellent" ? "bg-emerald-100 text-emerald-700" :
+                      c.rating === "Bad" ? "bg-red-100 text-red-700" : "bg-blue-100 text-blue-700"
+                    }`}>
                       {c.rating}
                     </span>
->>>>>>> ce7fac5 (Save work before sync)
                   </div>
-                  <p className="text-yellow-600 mt-1 text-sm sm:text-base">Rating: {c.rating}</p>
-                  <p className="mt-2 text-gray-800 text-sm sm:text-base">{c.text}</p>
+                  <p className="text-gray-700 text-sm leading-relaxed">{c.text}</p>
                 </div>
               ))
             ) : (
-              <p className="italic text-gray-500 text-sm sm:text-base">No comments yet.</p>
+              <p className="italic text-gray-500 text-sm">No evaluations recorded yet.</p>
             )}
           </div>
 
-          {/* Add a new comment */}
-          <div className="mt-4 sm:mt-6 space-y-4">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 sm:gap-4">
-              <div>
-                <label className="block font-medium text-sm sm:text-base mb-1">Your Name</label>
-                <select
-                  value={commenter}
-                  onChange={(e) => setCommenter(e.target.value)}
-                  disabled={submitting}
-                  className="border border-gray-300 p-2 sm:p-3 rounded w-full text-sm sm:text-base focus:ring-2 focus:ring-red-200 focus:border-red-500"
-                >
-                  {RECRUITERS.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block font-medium text-sm sm:text-base mb-1">Rating</label>
-                <select
-                  value={rating}
-                  onChange={(e) => setRating(e.target.value)}
-                  disabled={submitting}
-                  className="border border-gray-300 p-2 sm:p-3 rounded w-full text-sm sm:text-base focus:ring-2 focus:ring-red-200 focus:border-red-500"
-                >
-                  {RATINGS.map((r) => (
-                    <option key={r} value={r}>
-                      {r}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-<<<<<<< HEAD
-            
-            <div>
-              <label className="block font-medium text-sm sm:text-base mb-1">Comment</label>
-=======
-
-            <div className="mb-6">
-              <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Detailed Observations</label>
->>>>>>> ce7fac5 (Save work before sync)
-              <textarea
-                rows={3}
-                value={commentText}
-                onChange={(e) => setCommentText(e.target.value)}
+          <div className="bg-gray-50 p-6 rounded-2xl border border-dashed border-gray-300">
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-6">Add Evaluation</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              <select
+                value={commenter}
+                onChange={(e) => setCommenter(e.target.value)}
                 disabled={submitting}
-                className="border border-gray-300 p-2 sm:p-3 rounded w-full text-sm sm:text-base focus:ring-2 focus:ring-red-200 focus:border-red-500"
-                placeholder="Write your comment…"
-              />
-            </div>
-<<<<<<< HEAD
-            
-            <div className="text-right">
-              <button
-                onClick={submitComment}
-                disabled={submitting}
-                className={`px-4 sm:px-6 py-2 sm:py-3 rounded text-white text-sm sm:text-base ${
-                  submitting ? "bg-gray-400" : "bg-red-600 hover:bg-red-700"
-                }`}
-=======
-
-            <div className="flex justify-end">
-              <button
-                onClick={submitComment}
-                disabled={submitting}
-                className={`px-8 py-3 rounded-xl text-sm font-bold transition-all shadow-md ${submitting
-                  ? "bg-gray-200 text-gray-400 cursor-not-allowed"
-                  : "bg-red-600 text-white hover:bg-red-700 shadow-red-100"
-                  }`}
->>>>>>> ce7fac5 (Save work before sync)
+                className="bg-white border border-gray-200 p-3 rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-200 outline-none"
               >
-                {submitting ? "Submitting…" : "Submit Comment"}
+                {RECRUITERS.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+              <select
+                value={rating}
+                onChange={(e) => setRating(e.target.value)}
+                disabled={submitting}
+                className="bg-white border border-gray-200 p-3 rounded-xl text-sm font-medium focus:ring-2 focus:ring-red-200 outline-none"
+              >
+                {RATINGS.map((r) => <option key={r} value={r}>{r}</option>)}
+              </select>
+            </div>
+            <textarea
+              rows={3}
+              value={commentText}
+              onChange={(e) => setCommentText(e.target.value)}
+              disabled={submitting}
+              className="bg-white border border-gray-200 p-4 rounded-xl w-full text-sm focus:ring-2 focus:ring-red-200 outline-none"
+              placeholder="Deep dive observations..."
+            />
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={submitComment}
+                disabled={submitting || !commentText.trim()}
+                className={`px-8 py-3 rounded-xl text-sm font-bold transition-all ${
+                  submitting || !commentText.trim() ? "bg-gray-200 text-gray-400" : "bg-red-600 text-white hover:bg-red-700 shadow-lg shadow-red-600/20"
+                }`}
+              >
+                {submitting ? "Publishing..." : "Publish Post"}
               </button>
             </div>
           </div>
         </section>
-
-        {/* Delete record */}
-        <div className="pt-4 border-t flex justify-end">
-          <button
-            onClick={handleDelete}
-            className="px-4 sm:px-6 py-2 sm:py-3 bg-red-700 hover:bg-gray-700 text-white rounded flex items-center gap-2 text-sm sm:text-base"
-          >
-            <MdDelete className="text-base sm:text-lg" />
-            <span>Delete Record</span>
-          </button>
-        </div>
       </main>
     </div>
   );
